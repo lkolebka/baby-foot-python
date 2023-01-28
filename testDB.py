@@ -12,4 +12,4 @@ conn = psycopg2.connect(
 print("Connected to the database!")
 
 # Close the connection
-conn.close()
+conn.close() 
