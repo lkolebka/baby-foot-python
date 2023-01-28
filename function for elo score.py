@@ -70,12 +70,17 @@ for row in ws.rows:
     # Get the current IDs of the players
     cur.execute("SELECT id FROM players WHERE name=%s", (player1_name,))
     player1_id = cur.fetchone()[0]
+    print(f'id of player {player1_name} is {player1_id}')
+
     cur.execute("SELECT id FROM players WHERE name=%s", (player2_name,))
     player2_id = cur.fetchone()[0]
+    print(f'id of player {player2_name} is {player2_id}')
     cur.execute("SELECT id FROM players WHERE name=%s", (player3_name,))
     player3_id = cur.fetchone()[0]
+    print(f'id of player {player3_name} is {player3_id}')
     cur.execute("SELECT id FROM players WHERE name=%s", (player4_name,))
     player4_id = cur.fetchone()[0]
+    print(f'id of player {player4_name} is {player4_id}')
     
     # Get the current ratings of the players
     cur.execute("SELECT rating FROM eloratings WHERE playerid=%s", (player1_id,))
@@ -95,8 +100,7 @@ for row in ws.rows:
         # handle the case where the query did not return any rows
         player2_rating = 1200
     
-    # print the value for testing
-    print(f'Processing player2 {player2_name} with elo = {player2_rating}')
+    
  
     cur.execute("SELECT rating FROM eloratings WHERE playerid=%s", (player3_id,))
     result = cur.fetchone()
@@ -116,16 +120,23 @@ for row in ws.rows:
 
     conn.commit()
     # Calculate the new ratings for the players
-    player1_new_rating = calculate_elo(player1_rating, player3_rating, player1_outcome) + calculate_elo(player1_rating, player4_rating, player1_outcome)
-    player2_new_rating = calculate_elo(player2_rating, player3_rating, player2_outcome) + calculate_elo(player2_rating, player4_rating, player2_outcome)
-    player3_new_rating = calculate_elo(player3_rating, player1_rating, player3_outcome) + calculate_elo(player3_rating, player2_rating, player3_outcome)
-    player4_new_rating = calculate_elo(player4_rating, player1_rating, player4_outcome) + calculate_elo(player4_rating, player2_rating, player4_outcome)
+    player1_new_rating = (calculate_elo(player1_rating, player3_rating, player1_outcome) + calculate_elo(player1_rating, player4_rating, player1_outcome))/2
+    player2_new_rating = (calculate_elo(player2_rating, player3_rating, player2_outcome) + calculate_elo(player2_rating, player4_rating, player2_outcome))/2
+    player3_new_rating = (calculate_elo(player3_rating, player1_rating, player3_outcome) + calculate_elo(player3_rating, player2_rating, player3_outcome))/2
+    player4_new_rating = (calculate_elo(player4_rating, player1_rating, player4_outcome) + calculate_elo(player4_rating, player2_rating, player4_outcome))/2
+
+    # print the value for testing
+    print(f'new rating for {player1_name} is = {player1_new_rating}')
+    print(f'new rating for {player2_name} is = {player2_new_rating}')
+    print(f'new rating for {player3_name} is = {player3_new_rating}')
+    print(f'new rating for {player4_name} is = {player4_new_rating}')
 
     # Update the player ratings in the database
-    cur.execute("UPDATE eloratings SET rating=%s WHERE playerid=%s", (player1_new_rating, player1_id))
-    cur.execute("UPDATE eloratings SET rating=%s WHERE playerid=%s", (player2_new_rating, player2_id))
-    cur.execute("UPDATE eloratings SET rating=%s WHERE playerid=%s", (player3_new_rating, player3_id))
-    cur.execute("UPDATE eloratings SET rating=%s WHERE playerid=%s", (player4_new_rating, player4_id))
+    cur.execute("INSERT INTO eloratings (playerid, rating, date) VALUES (%s, %s, %s)", (player1_id, player1_new_rating, date))
+    cur.execute("INSERT INTO eloratings (playerid, rating, date) VALUES (%s, %s, %s)", (player2_id, player2_new_rating, date))
+    cur.execute("INSERT INTO eloratings (playerid, rating, date) VALUES (%s, %s, %s)", (player3_id, player3_new_rating, date))
+    cur.execute("INSERT INTO eloratings (playerid, rating, date) VALUES (%s, %s, %s)", (player4_id, player4_new_rating, date))
+
 
     conn.commit()
 
@@ -141,13 +152,14 @@ for row in ws.rows:
   
 
    # Update the team ratings in the elorating_teams table
-    cur.execute("UPDATE eloratings_teams SET rating = %s WHERE teamid = %s", (team1_rating, team1_id))
-    cur.execute("UPDATE eloratings_teams SET rating = %s WHERE teamid = %s", (team2_rating, team2_id))
+    cur.execute("INSERT INTO eloratings_teams (teamid, rating, date) VALUES (%s, %s,%s)", (team1_id, team1_rating, date ))
+    cur.execute("INSERT INTO eloratings_teams (teamid, rating, date) VALUES (%s, %s,%s)", (team2_id, team2_rating, date))
 
 
 
-    # Commit the changes to the database
-    conn.commit()
+
+# Commit the changes to the database
+conn.commit()
 
 # Close the cursor and connection
 cur.close()
