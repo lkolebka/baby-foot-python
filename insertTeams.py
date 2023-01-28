@@ -100,7 +100,7 @@ for row in ws.rows:
   
 
 
-  def get_team_ids(player1_id, player2_id, player3_id, player4_id, cur):
+  def get_team_player1_and_player_2(player1_id, player2_id, player3_id, player4_id, cur):
       # Check if the team already exists in the Teams table
     cur.execute("SELECT id FROM teams WHERE (team_player_1_id=%s AND team_player_2_id=%s) OR (team_player_1_id=%s AND team_player_2_id=%s)", (player1_id, player2_id, player2_id, player1_id))
     team_player_1_id = cur.fetchone()
@@ -128,8 +128,16 @@ for row in ws.rows:
     return team_player_1_id, team_player_2_id
     
 
-  
+  def get_team_id(team_player_1_id, team_player_2_id, cur):
+    cur.execute("SELECT id FROM teams WHERE (team_player_1_id=%s AND team_player_2_id=%s) OR (team_player_1_id=%s AND team_player_2_id=%s)", (team_player_1_id, team_player_2_id, team_player_2_id, team_player_1_id))
+    team_id = cur.fetchone()
+    if team_id is None:
+        return None
+    else:
+      return team_id[0]
+
       
+  
 
 
   # Commit the changes to the database
