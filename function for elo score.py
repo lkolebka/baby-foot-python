@@ -83,40 +83,42 @@ for row in ws.rows:
     print(f'id of player {player4_name} is {player4_id}')
     
     # Get the current ratings of the players
-    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s", (player1_id,))
+    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player1_id,))
     result = cur.fetchone()
     if result is not None:
         player1_rating = result[0]
     else:
         # handle the case where the query did not return any rows
         player1_rating = 1200
+    print(f'current rating of {player1_name} is {player1_rating}')
 
-
-    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s", (player2_id,))
+    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player2_id,))
     result = cur.fetchone()
     if result is not None:
         player2_rating = result[0]
     else:
         # handle the case where the query did not return any rows
         player2_rating = 1200
-    
+    print(f'current rating of {player2_name} is {player2_rating}')
     
  
-    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s", (player3_id,))
+    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player3_id,))
     result = cur.fetchone()
     if result is not None:
         player3_rating = result[0]
     else:
         # handle the case where the query did not return any rows
         player3_rating = 1200
+    print(f'current rating of {player3_name} is {player3_rating}')
 
-    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s", (player4_id,))
+    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player4_id,))
     result = cur.fetchone()
     if result is not None:
         player4_rating = result[0]
     else:
         # handle the case where the query did not return any rows
-        player4_rating = 1200                                                                                        
+        player4_rating = 1200  
+    print(f'current rating of {player4_name} is {player4_rating}')                                                                                       
 
     conn.commit()
     # Calculate the new ratings for the players
@@ -125,6 +127,16 @@ for row in ws.rows:
     player3_new_rating = (calculate_elo(player3_rating, player1_rating, player3_outcome) + calculate_elo(player3_rating, player2_rating, player3_outcome))/2
     player4_new_rating = (calculate_elo(player4_rating, player1_rating, player4_outcome) + calculate_elo(player4_rating, player2_rating, player4_outcome))/2
 
+    # print the value of the outcome
+    if team1_score > team2_score:
+        # Team 1 won, so players 1 and 2 get a win
+        print(f'{player1_name} and {player2_name} = won')
+        print(f'{player3_name} and {player4_name} = lost')
+    else:
+        # Team 1 lost, so players 1 and 2 get a loss
+          print(f'{player3_name} and {player4_name} = won')
+          print(f'{player1_name} and {player2_name} = lost')
+   
     # print the value for testing
     print(f'new rating for {player1_name} is = {player1_new_rating}')
     print(f'new rating for {player2_name} is = {player2_new_rating}')
