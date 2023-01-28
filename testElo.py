@@ -7,12 +7,23 @@ def calculate_elo(old_rating, opponent_rating, outcome):
 
 
 def test_calculate_elo():
-    old_rating = random.randint(1000,3000)
+    old_rating = random.randint(1200,1400)
     opponent_rating = random.randint(1000,3000)
-    outcome = random.choice([0,0.5,1])
+    outcome = random.choice([0,1])
     new_rating = calculate_elo(old_rating, opponent_rating, outcome)
     print("Old Rating:",old_rating)
     print("Opponent Rating:",opponent_rating)
     print("Outcome:",outcome)
     print("New Rating:",new_rating)
 test_calculate_elo()
+
+def test_calculate_elo2():
+    old_rating = 1216
+    opponent_rating = 1200
+    outcome = random.choice([0,1])
+    new_rating = calculate_elo(old_rating, opponent_rating, outcome)
+    print("V2_Old Rating:",old_rating)
+    print("V2_Opponent Rating:",opponent_rating)
+    print("V2_Outcome:",outcome)
+    print("V2_New Rating:",new_rating)
+test_calculate_elo2()

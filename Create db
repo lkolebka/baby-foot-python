@@ -38,6 +38,13 @@ CREATE TABLE MatchPlayers (
   FOREIGN KEY (PlayerID) REFERENCES Players(ID)
 );
 
+CREATE TABLE eloratings_teams (
+    id SERIAL PRIMARY KEY,
+    teamid INTEGER REFERENCES teams(id),
+    rating INTEGER,
+    date TIMESTAMP
+);
+
 
 CREATE SEQUENCE teams_id_seq
   START WITH 1
@@ -46,8 +53,12 @@ CREATE SEQUENCE teams_id_seq
 CREATE SEQUENCE players_id_seq START 1;
 CREATE SEQUENCE matches_id_seq START 1;
 CREATE SEQUENCE matcheplayers_id_seq START 1;
+CREATE SEQUENCE eloratings_id_seq START 1;
+CREATE SEQUENCE eloratings_teams_id_seq START 1;
 
 ALTER TABLE matchplayers
 ALTER COLUMN id SET DEFAULT nextval('matcheplayers_id_seq');
 ALTER TABLE matches
 ALTER COLUMN id SET DEFAULT nextval('matches_id_seq');
+ALTER TABLE eloratings
+ALTER COLUMN id SET DEFAULT nextval('eloratings_id_seq');
