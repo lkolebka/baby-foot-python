@@ -1,0 +1,12 @@
+DELETE FROM matchplayers;
+DELETE FROM matches;
+DELETE FROM teams;
+DELETE FROM players;
+
+
+
+SELECT setval('players_id_seq', 1, false);
+
+SELECT setval('teams_id_seq', 1, false);
+
+SELECT setval('matches_id_seq', 1, false);
