@@ -139,21 +139,24 @@ for row in ws.rows:
 
 
     # Insert the game into the matches table
-    cur.execute("INSERT INTO matches (date, team1id, team2id, team1score, team2score) VALUES (%s, %s, %s, %s, %s)", (date, team_player_1_id, team_player_2_id, team1_score, team2_score))
-    print(f'processin matchs : {date} with {player1_name} and {player2_name} vs {player3_name} and {player4_name}: {team1_score} - {team2_score}  ')
+    cur.execute("SELECT * FROM matches WHERE date=%s AND team1id=%s AND team2id=%s AND team1score=%s AND team2score=%s", (date, team_player_1_id, team_player_2_id, team1_score, team2_score))
+    match = cur.fetchone()
+    if match is None:
+        cur.execute("INSERT INTO matches (date, team1id, team2id, team1score, team2score) VALUES (%s, %s, %s, %s, %s)", (date, team_player_1_id, team_player_2_id, team1_score, team2_score))
+        print(f'processing match: {date} with {player1_name} and {player2_name} vs {player3_name} and {player4_name}: {team1_score} - {team2_score}  ')
+        conn.commit() 
 
-    conn.commit() 
+        # get the last of the matches
+        cur.execute("SELECT id FROM matches ORDER BY id DESC LIMIT 1")
+        match_id = cur.fetchone()[0]
 
-
-    # get the last of the matches
-    cur.execute("SELECT id FROM matches ORDER BY id DESC LIMIT 1")
-    match_id = cur.fetchone()[0]
-
-    # Insert the players into the MatchPlayers table
-    cur.execute("INSERT INTO MatchPlayers (MatchID, PlayerID) VALUES (%s, %s)", (match_id, player1_id))
-    cur.execute("INSERT INTO MatchPlayers (MatchID, PlayerID) VALUES (%s, %s)", (match_id, player2_id))
-    cur.execute("INSERT INTO MatchPlayers (MatchID, PlayerID) VALUES (%s, %s)", (match_id, player3_id))
-    cur.execute("INSERT INTO MatchPlayers (MatchID, PlayerID) VALUES (%s, %s)", (match_id, player4_id))
+        # Insert the players into the MatchPlayers table
+        cur.execute("INSERT INTO MatchPlayers (MatchID, PlayerID) VALUES (%s, %s)", (match_id, player1_id))
+        cur.execute("INSERT INTO MatchPlayers (MatchID, PlayerID) VALUES (%s, %s)", (match_id, player2_id))
+        cur.execute("INSERT INTO MatchPlayers (MatchID, PlayerID) VALUES (%s, %s)", (match_id, player3_id))
+        cur.execute("INSERT INTO MatchPlayers (MatchID, PlayerID) VALUES (%s, %s)", (match_id, player4_id))
+    else:
+        print(f'Skipping match: {date} with {player1_name} and {player2_name} vs {player3_name} and {player4_name}: {team1_score} - {team2_score}  , the match already exist')
 
     conn.commit()
 
