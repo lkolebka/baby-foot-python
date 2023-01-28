@@ -3,7 +3,7 @@ import psycopg2
 # Connect to the database
 conn = psycopg2.connect(
     host="localhost",
-    database="elo_baby",
+    database="babyfoot3",
     user="postgres",
     password="519173"
 )
@@ -12,4 +12,4 @@ conn = psycopg2.connect(
 print("Connected to the database!")
 
 # Close the connection
-conn.close()
+conn.close() 
