@@ -13,10 +13,10 @@ CREATE TABLE EloRatings (
 
 CREATE TABLE Teams (
   ID INTEGER PRIMARY KEY,
-  Player1ID INTEGER,
-  Player2ID INTEGER,
-  FOREIGN KEY (Player1ID) REFERENCES Players(ID),
-  FOREIGN KEY (Player2ID) REFERENCES Players(ID)
+  team_player_1_id INTEGER,
+  team_player_2_id INTEGER,
+  FOREIGN KEY (team_player_1_id) REFERENCES Players(ID),
+  FOREIGN KEY (team_player_2_id) REFERENCES Players(ID)
 );
 
 CREATE TABLE Matches (
@@ -43,5 +43,11 @@ CREATE SEQUENCE teams_id_seq
   START WITH 1
   INCREMENT BY 1;
 
-  CREATE SEQUENCE players_id_seq START 1;
+CREATE SEQUENCE players_id_seq START 1;
 CREATE SEQUENCE matches_id_seq START 1;
+CREATE SEQUENCE matcheplayers_id_seq START 1;
+
+ALTER TABLE matchplayers
+ALTER COLUMN id SET DEFAULT nextval('matcheplayers_id_seq');
+ALTER TABLE matches
+ALTER COLUMN id SET DEFAULT nextval('matches_id_seq');
