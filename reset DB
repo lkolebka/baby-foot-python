@@ -2,6 +2,8 @@ DELETE FROM matchplayers;
 DELETE FROM matches;
 DELETE FROM teams;
 DELETE FROM players;
+DELETE FROM eloratings;
+DELETE FROM eloratings_teams
 
 
 

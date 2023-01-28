@@ -18,7 +18,7 @@ def test_calculate_elo():
 test_calculate_elo()
 
 def test_calculate_elo2():
-    old_rating = 1216
+    old_rating = 1210
     opponent_rating = 1200
     outcome = random.choice([0,1])
     new_rating = calculate_elo(old_rating, opponent_rating, outcome)
