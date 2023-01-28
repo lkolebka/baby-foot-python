@@ -1,13 +1,15 @@
 
 import psycopg2
 from openpyxl import load_workbook
+from config import DATABASE_CONFIG
+
 
 # Connect to the database
 conn = psycopg2.connect(
-    host="localhost",
-    database="babyfoot3",
-    user="postgres",
-    password="519173"
+    host=DATABASE_CONFIG['host'],
+    database=DATABASE_CONFIG['database'],
+    user=DATABASE_CONFIG['user'],
+    password=DATABASE_CONFIG['password']
 )
 
 # Create a cursor
@@ -95,10 +97,6 @@ for row in ws.rows:
     else:
       # If the player already exists, retrieve their id
       player4_id = player4_id[0]
-
-
-  
-
 
   def get_team_player1_and_player_2(player1_id, player2_id, player3_id, player4_id, cur):
       # Check if the team already exists in the Teams table

@@ -1,12 +1,14 @@
 import psycopg2
 from openpyxl import load_workbook
+from config import DATABASE_CONFIG
+
 
 # Connect to the database
 conn = psycopg2.connect(
-    host="localhost",
-    database="babyfoot3",
-    user="postgres",
-    password="519173"
+    host=DATABASE_CONFIG['host'],
+    database=DATABASE_CONFIG['database'],
+    user=DATABASE_CONFIG['user'],
+    password=DATABASE_CONFIG['password']
 )
 
 # Create a cursor
@@ -85,8 +87,6 @@ for row in ws.rows:
         # If the player already exists, retrieve their id
         player3_id = player3_id[0]
 
-
-
     # Check if the player4 name is not empty
     if player4_name:
       # Check if the player already exists in the Players table
@@ -132,12 +132,6 @@ for row in ws.rows:
 
     conn.commit() 
 
-
-
-    
-
-
-
     # Insert the game into the matches table
     cur.execute("SELECT * FROM matches WHERE date=%s AND team1id=%s AND team2id=%s AND team1score=%s AND team2score=%s", (date, team_player_1_id, team_player_2_id, team1_score, team2_score))
     match = cur.fetchone()
@@ -159,6 +153,5 @@ for row in ws.rows:
         print(f'Skipping match: {date} with {player1_name} and {player2_name} vs {player3_name} and {player4_name}: {team1_score} - {team2_score}  , the match already exist')
 
     conn.commit()
-
 
 conn.close()

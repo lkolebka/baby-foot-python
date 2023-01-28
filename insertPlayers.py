@@ -103,4 +103,4 @@ for row in ws.rows:
     print(f'Processing player4 {player4_name} with id {player4_id}')
 
 # Commit the changes to the database    
-conn.commit()
+conn.commit() 
