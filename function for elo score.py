@@ -2,25 +2,28 @@ import psycopg2
 from openpyxl import load_workbook
 from insertTeams import get_team_player1_and_player_2
 from insertTeams import get_team_id
+from config import DATABASE_CONFIG
+
 
 
 # Connect to the database
 conn = psycopg2.connect(
-    host="localhost",
-    database="babyfoot3",
-    user="postgres",
-    password="519173"
+    host=DATABASE_CONFIG['host'],
+    database=DATABASE_CONFIG['database'],
+    user=DATABASE_CONFIG['user'],
+    password=DATABASE_CONFIG['password']
 )
-
 
 # Create a cursor
 cur = conn.cursor()
 
-def calculate_elo(old_rating, opponent_rating, outcome):
-    K = 32  # The constant that determines the impact of the match on the rating
+def calculate_elo(old_rating, opponent_rating, outcome, score_difference):
+    K = 50  # The constant that determines the impact of the match on the rating
     expected_outcome = 1 / (1 + 10 ** ((opponent_rating - old_rating) / 400))
-    return old_rating + K * (outcome - expected_outcome)
-
+    # Calculate the score difference between two teams
+    score_difference = abs(team1_score - team2_score)
+    point_factor = 1 + (score_difference / 11)  # Normalize score_difference to a value between 1 and 2
+    return old_rating + K * point_factor * (outcome - expected_outcome)
 
 
 # Load the workbook
@@ -44,15 +47,24 @@ for row in ws.rows:
     player4_name = row[5].value
     team2_score = row[6].value
 
+    # Calculate the score difference for the individual players
+    score_difference_player1 = 0
+    score_difference_player2 = 0
+    score_difference_player3 = 0
+    score_difference_player4 = 0
+
     # Calculate the Elo ratings for the individual players
     player1_outcome = 0
     player2_outcome = 0
     player3_outcome = 0
     player4_outcome = 0
+
     if team1_score > team2_score:
         # Team 1 won, so players 1 and 2 get a win
         player1_outcome = 1
         player2_outcome = 1
+        score_difference_player1 = (team1_score - team2_score)
+        score_difference_player2 = (team1_score - team2_score)
     else:
         # Team 1 lost, so players 1 and 2 get a loss
         player1_outcome = 0
@@ -62,6 +74,8 @@ for row in ws.rows:
         # Team 2 won, so players 3 and 4 get a win
         player3_outcome = 1
         player4_outcome = 1
+        score_difference_player3 = (team2_score - team1_score)
+        score_difference_player4 = (team2_score - team1_score)
     else:
         # Team 2 lost, so players 3 and 4 get a loss
         player3_outcome = 0
@@ -122,10 +136,10 @@ for row in ws.rows:
 
     conn.commit()
     # Calculate the new ratings for the players
-    player1_new_rating = (calculate_elo(player1_rating, player3_rating, player1_outcome) + calculate_elo(player1_rating, player4_rating, player1_outcome))/2
-    player2_new_rating = (calculate_elo(player2_rating, player3_rating, player2_outcome) + calculate_elo(player2_rating, player4_rating, player2_outcome))/2
-    player3_new_rating = (calculate_elo(player3_rating, player1_rating, player3_outcome) + calculate_elo(player3_rating, player2_rating, player3_outcome))/2
-    player4_new_rating = (calculate_elo(player4_rating, player1_rating, player4_outcome) + calculate_elo(player4_rating, player2_rating, player4_outcome))/2
+    player1_new_rating = (calculate_elo(player1_rating, player3_rating, player1_outcome, score_difference_player1) + calculate_elo(player1_rating, player4_rating, player1_outcome, score_difference_player1))/2
+    player2_new_rating = (calculate_elo(player2_rating, player3_rating, player2_outcome, score_difference_player2) + calculate_elo(player2_rating, player4_rating, player2_outcome,score_difference_player2 ))/2
+    player3_new_rating = (calculate_elo(player3_rating, player1_rating, player3_outcome, score_difference_player3) + calculate_elo(player3_rating, player2_rating, player3_outcome, score_difference_player3))/2
+    player4_new_rating = (calculate_elo(player4_rating, player1_rating, player4_outcome, score_difference_player4) + calculate_elo(player4_rating, player2_rating, player4_outcome, score_difference_player4))/2
 
     # print the value of the outcome
     if team1_score > team2_score:
