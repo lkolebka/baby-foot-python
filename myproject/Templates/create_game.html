@@ -5,32 +5,43 @@
   <title>Create Game</title>
 </head>
 <body>
+  <h1>Create a game</h1>
   <form method="post">
-    <div>
-        <label for="player1_name">Player 1 Name:</label>
-        <input type="text" id="player1_name" name="player1_name">
-    </div>
-    <div>
-        <label for="player2_name">Player 2 Name:</label>
-        <input type="text" id="player2_name" name="player2_name">
-    </div>
-    <div>
-        <label for="team1_score">Team 1 Score:</label>
-        <input type="number" id="team1_score" name="team1_score">
-    </div>
-    <div>
-        <label for="player3_name">Player 3 Name:</label>
-        <input type="text" id="player3_name" name="player3_name">
-    </div>
-    <div>
-        <label for="player4_name">Player 4 Name:</label>
-        <input type="text" id="player4_name" name="player4_name">
-    </div>
-    <div>
-        <label for="team2_score">Team 2 Score:</label>
-        <input type="number" id="team2_score" name="team2_score">
-    </div>
-    <input type="submit" value="Create">
+    <label for="player1_name">Player 1 name:</label>
+    <select id="player1_name" name="player1_name">
+      {% for player in players %}
+      <option value="{{ player }}">{{ player }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <label for="player2_name">Player 2 name:</label>
+    <select id="player2_name" name="player2_name">
+      {% for player in players %}
+      <option value="{{ player }}">{{ player }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <label for="team1_score">Team 1 score:</label>
+    <input type="number" id="team1_score" name="team1_score">
+    <br>
+    <label for="player3_name">Player 3 name:</label>
+    <select id="player3_name" name="player3_name">
+      {% for player in players %}
+      <option value="{{ player }}">{{ player }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <label for="player4_name">Player 4 name:</label>
+    <select id="player4_name" name="player4_name">
+      {% for player in players %}
+      <option value="{{ player }}">{{ player }}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <label for="team2_score">Team 2 score:</label>
+    <input type="number" id="team2_score" name="team2_score">
+    <br>
+    <input type="submit" value="Create game">
   </form>
 </body>
 </html>
