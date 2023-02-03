@@ -4,7 +4,7 @@ from insertTeams import get_team_player1_and_player_2
 from insertTeams import get_team_id
 from config import DATABASE_CONFIG
 
-
+import math
 
 # Connect to the database
 conn = psycopg2.connect(
@@ -17,14 +17,34 @@ conn = psycopg2.connect(
 # Create a cursor
 cur = conn.cursor()
 
-def calculate_elo(old_rating, opponent_rating, outcome, score_difference):
-    K = 50  # The constant that determines the impact of the match on the rating
-    expected_outcome = 1 / (1 + 10 ** ((opponent_rating - old_rating) / 400))
-    # Calculate the score difference between two teams
-    score_difference = abs(team1_score - team2_score)
-    point_factor = 1 + (score_difference / 11)  # Normalize score_difference to a value between 1 and 2
-    return old_rating + K * point_factor * (outcome - expected_outcome)
+import math
 
+def get_number_of_games_by_name(player_name):
+    query = """
+    SELECT COUNT(*)
+    FROM matchplayers
+    WHERE playerid IN (
+      SELECT id
+      FROM players
+      WHERE name = %s
+    );
+    """
+    cur.execute(query, (player_name,))
+    result = cur.fetchone()
+    number_of_games = result[0] if result else 0
+    return number_of_games
+
+
+# calculate the factor of the differnce of the point 
+def calculate_point_factor(score_difference):
+    return 1 + (math.log(score_difference + 1) / math.log(12))
+
+
+def calculate_elo(old_rating, opponent_rating, outcome, score_difference, number_of_games):
+    K = 50 / (1 + number_of_games / 800)  # The constant that determines the impact of the match on the rating
+    expected_outcome = 1 / (1 + 10 ** ((opponent_rating - old_rating) / 400))
+    point_factor = calculate_point_factor(score_difference)
+    return old_rating + (K) * point_factor * (outcome - expected_outcome)
 
 # Load the workbook
 wb = load_workbook('data.xlsx')
@@ -89,12 +109,31 @@ for row in ws.rows:
     cur.execute("SELECT id FROM players WHERE name=%s", (player2_name,))
     player2_id = cur.fetchone()[0]
     print(f'id of player {player2_name} is {player2_id}')
+
     cur.execute("SELECT id FROM players WHERE name=%s", (player3_name,))
     player3_id = cur.fetchone()[0]
     print(f'id of player {player3_name} is {player3_id}')
+
     cur.execute("SELECT id FROM players WHERE name=%s", (player4_name,))
     player4_id = cur.fetchone()[0]
     print(f'id of player {player4_name} is {player4_id}')
+
+    # Get the number of games by players 
+    cur.execute("SELECT COUNT(*) FROM matchplayers WHERE playerid IN (SELECT id FROM players WHERE id = %s)", (player1_id,))
+    number_of_game_player1 = cur.fetchone()[0]
+    print(f'number of game for {player1_name} is {number_of_game_player1}')
+
+    cur.execute("SELECT COUNT(*) FROM matchplayers WHERE playerid IN (SELECT id FROM players WHERE id = %s)", (player2_id,))
+    number_of_game_player2 = cur.fetchone()[0]
+    print(f'number of game for {player2_name} is {number_of_game_player2}')
+
+    cur.execute("SELECT COUNT(*) FROM matchplayers WHERE playerid IN (SELECT id FROM players WHERE id = %s)", (player3_id,))
+    number_of_game_player3 = cur.fetchone()[0]
+    print(f'number of game for {player3_name} is {number_of_game_player3}')
+
+    cur.execute("SELECT COUNT(*) FROM matchplayers WHERE playerid IN (SELECT id FROM players WHERE id = %s)", (player4_id,))
+    number_of_game_player4 = cur.fetchone()[0]
+    print(f'number of game for {player4_name} is {number_of_game_player4}')
     
     # Get the current ratings of the players
     cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player1_id,))
@@ -135,11 +174,12 @@ for row in ws.rows:
     print(f'current rating of {player4_name} is {player4_rating}')                                                                                       
 
     conn.commit()
+
     # Calculate the new ratings for the players
-    player1_new_rating = (calculate_elo(player1_rating, player3_rating, player1_outcome, score_difference_player1) + calculate_elo(player1_rating, player4_rating, player1_outcome, score_difference_player1))/2
-    player2_new_rating = (calculate_elo(player2_rating, player3_rating, player2_outcome, score_difference_player2) + calculate_elo(player2_rating, player4_rating, player2_outcome,score_difference_player2 ))/2
-    player3_new_rating = (calculate_elo(player3_rating, player1_rating, player3_outcome, score_difference_player3) + calculate_elo(player3_rating, player2_rating, player3_outcome, score_difference_player3))/2
-    player4_new_rating = (calculate_elo(player4_rating, player1_rating, player4_outcome, score_difference_player4) + calculate_elo(player4_rating, player2_rating, player4_outcome, score_difference_player4))/2
+    player1_new_rating = (calculate_elo(player1_rating, player3_rating, player1_outcome, score_difference_player1, number_of_game_player1) + calculate_elo(player1_rating, player4_rating, player1_outcome, score_difference_player1, number_of_game_player1))/2
+    player2_new_rating = (calculate_elo(player2_rating, player3_rating, player2_outcome, score_difference_player2, number_of_game_player2) + calculate_elo(player2_rating, player4_rating, player2_outcome,score_difference_player2, number_of_game_player2 ))/2
+    player3_new_rating = (calculate_elo(player3_rating, player1_rating, player3_outcome, score_difference_player3, number_of_game_player3) + calculate_elo(player3_rating, player2_rating, player3_outcome, score_difference_player3, number_of_game_player3))/2
+    player4_new_rating = (calculate_elo(player4_rating, player1_rating, player4_outcome, score_difference_player4, number_of_game_player4) + calculate_elo(player4_rating, player2_rating, player4_outcome, score_difference_player4, number_of_game_player4))/2
 
     # print the value of the outcome
     if team1_score > team2_score:

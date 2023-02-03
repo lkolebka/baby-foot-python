@@ -40,7 +40,9 @@ def create_game():
         player4_name = request.form['player4_name']
         team2_score = request.form['team2_score']
         # Do something with the data (e.g. save it to a database)
+    
         return "Game created successfully!"
+       
     return render_template('create_game.html', players=players)
 
 if __name__ == '__main__':

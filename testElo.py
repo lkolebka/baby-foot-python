@@ -31,7 +31,7 @@ test_calculate_elo2()
 
 
 def calculate_elo2(old_rating, opponent_rating, outcome, score_difference):
-    team1_score = 10
+    team1_score = 4
     team2_score = 11
     difference = (team1_score - team2_score)
     K = 50  # The constant that determines the impact of the match on the rating
