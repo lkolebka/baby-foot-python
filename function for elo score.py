@@ -1,6 +1,5 @@
 import psycopg2
 from openpyxl import load_workbook
-from insertTeams import get_team_player1_and_player_2
 from insertTeams import get_team_id
 from config import DATABASE_CONFIG
 
@@ -37,7 +36,7 @@ def get_number_of_games_by_name(player_name):
 
 # calculate the factor of the differnce of the point 
 def calculate_point_factor(score_difference):
-    return 1 + (math.log(score_difference + 1) / math.log(12))
+    return 1 + (math.log(score_difference + 1) / math.log(25))
 
 
 def calculate_elo(old_rating, opponent_rating, outcome, score_difference, number_of_games):
@@ -180,6 +179,8 @@ for row in ws.rows:
     player2_new_rating = (calculate_elo(player2_rating, player3_rating, player2_outcome, score_difference_player2, number_of_game_player2) + calculate_elo(player2_rating, player4_rating, player2_outcome,score_difference_player2, number_of_game_player2 ))/2
     player3_new_rating = (calculate_elo(player3_rating, player1_rating, player3_outcome, score_difference_player3, number_of_game_player3) + calculate_elo(player3_rating, player2_rating, player3_outcome, score_difference_player3, number_of_game_player3))/2
     player4_new_rating = (calculate_elo(player4_rating, player1_rating, player4_outcome, score_difference_player4, number_of_game_player4) + calculate_elo(player4_rating, player2_rating, player4_outcome, score_difference_player4, number_of_game_player4))/2
+
+    
 
     # print the value of the outcome
     if team1_score > team2_score:

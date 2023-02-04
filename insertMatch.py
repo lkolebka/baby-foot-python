@@ -52,8 +52,6 @@ for row in ws.rows:
         player1_id = player1_id[0]
         
 
-
-    
     # Check if the player2 name is not empty
       if player2_name:
         # Check if the player already exists in the Players table
