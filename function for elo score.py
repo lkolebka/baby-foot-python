@@ -117,22 +117,22 @@ for row in ws.rows:
     player4_id = cur.fetchone()[0]
     print(f'id of player {player4_name} is {player4_id}')
 
-    # Get the number of games by players 
-    cur.execute("SELECT COUNT(*) FROM matchplayers WHERE playerid IN (SELECT id FROM players WHERE id = %s)", (player1_id,))
+    # Get the number of games by players according to the date 
+    cur.execute("SELECT COUNT(*) FROM matchplayers mp INNER JOIN matches m ON mp.matchid = m.id WHERE playerid =%s  AND m.date <=%s;", (player1_id,date))
     number_of_game_player1 = cur.fetchone()[0]
-    print(f'number of game for {player1_name} is {number_of_game_player1}')
+    print(f'number of game for {player1_name} on the {date} is {number_of_game_player1}')
 
-    cur.execute("SELECT COUNT(*) FROM matchplayers WHERE playerid IN (SELECT id FROM players WHERE id = %s)", (player2_id,))
+    cur.execute("SELECT COUNT(*) FROM matchplayers mp INNER JOIN matches m ON mp.matchid = m.id WHERE playerid =%s  AND m.date <=%s;", (player2_id,date))
     number_of_game_player2 = cur.fetchone()[0]
-    print(f'number of game for {player2_name} is {number_of_game_player2}')
+    print(f'number of game for {player2_name} on the {date} is {number_of_game_player2}')
 
-    cur.execute("SELECT COUNT(*) FROM matchplayers WHERE playerid IN (SELECT id FROM players WHERE id = %s)", (player3_id,))
+    cur.execute("SELECT COUNT(*) FROM matchplayers mp INNER JOIN matches m ON mp.matchid = m.id WHERE playerid =%s  AND m.date <=%s;", (player3_id,date))
     number_of_game_player3 = cur.fetchone()[0]
-    print(f'number of game for {player3_name} is {number_of_game_player3}')
+    print(f'number of game for {player3_name} on the {date} is {number_of_game_player3}')
 
-    cur.execute("SELECT COUNT(*) FROM matchplayers WHERE playerid IN (SELECT id FROM players WHERE id = %s)", (player4_id,))
+    cur.execute("SELECT COUNT(*) FROM matchplayers mp INNER JOIN matches m ON mp.matchid = m.id WHERE playerid =%s  AND m.date <=%s;", (player4_id,date))
     number_of_game_player4 = cur.fetchone()[0]
-    print(f'number of game for {player4_name} is {number_of_game_player4}')
+    print(f'number of game for {player4_name} on the {date} is {number_of_game_player4}')
     
     # Get the current ratings of the players
     cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player1_id,))
