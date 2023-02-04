@@ -12,3 +12,9 @@ SELECT setval('players_id_seq', 1, false);
 SELECT setval('teams_id_seq', 1, false);
 
 SELECT setval('matches_id_seq', 1, false);
+
+SELECT setval('eloratings_teams_id_seq', 1, false);
+
+SELECT setval('eloratings_id_seq', 1, false);
+
+

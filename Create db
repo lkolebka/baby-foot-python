@@ -40,7 +40,7 @@ CREATE TABLE MatchPlayers (
 
 CREATE TABLE eloratings_teams (
     id SERIAL PRIMARY KEY,
-    teamid INTEGER REFERENCES teams(id),
+    FOREIGN KEY (teamid) INTEGER REFERENCES Teams(ID),
     rating INTEGER,
     date TIMESTAMP
 );
