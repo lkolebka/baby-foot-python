@@ -144,7 +144,7 @@ for row in ws.rows:
     cur.execute("SELECT rating FROM PlayerRating WHERE player_rating_id=%s ORDER BY player_rating_timestamp DESC LIMIT 1", (player1_id,))
     result = cur.fetchone()
     if result is not None:
-        player1_rating = result[0]
+        player1_rating = result[0] 
     else:
         # handle the case where the query did not return any rows
         player1_rating = 1200
