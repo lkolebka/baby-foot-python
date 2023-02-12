@@ -7,14 +7,13 @@ CREATE TABLE Player (
 
 CREATE TABLE Team (
     team_id serial PRIMARY KEY,
-    player_1_id int REFERENCES Player(player_id),
-    player_2_id int REFERENCES Player(player_id)
+    team_player_1_id int REFERENCES Player(player_id),
+    team_player_2_id int REFERENCES Player(player_id)
 );
 
 CREATE TABLE Match (
     match_id serial PRIMARY KEY,
-    match_date date NOT NULL,
-    location varchar(100) NOT NULL,
+    match_timestamp timestamp NOT NULL,
     winning_team_id int REFERENCES Team(team_id),
     losing_team_id int REFERENCES Team(team_id),
     winning_team_score int NOT NULL,
