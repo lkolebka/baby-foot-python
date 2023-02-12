@@ -21,11 +21,11 @@ import math
 def get_number_of_games_by_name(player_name):
     query = """
     SELECT COUNT(*)
-    FROM matchplayers
-    WHERE playerid IN (
-      SELECT id
-      FROM players
-      WHERE name = %s
+    FROM PlayerMatch
+    WHERE player_id IN (
+      SELECT player_id
+      FROM player
+      WHERE first_name = %s
     );
     """
     cur.execute(query, (player_name,))
@@ -33,17 +33,23 @@ def get_number_of_games_by_name(player_name):
     number_of_games = result[0] if result else 0
     return number_of_games
 
+# calculate the factor of the difference of player in the same team
+def calculate_weighting_factor(player_rating, team_mate_rating):
+    return 1 + (player_rating - team_mate_rating) / 1000
 
-# calculate the factor of the differnce of the point 
+# calculate the factor of the difference of the point 
 def calculate_point_factor(score_difference):
     return 1 + (math.log(score_difference + 1) / math.log(25))
 
 
-def calculate_elo(old_rating, opponent_rating, outcome, score_difference, number_of_games):
+def calculate_elo(old_rating, opponent_rating, outcome, score_difference, number_of_games, team_mate_rating=None):
     K = 50 / (1 + number_of_games / 800)  # The constant that determines the impact of the match on the rating
     expected_outcome = 1 / (1 + 10 ** ((opponent_rating - old_rating) / 400))
     point_factor = calculate_point_factor(score_difference)
-    return old_rating + (K) * point_factor * (outcome - expected_outcome)
+    weighting_factor = calculate_weighting_factor(old_rating, team_mate_rating)
+    return old_rating + (K) * point_factor * weighting_factor * (outcome - expected_outcome)
+
+
 
 # Load the workbook
 wb = load_workbook('data.xlsx')
@@ -101,41 +107,41 @@ for row in ws.rows:
         player4_outcome = 0
 
     # Get the current IDs of the players
-    cur.execute("SELECT id FROM players WHERE name=%s", (player1_name,))
+    cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player1_name,))
     player1_id = cur.fetchone()[0]
     print(f'id of player {player1_name} is {player1_id}')
 
-    cur.execute("SELECT id FROM players WHERE name=%s", (player2_name,))
+    cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player2_name,))
     player2_id = cur.fetchone()[0]
     print(f'id of player {player2_name} is {player2_id}')
 
-    cur.execute("SELECT id FROM players WHERE name=%s", (player3_name,))
+    cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player3_name,))
     player3_id = cur.fetchone()[0]
     print(f'id of player {player3_name} is {player3_id}')
 
-    cur.execute("SELECT id FROM players WHERE name=%s", (player4_name,))
+    cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player4_name,))
     player4_id = cur.fetchone()[0]
     print(f'id of player {player4_name} is {player4_id}')
 
     # Get the number of games by players according to the date 
-    cur.execute("SELECT COUNT(*) FROM matchplayers mp INNER JOIN matches m ON mp.matchid = m.id WHERE playerid =%s  AND m.date <=%s;", (player1_id,date))
+    cur.execute("SELECT COUNT(*) FROM PlayerMatch mp INNER JOIN match m ON mp.player_match_id = m.player_id WHERE player_id =%s  AND m.match_timestamp <=%s;", (player1_id,date))
     number_of_game_player1 = cur.fetchone()[0]
     print(f'number of game for {player1_name} on the {date} is {number_of_game_player1}')
 
-    cur.execute("SELECT COUNT(*) FROM matchplayers mp INNER JOIN matches m ON mp.matchid = m.id WHERE playerid =%s  AND m.date <=%s;", (player2_id,date))
+    cur.execute("SELECT COUNT(*) FROM PlayerMatch mp INNER JOIN match m ON mp.player_match_id = m.player_id WHERE player_id =%s  AND m.match_timestamp <=%s;", (player2_id,date))
     number_of_game_player2 = cur.fetchone()[0]
     print(f'number of game for {player2_name} on the {date} is {number_of_game_player2}')
 
-    cur.execute("SELECT COUNT(*) FROM matchplayers mp INNER JOIN matches m ON mp.matchid = m.id WHERE playerid =%s  AND m.date <=%s;", (player3_id,date))
+    cur.execute("SELECT COUNT(*) FROM PlayerMatch mp INNER JOIN match m ON mp.player_match_id = m.player_id WHERE player_id =%s  AND m.match_timestamp <=%s;", (player3_id,date))
     number_of_game_player3 = cur.fetchone()[0]
     print(f'number of game for {player3_name} on the {date} is {number_of_game_player3}')
 
-    cur.execute("SELECT COUNT(*) FROM matchplayers mp INNER JOIN matches m ON mp.matchid = m.id WHERE playerid =%s  AND m.date <=%s;", (player4_id,date))
+    cur.execute("SELECT COUNT(*) FROM PlayerMatch mp INNER JOIN match m ON mp.player_match_id = m.player_id WHERE player_id =%s  AND m.match_timestamp <=%s;", (player4_id,date))
     number_of_game_player4 = cur.fetchone()[0]
     print(f'number of game for {player4_name} on the {date} is {number_of_game_player4}')
     
     # Get the current ratings of the players
-    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player1_id,))
+    cur.execute("SELECT rating FROM PlayerRating WHERE player_rating_id=%s ORDER BY player_rating_timestamp DESC LIMIT 1", (player1_id,))
     result = cur.fetchone()
     if result is not None:
         player1_rating = result[0]
@@ -144,7 +150,7 @@ for row in ws.rows:
         player1_rating = 1200
     print(f'current rating of {player1_name} is {player1_rating}')
 
-    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player2_id,))
+    cur.execute("SELECT rating FROM PlayerRating WHERE player_rating_id=%s ORDER BY player_rating_timestamp DESC LIMIT 1", (player2_id,))
     result = cur.fetchone()
     if result is not None:
         player2_rating = result[0]
@@ -154,7 +160,7 @@ for row in ws.rows:
     print(f'current rating of {player2_name} is {player2_rating}')
     
  
-    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player3_id,))
+    cur.execute("SELECT rating FROM PlayerRating WHERE player_rating_id=%s ORDER BY player_rating_timestamp DESC LIMIT 1", (player3_id,))
     result = cur.fetchone()
     if result is not None:
         player3_rating = result[0]
@@ -163,7 +169,7 @@ for row in ws.rows:
         player3_rating = 1200
     print(f'current rating of {player3_name} is {player3_rating}')
 
-    cur.execute("SELECT rating FROM eloratings WHERE playerid=%s ORDER BY date DESC LIMIT 1", (player4_id,))
+    cur.execute("SELECT rating FROM PlayerRating WHERE player_rating_id=%s ORDER BY player_rating_timestamp DESC LIMIT 1", (player4_id,))
     result = cur.fetchone()
     if result is not None:
         player4_rating = result[0]
