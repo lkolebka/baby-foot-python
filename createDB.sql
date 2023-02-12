@@ -30,7 +30,7 @@ CREATE TABLE PlayerRating (
     player_rating_id serial PRIMARY KEY,
     player_match_id int REFERENCES PlayerMatch(player_match_id),
     rating int NOT NULL,
-    player_rating_timestamp timestamp  NOT NULL()
+    player_rating_timestamp timestamp  NOT NULL
 
 );
 
@@ -44,15 +44,6 @@ CREATE TABLE TeamRating (
     team_rating_id serial PRIMARY KEY,
     team_match_id int REFERENCES TeamMatch(team_match_id),
     rating int NOT NULL,
-    team_rating_timestamp timestamp  NOT NULL()
+    team_rating_timestamp timestamp  NOT NULL
 
 );
-
-
-CREATE SEQUENCE player_id_seq START 1;
-CREATE SEQUENCE team_id_seq START 1;
-CREATE SEQUENCE match_id_seq START 1;
-CREATE SEQUENCE player_match_id_seq START 1;
-CREATE SEQUENCE player_rating_id_seq START 1;
-CREATE SEQUENCE team_match_id_seq START 1;
-CREATE SEQUENCE team_rating_id_seq START 1;
