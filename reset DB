@@ -1,13 +1,14 @@
 DELETE FROM matchplayers;
 DELETE FROM matches;
+DELETE FROM eloratings_teams;
 DELETE FROM teams;
-DELETE FROM players;
 DELETE FROM eloratings;
-DELETE FROM eloratings_teams
+DELETE FROM player;
 
 
 
-SELECT setval('players_id_seq', 1, false);
+
+SELECT setval('player_id_seq', 1, false);
 
 SELECT setval('teams_id_seq', 1, false);
 
@@ -15,6 +16,18 @@ SELECT setval('matches_id_seq', 1, false);
 
 SELECT setval('eloratings_teams_id_seq', 1, false);
 
+SELECT setval('matchplayers_id_seq', 1, false);
+
 SELECT setval('eloratings_id_seq', 1, false);
+
+ALTER SEQUENCE players_id_seq RESTART WITH 1;
+ALTER SEQUENCE teams_id_seq RESTART WITH 1;
+ALTER SEQUENCE matches_id_seq RESTART WITH 1;
+ALTER SEQUENCE eloratings_teams_id_seq RESTART WITH 1;
+ALTER SEQUENCE matchplayers_id_seq RESTART WITH 1;
+ALTER SEQUENCE eloratings_id_seq RESTART WITH 1;
+
+
+
 
 

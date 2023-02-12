@@ -215,14 +215,9 @@ for row in ws.rows:
     team1_id = get_team_id(player1_id, player2_id,cur)
     team2_id = get_team_id(player3_id, player4_id,cur)
 
-
-  
-
    # Update the team ratings in the elorating_teams table
     cur.execute("INSERT INTO eloratings_teams (teamid, rating, date) VALUES (%s, %s,%s)", (team1_id, team1_rating, date ))
     cur.execute("INSERT INTO eloratings_teams (teamid, rating, date) VALUES (%s, %s,%s)", (team2_id, team2_rating, date))
-
-
 
 
 # Commit the changes to the database

@@ -40,19 +40,17 @@ CREATE TABLE MatchPlayers (
 
 CREATE TABLE eloratings_teams (
     id SERIAL PRIMARY KEY,
-    FOREIGN KEY (teamid) INTEGER REFERENCES Teams(ID),
+	teamid INTEGER,
+    FOREIGN KEY (teamid) REFERENCES Teams(ID),
     rating INTEGER,
     date TIMESTAMP
 );
 
 
-CREATE SEQUENCE teams_id_seq
-  START WITH 1
-  INCREMENT BY 1;
-
+CREATE SEQUENCE teams_id_seq START 1;
 CREATE SEQUENCE players_id_seq START 1;
 CREATE SEQUENCE matches_id_seq START 1;
-CREATE SEQUENCE matcheplayers_id_seq START 1;
+CREATE SEQUENCE matchplayers_id_seq START 1;
 CREATE SEQUENCE eloratings_id_seq START 1;
 CREATE SEQUENCE eloratings_teams_id_seq START 1;
 
