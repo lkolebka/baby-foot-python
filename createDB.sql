@@ -16,7 +16,7 @@ CREATE TABLE Match (
     match_timestamp timestamp NOT NULL,
     winning_team_id int REFERENCES Team(team_id),
     losing_team_id int REFERENCES Team(team_id),
-    winning_team_score int NOT NULL,
+    winning_team_score int,
     losing_team_score int NOT NULL
 );
 
@@ -27,10 +27,11 @@ CREATE TABLE PlayerMatch (
 );
 
 CREATE TABLE PlayerRating (
-    player_rating_timestamp timestamp  NOT NULL()
     player_rating_id serial PRIMARY KEY,
     player_match_id int REFERENCES PlayerMatch(player_match_id),
-    rating int NOT NULL
+    rating int NOT NULL,
+    player_rating_timestamp timestamp  NOT NULL()
+
 );
 
 CREATE TABLE TeamMatch (
@@ -40,10 +41,11 @@ CREATE TABLE TeamMatch (
 );
 
 CREATE TABLE TeamRating (
-    team_rating_timestamp timestamp  NOT NULL()
     team_rating_id serial PRIMARY KEY,
     team_match_id int REFERENCES TeamMatch(team_match_id),
-    rating int NOT NULL
+    rating int NOT NULL,
+    team_rating_timestamp timestamp  NOT NULL()
+
 );
 
 
