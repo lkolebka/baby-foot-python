@@ -24,3 +24,12 @@ FROM ratings
 GROUP BY week
 ORDER BY week;
 
+#show the number of game by team 
+
+SELECT t.team_id, p1.first_name AS player1_name, p2.first_name AS player2_name, COUNT(tm.match_id) AS number_of_games
+FROM Team t
+INNER JOIN Player p1 ON t.team_player_1_id = p1.player_id
+INNER JOIN Player p2 ON t.team_player_2_id = p2.player_id
+LEFT JOIN TeamMatch tm ON t.team_id = tm.team_id
+GROUP BY t.team_id, p1.first_name, p1.last_name, p2.first_name, p2.last_name
+ORDER BY COUNT(tm.match_id) DESC;
