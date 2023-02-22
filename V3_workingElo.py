@@ -175,7 +175,10 @@ def get_team_ratings(team1_id, team2_id, cur):
     return team1_rating, team2_rating
 
 def calculate_point_factor(score_difference):
-        return 1 + (math.log(score_difference + 1) / math.log(25))
+    return 1 + (math.log(score_difference + 1) / math.log(25))
+
+
+
 
 # Iterate through the rows of the sheet
 for row in ws.rows:
@@ -215,7 +218,7 @@ for row in ws.rows:
     # Call the get_team_match_id_by_timestamp_and_by_team_id function inside the loop
     team_match1_id, team_match2_id  = get_team_match_id_by_timestamp_and_by_team_id(team1_id, team2_id, date, cur)
 
-
+    
     # Calculate the expected scores for the players
     player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 400))
     player1_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player1_rating) / 400))
@@ -237,7 +240,7 @@ for row in ws.rows:
     player4_expected_score = (player4_expected_score_against_player1 + player4_expected_score_against_player2) / 2
     print("Player 4 expected score: ", player4_expected_score)
 
-    input("Press enter to continue...")
+    #input("Press enter to continue...")
 
     # Calculate the expected scores for the teams
     team1_expected_score = (player1_expected_score + player2_expected_score) / 2
@@ -245,7 +248,7 @@ for row in ws.rows:
     print("Team 1 expected score: ", team1_expected_score)
     print("Team 2 expected score: ", team2_expected_score)
 
-    input("Press enter to continue...")
+    #input("Press enter to continue...")
 
     # Calculate the score difference to be used as a variable
     team1_actual_score = team1_score / (team1_score + team2_score)
@@ -253,20 +256,21 @@ for row in ws.rows:
     print("Team 1 actual score: ", team1_actual_score)
     print("Team 2 actual score: ", team2_actual_score)
 
-    input("Press enter to continue...")
+    #input("Press enter to continue...")
+
 
     # Calculate the point factor to be used as a variable
     score_difference = abs(team1_score - team2_score)
     point_factor = calculate_point_factor(score_difference)
     print("Point factor: ", point_factor)
 
-    input("Press enter to continue...")
+   #input("Press enter to continue...")
 
     # Calculate the K value for each player based on the number of games played
-    k1 = 50 / (1 + number_of_game_player1 / 300)
-    k2 = 50 / (1 + number_of_game_player2 / 300)
-    k3 = 50 / (1 + number_of_game_player3 / 300)
-    k4 = 50 / (1 + number_of_game_player4 / 300)
+    k1 = 100 / (1 + number_of_game_player1 / 300)
+    k2 = 100 / (1 + number_of_game_player2 / 300)
+    k3 = 100 / (1 + number_of_game_player3 / 300)
+    k4 = 100 / (1 + number_of_game_player4 / 300)
     print("Player 1 K value: ", k1)
     print("Player 2 K value: ", k2)
     print("Player 3 K value: ", k3)
@@ -278,7 +282,7 @@ for row in ws.rows:
     print("Team 1 K value: ", k5)
     print("Team 2 K value: ", k6)
 
-    input("Press enter to continue...")
+   #input("Press enter to continue...")
 
     # Calculate the new Elo ratings for each player
     player1_new_rating = player1_rating + k1 * point_factor * (team1_actual_score - player1_expected_score)
@@ -286,11 +290,11 @@ for row in ws.rows:
     player3_new_rating = player3_rating + k3 * point_factor * (team2_actual_score - player3_expected_score)
     player4_new_rating = player4_rating + k4 * point_factor * (team2_actual_score - player4_expected_score)
     print("player1_new_rating = ",player1_rating, "+", k1 * point_factor, "* (", team1_actual_score, "-", player1_expected_score,") =", player1_new_rating)
-    print("player1_new_rating = ",player2_rating, "+", k2 * point_factor, "* (", team1_actual_score, "-", player2_expected_score,") =", player2_new_rating)
-    print("player1_new_rating = ",player3_rating, "+", k3 * point_factor, "* (", team2_actual_score, "-", player3_expected_score,") =", player3_new_rating)
-    print("player1_new_rating = ",player4_rating, "+ ", k4 * point_factor, "* (", team2_actual_score, "-", player4_expected_score,") =", player4_new_rating)
+    print("player2_new_rating = ",player2_rating, "+", k2 * point_factor, "* (", team1_actual_score, "-", player2_expected_score,") =", player2_new_rating)
+    print("player3_new_rating = ",player3_rating, "+", k3 * point_factor, "* (", team2_actual_score, "-", player3_expected_score,") =", player3_new_rating)
+    print("player4_new_rating = ",player4_rating, "+ ", k4 * point_factor, "* (", team2_actual_score, "-", player4_expected_score,") =", player4_new_rating)
 
-    input("Press enter to continue...")
+    #input("Press enter to continue...")
 
     # Calculate the new Elo ratings for each team
     team1_new_rating = team1_rating + k5 * point_factor * (team1_actual_score - team1_expected_score)
@@ -298,7 +302,7 @@ for row in ws.rows:
     print("team1_new_rating = ",team1_rating, "+", k5,"*", point_factor, "* (", team1_actual_score, "-", team1_expected_score,") =", team1_new_rating)
     print("team1_new_rating = ",team2_rating, "+", k6,"*", point_factor, "* (", team2_actual_score, "-", team2_expected_score,") =", team2_new_rating)
 
-    input("Press enter to continue...")
+    #input("Press enter to continue...")
 
     
     # Update the database with the player ratings
