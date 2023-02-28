@@ -360,14 +360,15 @@ for row in ws.rows:
    #input("Press enter to continue...")
 
  #logg the wining team
-    if team2_score > team1_score:
+    if team1_score > team2_score:
        
         logging.info('team 1 win with %s and : %s', player1_name,player2_name)
         logging.info('team 2 lost with %s and : %s', player3_name,player4_name)
 
     else:
-        logging.info('team 2 win with %s and : %s', player3_name,player4_name)
         logging.info('team 1 lost with %s and : %s', player1_name,player2_name)
+        logging.info('team 2 win with %s and : %s', player3_name,player4_name)
+        
 
     # Calculate the new Elo ratings for each player
     player1_new_rating = player1_rating + k1 * point_factor * (team1_actual_score - player1_expected_score)
