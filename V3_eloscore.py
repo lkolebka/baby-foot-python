@@ -43,7 +43,7 @@ for row in ws.rows:
         Given the ids of two players and a cursor, return the team_id of the team they are in,
         or insert the team into the teams table if it does not exist and return its new id.
         """
-        cur.execute("SELECT team_id FROM team WHERE (team_player_1_id=%s AND team_player_2_id=%s) OR (team_player_1_id=%s AND team_player_2_id=%s)", (team_player1_id, team_player2_id, team_player1_id, team_player2_id))
+        cur.execute("SELECT team_id FROM team WHERE (team_player_1_id=%s AND team_player_2_id=%s) OR (team_player_1_id=%s AND team_player_2_id=%s)", (team_player1_id, player2_id, team_player1_id, player1_id))
         team_id = cur.fetchone()
         return team_id
 
