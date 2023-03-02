@@ -223,8 +223,9 @@ def get_team_ratings(team1_id, team2_id, cur):
 
     return team1_rating, team2_rating
 
+
 def calculate_point_factor(score_difference):
-    return 1 + (math.log(score_difference + 1) / math.log(25))
+    return 1 + (math.log(score_difference + 1) / math.log(10)) ** 2
 
 
 
@@ -315,8 +316,8 @@ for row in ws.rows:
     #input("Press enter to continue...")
 
     # Calculate the score difference to be used as a variable
-    team1_actual_score = team1_score / (team1_score + team2_score)
-    team2_actual_score = team2_score / (team1_score + team2_score)
+    team1_actual_score = team1_score / (team1_score + team2_score)* 1.025
+    team2_actual_score = team2_score / (team1_score + team2_score) *1.025
     print("Team 1 actual score: ", team1_actual_score)
     print("Team 2 actual score: ", team2_actual_score)
     logging.info("Team 1 actual score: %s", team1_actual_score)
@@ -335,10 +336,12 @@ for row in ws.rows:
    #input("Press enter to continue...")
 
     # Calculate the K value for each player based on the number of games played
-    k1 = 50 / (1 + number_of_game_player1 / 800)
-    k2 = 50 / (1 + number_of_game_player2 / 800)
-    k3 = 50 / (1 + number_of_game_player3 / 800)
-    k4 = 50 / (1 + number_of_game_player4 / 800)
+ # Calculate the K value for each player based on the number of games played and their rating
+    k1 = 300 / (1 + number_of_game_player1 / 500) * (2000 - player1_rating) / 1000
+    k2 = 300 / (1 + number_of_game_player2 / 500) * (2000 - player2_rating) / 1000
+    k3 = 300 / (1 + number_of_game_player3 / 500) * (2000 - player3_rating) / 1000
+    k4 = 300 / (1 + number_of_game_player4 / 500) * (2000 - player4_rating) / 1000
+
     print("Player 1 K value: ", k1)
     print("Player 2 K value: ", k2)
     print("Player 3 K value: ", k3)
