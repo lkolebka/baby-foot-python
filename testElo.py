@@ -14,3 +14,6 @@ print('score_difference =', score_difference)
 
 calculate_point_factor =  1 + (math.log(score_difference + 1) / math.log((3)))
 print("calculate_point_factor = ", calculate_point_factor)
+
+a = 1200 + 49.93757802746567 * 1.7153382790366967 * (0.8461538461538461 - 0.5)
+print(a)

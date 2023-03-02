@@ -1,28 +1,32 @@
-#Show the elo score 
+#Show the elo score for Lazare
+SELECT pr.rating, pm.match_id, m.match_timestamp
+FROM PlayerMatch pm
+JOIN Player p ON pm.player_id = p.player_id
+JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+JOIN Match m ON pm.match_id = m.match_id
+WHERE p.first_name = 'Lazare'
+ORDER BY pr.rating ASC;
 
-WITH ratings AS (
-SELECT
-players.name AS player_name,
-date_trunc ('week', eloratings.date) AS week,
-eloratings.rating
-FROM eloratings
-JOIN players ON eloratings.playerid
-= players.id
-WHERE players.name IN ('Matthieu', 'Lazare','Nathan','Wissam', 'Elie', 'Ilan', 'Nathanael', 'Edouard')
-	)
-SELECT
-week, 
-AVG (CASE WHEN player_name ='Matthieu'THEN rating END) AS Matthieu_rating,
-AVG (CASE WHEN player_name ='Lazare'THEN rating END) AS Lazare_rating,
-AVG (CASE WHEN player_name ='Nathan'THEN rating END) AS Nathan_rating,
-AVG (CASE WHEN player_name ='Wissam'THEN rating END) AS Wissam_rating,
-AVG (CASE WHEN player_name ='Elie'THEN rating END) AS Elie_rating,
-AVG (CASE WHEN player_name ='Ilan'THEN rating END) AS Ilan_rating,
-AVG (CASE WHEN player_name ='Edouard'THEN rating END) AS Edoauard_rating
+#Show the elo score for Lazare and Matthieu 
 
-FROM ratings
-GROUP BY week
-ORDER BY week;
+SELECT
+    'Lazare' AS player_name,
+    pr.rating AS lazare_rating,
+    m.match_timestamp AS lazare_timestamp,
+    'Matthieu' AS player_name,
+    pr2.rating AS matthieu_rating,
+    m2.match_timestamp AS matthieu_timestamp
+FROM PlayerMatch pm
+JOIN Player p ON pm.player_id = p.player_id
+JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+JOIN Match m ON pm.match_id = m.match_id
+JOIN PlayerMatch pm2 ON pm2.match_id = pm.match_id
+JOIN Player p2 ON pm2.player_id = p2.player_id
+JOIN PlayerRating pr2 ON pm2.player_match_id = pr2.player_match_id
+JOIN Match m2 ON pm2.match_id = m2.match_id
+WHERE p.first_name = 'Lazare' AND p2.first_name = 'Matthieu'
+ORDER BY lazare_rating ASC, matthieu_rating ASC;
+
 
 #show the number of game by team 
 
