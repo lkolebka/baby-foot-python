@@ -23,7 +23,7 @@ wb = load_workbook('data.xlsx')
 ws = wb.active
 print("Connected to the XLS sheet!")
 
-def get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, player3_id, player4_id,date,cur):
+def get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, player3_id, player4_id, date, cur):
         cur.execute("SELECT PlayerMatch.player_match_id FROM Match JOIN PlayerMatch ON Match.match_id = PlayerMatch.match_id WHERE PlayerMatch.player_id = %s AND Match.match_timestamp =%s;", (player1_id, date))
         player1_match_id = cur.fetchone()[0]
 
@@ -38,7 +38,7 @@ def get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, pl
 
         return (player1_match_id, player2_match_id, player3_match_id, player4_match_id)
 
-def get_team_match_id_by_timestamp_and_by_team_id(team1_id,team2_id,date, cur):
+def get_team_match_id_by_timestamp_and_by_team_id(team1_id,team2_id, date, cur):
         cur.execute("SELECT TeamMatch.team_match_id FROM Match JOIN TeamMatch ON Match.match_id = TeamMatch.match_id WHERE TeamMatch.team_id =%s AND Match.match_timestamp =%s;", (team1_id,date))
         team_match1_id = cur.fetchone()[0]
 
@@ -137,45 +137,69 @@ def number_of_games_team(team1_id, team2_id,date, cur):
     return (number_of_game_team_1, number_of_game_team_2)
              
 def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
-    cur.execute("SELECT rating FROM PlayerRating WHERE player_match_id IN (SELECT player_match_id FROM PlayerMatch WHERE player_id = %s ORDER BY player_match_id DESC LIMIT 1) ORDER BY player_rating_timestamp DESC LIMIT 1", (player1_id,))
+    cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player1_id,))
 
     result = cur.fetchone()
-    player1_rating = result[0] if result else 1200
+    if result is not None:
+        player1_rating = result[0]
+    else:
+     player1_rating = 1200
+
     print(f'current rating of player {player1_id} is {player1_rating}')
 
-    cur.execute("SELECT rating FROM PlayerRating WHERE player_match_id IN (SELECT player_match_id FROM PlayerMatch WHERE player_id = %s ORDER BY player_match_id DESC LIMIT 1) ORDER BY player_rating_timestamp DESC LIMIT 1", (player2_id,))
+    cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player2_id,))
     result = cur.fetchone()
-    player2_rating = result[0] if result else 1200
+    if result is not None:
+        player2_rating = result[0]
+    else:
+     player2_rating = 1200
     print(f'current rating of player {player2_id} is {player2_rating}')
 
-    cur.execute("SELECT rating FROM PlayerRating WHERE player_match_id IN (SELECT player_match_id FROM PlayerMatch WHERE player_id = %s ORDER BY player_match_id DESC LIMIT 1) ORDER BY player_rating_timestamp DESC LIMIT 1", (player3_id,))
+    cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player3_id,))
     result = cur.fetchone()
-    player3_rating = result[0] if result else 1200
+   
+    if result is not None:
+        player3_rating = result[0]
+    else:
+     player3_rating = 1200
     print(f'current rating of player {player3_id} is {player3_rating}')
 
-    cur.execute("SELECT rating FROM PlayerRating WHERE player_match_id IN (SELECT player_match_id FROM PlayerMatch WHERE player_id = %s ORDER BY player_match_id DESC LIMIT 1) ORDER BY player_rating_timestamp DESC LIMIT 1", (player4_id,))
+    cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player4_id,))
     result = cur.fetchone()
-    player4_rating = result[0] if result else 1200
+    if result is not None:
+        player4_rating = result[0]
+    else:
+        player4_rating = 1200   
     print(f'current rating of player {player4_id} is {player4_rating}')
 
     return player1_rating, player2_rating, player3_rating, player4_rating
 
 
 def get_team_ratings(team1_id, team2_id, cur):
-    cur.execute("SELECT TeamRating.rating FROM TeamMatch JOIN TeamRating ON TeamMatch.team_match_id = TeamRating.team_match_id  WHERE TeamMatch.team_id = %s  ORDER BY TeamRating.team_rating_timestamp DESC  LIMIT 1;", (team1_id,))
+    cur.execute("SELECT rating, team_rating_timestamp FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE team_id = %s) ORDER BY team_rating_timestamp DESC LIMIT 1;", (team1_id,))
     result = cur.fetchone()
-    team1_rating = result[0] if result else 1200
+    
+    if result is not None:
+        team1_rating = result[0]
+    else:
+     team1_rating = 1200
     print(f'current rating of team {team1_id} is {team1_rating}')
 
-    cur.execute("SELECT TeamRating.rating FROM TeamMatch JOIN TeamRating ON TeamMatch.team_match_id = TeamRating.team_match_id  WHERE TeamMatch.team_id = %s  ORDER BY TeamRating.team_rating_timestamp DESC  LIMIT 1;", (team2_id,))
+    cur.execute("SELECT rating, team_rating_timestamp FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE team_id = %s) ORDER BY team_rating_timestamp DESC LIMIT 1;", (team2_id,))
     result = cur.fetchone()
-    team2_rating = result[0] if result else 1200
+    if result is not None:
+        team2_rating = result[0]
+    else:
+     team2_rating = 1200
     print(f'current rating of team {team2_id} is {team2_rating}')
 
     return team1_rating, team2_rating
 
 def calculate_point_factor(score_difference):
-        return 1 + (math.log(score_difference + 1) / math.log(25))
+    return 1 + (math.log(score_difference + 1) / math.log(25))
+
+
+
 
 # Iterate through the rows of the sheet
 for row in ws.rows:
@@ -215,3 +239,106 @@ for row in ws.rows:
     # Call the get_team_match_id_by_timestamp_and_by_team_id function inside the loop
     team_match1_id, team_match2_id  = get_team_match_id_by_timestamp_and_by_team_id(team1_id, team2_id, date, cur)
 
+    
+    # Calculate the expected scores for the players
+    player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 400))
+    player1_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player1_rating) / 400))
+    player1_expected_score = (player1_expected_score_against_player3 + player1_expected_score_against_player4) / 2
+    print("Player 1 expected score: ", player1_expected_score)
+
+    player2_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player2_rating) / 400))
+    player2_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player2_rating) / 400))
+    player2_expected_score = (player2_expected_score_against_player3 + player2_expected_score_against_player4) / 2
+    print("Player 2 expected score: ", player2_expected_score)
+
+    player3_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player3_rating) / 400))
+    player3_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player3_rating) / 400))
+    player3_expected_score = (player3_expected_score_against_player1 + player3_expected_score_against_player2) / 2
+    print("Player 3 expected score: ", player3_expected_score)
+
+    player4_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player4_rating) / 400))
+    player4_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player4_rating) / 400))
+    player4_expected_score = (player4_expected_score_against_player1 + player4_expected_score_against_player2) / 2
+    print("Player 4 expected score: ", player4_expected_score)
+
+    #input("Press enter to continue...")
+
+    # Calculate the expected scores for the teams
+    team1_expected_score = (player1_expected_score + player2_expected_score) / 2
+    team2_expected_score = (player3_expected_score + player4_expected_score) / 2
+    print("Team 1 expected score: ", team1_expected_score)
+    print("Team 2 expected score: ", team2_expected_score)
+
+    #input("Press enter to continue...")
+
+    # Calculate the score difference to be used as a variable
+    team1_actual_score = team1_score / (team1_score + team2_score)
+    team2_actual_score = team2_score / (team1_score + team2_score)
+    print("Team 1 actual score: ", team1_actual_score)
+    print("Team 2 actual score: ", team2_actual_score)
+
+    #input("Press enter to continue...")
+
+
+    # Calculate the point factor to be used as a variable
+    score_difference = abs(team1_score - team2_score)
+    point_factor = calculate_point_factor(score_difference)
+    print("Point factor: ", point_factor)
+
+   #input("Press enter to continue...")
+
+    # Calculate the K value for each player based on the number of games played
+    k1 = 300 / (1 + number_of_game_player1 / 300)
+    k2 = 300 / (1 + number_of_game_player2 / 300)
+    k3 = 300 / (1 + number_of_game_player3 / 300)
+    k4 = 300 / (1 + number_of_game_player4 / 300)
+    print("Player 1 K value: ", k1)
+    print("Player 2 K value: ", k2)
+    print("Player 3 K value: ", k3)
+    print("Player 4 K value: ", k4)
+
+    # Calculate the K value for each team based on the number of games played
+    k5 = 50 / (1 + number_of_games_team1/ 100)
+    k6 = 50 / (1 + number_of_games_team2/ 100)
+    print("Team 1 K value: ", k5)
+    print("Team 2 K value: ", k6)
+
+   #input("Press enter to continue...")
+
+    # Calculate the new Elo ratings for each player
+    player1_new_rating = player1_rating + k1 * point_factor * (team1_actual_score - player1_expected_score)
+    player2_new_rating = player2_rating + k2 * point_factor * (team1_actual_score - player2_expected_score)
+    player3_new_rating = player3_rating + k3 * point_factor * (team2_actual_score - player3_expected_score)
+    player4_new_rating = player4_rating + k4 * point_factor * (team2_actual_score - player4_expected_score)
+    print("player1_new_rating = ",player1_rating, "+", k1 * point_factor, "* (", team1_actual_score, "-", player1_expected_score,") =", player1_new_rating)
+    print("player2_new_rating = ",player2_rating, "+", k2 * point_factor, "* (", team1_actual_score, "-", player2_expected_score,") =", player2_new_rating)
+    print("player3_new_rating = ",player3_rating, "+", k3 * point_factor, "* (", team2_actual_score, "-", player3_expected_score,") =", player3_new_rating)
+    print("player4_new_rating = ",player4_rating, "+ ", k4 * point_factor, "* (", team2_actual_score, "-", player4_expected_score,") =", player4_new_rating)
+
+    #input("Press enter to continue...")
+
+    # Calculate the new Elo ratings for each team
+    team1_new_rating = team1_rating + k5 * point_factor * (team1_actual_score - team1_expected_score)
+    team2_new_rating = team2_rating + k6 * point_factor * (team2_actual_score - team2_expected_score)
+    print("team1_new_rating = ",team1_rating, "+", k5,"*", point_factor, "* (", team1_actual_score, "-", team1_expected_score,") =", team1_new_rating)
+    print("team1_new_rating = ",team2_rating, "+", k6,"*", point_factor, "* (", team2_actual_score, "-", team2_expected_score,") =", team2_new_rating)
+
+    #input("Press enter to continue...")
+
+    
+    # Update the database with the player ratings
+    cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match1_id, player1_new_rating, date))
+    cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES ( %s, %s, %s)", (player_match2_id, player2_new_rating, date))
+    cur.execute("INSERT INTO playerrating (player_match_id,rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match3_id,player3_new_rating, date))
+    cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match4_id, player4_new_rating, date))
+    conn.commit()
+
+    # Update the database with the team ratings
+    cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match1_id, team1_new_rating, date))
+    cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match2_id, team2_new_rating, date))
+    conn.commit()
+
+
+# Close the cursor and connection
+cur.close()
+conn.close()
