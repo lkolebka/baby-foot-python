@@ -17,7 +17,7 @@ conn = psycopg2.connect(
 )
 print("Connected to the database!")
 
-
+print("Working...")
 # Create a cursor
 cur = conn.cursor()
 
@@ -26,7 +26,6 @@ wb = load_workbook('data.xlsx')
 
 # Select the active sheet
 ws = wb.active
-print("Connected to the XLS sheet!")
 
 def get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, player3_id, player4_id, date, cur):
         cur.execute("SELECT PlayerMatch.player_match_id FROM Match JOIN PlayerMatch ON Match.match_id = PlayerMatch.match_id WHERE PlayerMatch.player_id = %s AND Match.match_timestamp =%s;", (player1_id, date))
@@ -153,7 +152,7 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
     if result is not None:
         player1_rating = result[0]
     else:
-     player1_rating = 1200
+     player1_rating = 1500
 
     logging.info(f'current rating of player {player1_name} is {player1_rating}')
 
@@ -162,7 +161,7 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
     if result is not None:
         player2_rating = result[0]
     else:
-     player2_rating = 1200
+     player2_rating = 1500
     logging.info(f'current rating of player {player2_name} is {player2_rating}')
 
     cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player3_id,))
@@ -171,7 +170,7 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
     if result is not None:
         player3_rating = result[0]
     else:
-     player3_rating = 1200
+     player3_rating = 1500
     logging.info(f'current rating of player {player3_name} is {player3_rating}')
 
     cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player4_id,))
@@ -179,7 +178,7 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
     if result is not None:
         player4_rating = result[0]
     else:
-        player4_rating = 1200   
+        player4_rating = 1500   
     logging.info(f'current rating of player {player4_name} is {player4_rating}')
 
     return player1_rating, player2_rating, player3_rating, player4_rating
@@ -192,7 +191,7 @@ def get_team_ratings(team1_id, team2_id, cur):
     if result is not None:
         team1_rating = result[0]
     else:
-     team1_rating = 1200
+     team1_rating = 1500
     logging.info(f'current rating of team {team1_id} is {team1_rating}')
 
     cur.execute("SELECT rating, team_rating_timestamp FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE team_id = %s) ORDER BY team_rating_timestamp DESC LIMIT 1;", (team2_id,))
@@ -200,14 +199,14 @@ def get_team_ratings(team1_id, team2_id, cur):
     if result is not None:
         team2_rating = result[0]
     else:
-     team2_rating = 1200
+     team2_rating = 1500
     logging.info(f'current rating of team {team2_id} is {team2_rating}')
 
     return team1_rating, team2_rating
 
 # Get the point factor 
 def calculate_point_factor(score_difference):
-    return 1 + (math.log(score_difference + 1) / math.log(10)) ** 2
+    return 2 + (math.log(score_difference + 1) / math.log(10)) ** 3
 
 
 
@@ -291,12 +290,7 @@ for row in ws.rows:
     logging.info("Team 2 expected score: %s", team2_expected_score)
     #input("Press enter to continue...")
 
-    # Calculate the score difference to be used as a variable
-    team1_actual_score = team1_score / (team1_score + team2_score) * 1.025
-    team2_actual_score = team2_score / (team1_score + team2_score) * 1.025
 
-    logging.info("Team 1 actual score: %s", team1_actual_score)
-    logging.info("Team 2 actual score: %s", team2_actual_score)
 
     # Calculate the point factor to be used as a variable
     score_difference = abs(team1_score - team2_score)
@@ -306,10 +300,11 @@ for row in ws.rows:
     
 
     # Calculate the K value for each player based on the number of games played and their rating
-    k1 = 200 / (1 + number_of_game_player1 / 300)
-    k2 = 200 / (1 + number_of_game_player2 / 300) 
-    k3 = 200 / (1 + number_of_game_player3 / 300) 
-    k4 = 200 / (1 + number_of_game_player4 / 300) 
+
+    k1 = 50 / (1 + number_of_game_player1 / 300)
+    k2 = 50 / (1 + number_of_game_player2 / 300) 
+    k3 = 50 / (1 + number_of_game_player3 / 300) 
+    k4 = 50 / (1 + number_of_game_player4 / 300) 
 
     logging.info('Player %s K value: %s', player1_name,k1)
     logging.info('Player %s K value: %s', player2_name,k2)
@@ -328,11 +323,14 @@ for row in ws.rows:
 
  #logg the wining team
     if team1_score > team2_score:
-       
+        team1_actual_score = 1
+        team2_actual_score = 0
         logging.info('team 1 win with %s and : %s', player1_name,player2_name)
         logging.info('team 2 lost with %s and : %s', player3_name,player4_name)
 
     else:
+        team1_actual_score = 0
+        team2_actual_score = 1
         logging.info('team 1 lost with %s and : %s', player1_name,player2_name)
         logging.info('team 2 win with %s and : %s', player3_name,player4_name)
         
@@ -381,6 +379,6 @@ for row in ws.rows:
 
 
 # Close the cursor and connection
-print("Loop done")
+print("Done !")
 cur.close()
 conn.close()
