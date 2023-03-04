@@ -22,8 +22,9 @@ print("calculate_point_factor2 = ", calculate_point_factor2)
 a = 1200 + 49.93757802746567 * 1.7153382790366967 * (0.8461538461538461 - 0.5)
 print(a)
 
-player3_rating = 1952
-player1_rating = 2100
+
+player1_rating = 1816
+player3_rating = 1467
 player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 500))
 
 print(player1_expected_score_against_player3)
