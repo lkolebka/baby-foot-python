@@ -2,6 +2,10 @@ import psycopg2
 from openpyxl import load_workbook
 from config import DATABASE_CONFIG
 import math
+import logging
+
+# Set up logging to a file
+logging.basicConfig(filename='elo_log.txt', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
 
 # Connect to the database
@@ -12,6 +16,7 @@ conn = psycopg2.connect(
     password=DATABASE_CONFIG['password']
 )
 print("Connected to the database!")
+
 
 # Create a cursor
 cur = conn.cursor()
@@ -47,23 +52,28 @@ def get_team_match_id_by_timestamp_and_by_team_id(team1_id,team2_id, date, cur):
         return (team_match1_id,team_match2_id)
 
 
+
+
 # Get the player ID of the players playing a match
 def get_player_id(player1_name, player2_name, player3_name, player4_name, cur):
         cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player1_name,))
         player1_id = cur.fetchone()[0]
-        print(f'Processing player1 {player1_name} with id {player1_id}')
+        logging.info('Processing player1 %s with id %s', player1_name, player1_id)
+
+
 
         cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player2_name,))
         player2_id = cur.fetchone()[0]
-        print(f'Processing player2 {player2_name} with id {player2_id}')
+        logging.info('Processing player2 %s with id %s', player2_name, player2_id)
+
 
         cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player3_name,))
         player3_id = cur.fetchone()[0]
-        print(f'Processing player3 {player3_name} with id {player3_id}')
+        logging.info('Processing player3 %s with id %s', player3_name, player3_id)
 
         cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player4_name,))
         player4_id = cur.fetchone()[0]
-        print(f'Processing player4 {player4_name} with id {player4_id}')
+        logging.info('Processing player4 %s with id %s', player4_name, player4_id)
 
 
         # Return a tuple containing all the player IDs
@@ -83,7 +93,6 @@ def insert_team_or_get_team_id(player1_id, player2_id, player3_id, player4_id, c
         else:
             # If the team already exists, retrieve their id
             team1_id = team1_id[0]
-            print(f"Team with id={team1_id} with players {player1_id} and {player2_id} already exists")
 
 
         # Check if the second team already exists
@@ -95,10 +104,10 @@ def insert_team_or_get_team_id(player1_id, player2_id, player3_id, player4_id, c
             id = cur.fetchone()[0]
             cur.execute("INSERT INTO team (team_id, team_player_1_id, team_player_2_id) VALUES (%s, %s, %s)", (id, player3_id, player4_id))
             team2_id = id
+
         else:
             # If the team already exists, retrieve their id
             team2_id = team2_id[0]
-            print(f"Team with id={team2_id} with players {player3_id} and {player4_id} already exists")
 
         # Return the team player IDs as a tuple
         return (team1_id, team2_id)         
@@ -106,19 +115,20 @@ def insert_team_or_get_team_id(player1_id, player2_id, player3_id, player4_id, c
 def number_of_games_player(player1_id, player2_id, player3_id, player4_id, date, cur):
     cur.execute("SELECT COUNT(*) FROM PlayerMatch pm  INNER JOIN Match m ON pm.match_id = m.match_id  WHERE pm.player_id =%s AND m.match_timestamp <=%s;", (player1_id, date))
     number_of_game_player1 = cur.fetchone()[0] or 0
-    print(f'number of game for player {player1_id} on the {date} is {number_of_game_player1}')
+    logging.info(f'number of game for player {player1_name} on the {date} is {number_of_game_player1}')
+
 
     cur.execute("SELECT COUNT(*) FROM PlayerMatch pm  INNER JOIN Match m ON pm.match_id = m.match_id  WHERE pm.player_id =%s AND m.match_timestamp <=%s;", (player2_id, date))
     number_of_game_player2 = cur.fetchone()[0] or 0
-    print(f'number of game for player {player2_id} on the {date} is {number_of_game_player2}')
+    logging.info(f'number of game for player {player2_name} on the {date} is {number_of_game_player2}')
 
     cur.execute("SELECT COUNT(*) FROM PlayerMatch pm  INNER JOIN Match m ON pm.match_id = m.match_id  WHERE pm.player_id =%s AND m.match_timestamp <=%s;", (player3_id, date))
     number_of_game_player3 = cur.fetchone()[0] or 0
-    print(f'number of game for player {player3_id} on the {date} is {number_of_game_player3}')
+    logging.info(f'number of game for player {player3_name} on the {date} is {number_of_game_player3}')
 
     cur.execute("SELECT COUNT(*) FROM PlayerMatch pm  INNER JOIN Match m ON pm.match_id = m.match_id  WHERE pm.player_id =%s AND m.match_timestamp <=%s;", (player4_id, date))
     number_of_game_player4 = cur.fetchone()[0] or 0
-    print(f'number of game for player {player4_id} on the {date} is {number_of_game_player4}')
+    logging.info(f'number of game for player {player4_name} on the {date} is {number_of_game_player4}')
 
     # Return the number of games played by each player as a tuple
     return (number_of_game_player1, number_of_game_player2, number_of_game_player3, number_of_game_player4)
@@ -127,11 +137,11 @@ def number_of_games_player(player1_id, player2_id, player3_id, player4_id, date,
 def number_of_games_team(team1_id, team2_id,date, cur):
     cur.execute("SELECT COUNT(*) FROM Match  WHERE winning_team_id =%s OR losing_team_id = %s AND match_timestamp <=%s", (team1_id,team1_id,date))
     number_of_game_team_1 = cur.fetchone()[0] or 0 
-    print(f'number of game for team {team1_id} on the {date} is {number_of_game_team_1}')
+    logging.info(f'number of game for team {team1_id} on the {date} is {number_of_game_team_1}')
 
     cur.execute("SELECT COUNT(*) FROM Match  WHERE winning_team_id =%s OR losing_team_id = %s AND match_timestamp <=%s", (team2_id,team2_id,date))
     number_of_game_team_2 = cur.fetchone()[0] or 0
-    print(f'number of game for team {team2_id} on the {date} is {number_of_game_team_2}')  
+    logging.info(f'number of game for team {team2_id} on the {date} is {number_of_game_team_2}')
     
      # Return the number of games played by each team as a tuple
     return (number_of_game_team_1, number_of_game_team_2)
@@ -145,7 +155,7 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
     else:
      player1_rating = 1200
 
-    print(f'current rating of player {player1_id} is {player1_rating}')
+    logging.info(f'current rating of player {player1_name} is {player1_rating}')
 
     cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player2_id,))
     result = cur.fetchone()
@@ -153,7 +163,7 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
         player2_rating = result[0]
     else:
      player2_rating = 1200
-    print(f'current rating of player {player2_id} is {player2_rating}')
+    logging.info(f'current rating of player {player2_name} is {player2_rating}')
 
     cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player3_id,))
     result = cur.fetchone()
@@ -162,7 +172,7 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
         player3_rating = result[0]
     else:
      player3_rating = 1200
-    print(f'current rating of player {player3_id} is {player3_rating}')
+    logging.info(f'current rating of player {player3_name} is {player3_rating}')
 
     cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player4_id,))
     result = cur.fetchone()
@@ -170,7 +180,7 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
         player4_rating = result[0]
     else:
         player4_rating = 1200   
-    print(f'current rating of player {player4_id} is {player4_rating}')
+    logging.info(f'current rating of player {player4_name} is {player4_rating}')
 
     return player1_rating, player2_rating, player3_rating, player4_rating
 
@@ -183,7 +193,7 @@ def get_team_ratings(team1_id, team2_id, cur):
         team1_rating = result[0]
     else:
      team1_rating = 1200
-    print(f'current rating of team {team1_id} is {team1_rating}')
+    logging.info(f'current rating of team {team1_id} is {team1_rating}')
 
     cur.execute("SELECT rating, team_rating_timestamp FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE team_id = %s) ORDER BY team_rating_timestamp DESC LIMIT 1;", (team2_id,))
     result = cur.fetchone()
@@ -191,13 +201,13 @@ def get_team_ratings(team1_id, team2_id, cur):
         team2_rating = result[0]
     else:
      team2_rating = 1200
-    print(f'current rating of team {team2_id} is {team2_rating}')
+    logging.info(f'current rating of team {team2_id} is {team2_rating}')
 
     return team1_rating, team2_rating
 
+# Get the point factor 
 def calculate_point_factor(score_difference):
-    return 1 + (math.log(score_difference + 1) / math.log(25))
-
+    return 1 + (math.log(score_difference + 1) / math.log(10)) ** 2
 
 
 
@@ -215,6 +225,8 @@ for row in ws.rows:
     player4_name = row[5].value
     team2_score = row[6].value
 
+    logging.info('Processing match %s', date)
+    
     # Call the get_player_id function inside the loop
     player1_id, player2_id, player3_id, player4_id = get_player_id(player1_name, player2_name, player3_name, player4_name, cur)
 
@@ -241,87 +253,115 @@ for row in ws.rows:
 
     
     # Calculate the expected scores for the players
-    player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 400))
-    player1_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player1_rating) / 400))
+    player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 500))
+    player1_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player1_rating) / 500))
     player1_expected_score = (player1_expected_score_against_player3 + player1_expected_score_against_player4) / 2
-    print("Player 1 expected score: ", player1_expected_score)
+    logging.info('Player %s expected score against player %s: %s',player1_name, player3_name, player1_expected_score_against_player3)
+    logging.info('Player %s expected score against player %s: %s', player1_name, player4_name,player1_expected_score_against_player4)
+    logging.info('Player %s overall expected score: %s',player1_name, player1_expected_score)
 
-    player2_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player2_rating) / 400))
-    player2_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player2_rating) / 400))
+    player2_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player2_rating) / 500))
+    player2_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player2_rating) / 500))
     player2_expected_score = (player2_expected_score_against_player3 + player2_expected_score_against_player4) / 2
-    print("Player 2 expected score: ", player2_expected_score)
+    logging.info('Player %s expected score against player %s: %s',player2_name, player3_name, player2_expected_score_against_player3)
+    logging.info('Player %s expected score against player %s: %s', player2_name, player4_name,player2_expected_score_against_player4)
+    logging.info('Player %s overall expected score: %s',player2_name, player2_expected_score)
 
-    player3_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player3_rating) / 400))
-    player3_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player3_rating) / 400))
+    player3_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player3_rating) / 500))
+    player3_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player3_rating) / 500))
     player3_expected_score = (player3_expected_score_against_player1 + player3_expected_score_against_player2) / 2
-    print("Player 3 expected score: ", player3_expected_score)
+    logging.info('Player %s expected score against player %s: %s',player3_name, player1_name, player3_expected_score_against_player1)
+    logging.info('Player %s expected score against player %s: %s', player3_name, player2_name,player3_expected_score_against_player2)
+    logging.info('Player %s overall expected score: %s',player3_name, player3_expected_score)
 
-    player4_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player4_rating) / 400))
-    player4_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player4_rating) / 400))
+    player4_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player4_rating) / 500))
+    player4_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player4_rating) / 500))
     player4_expected_score = (player4_expected_score_against_player1 + player4_expected_score_against_player2) / 2
-    print("Player 4 expected score: ", player4_expected_score)
+    logging.info('Player %s expected score against player %s: %s',player4_name, player1_name, player4_expected_score_against_player1)
+    logging.info('Player %s expected score against player %s: %s', player4_name, player2_name,player4_expected_score_against_player2)
+    logging.info('Player %s overall expected score: %s',player4_name, player4_expected_score)
 
     #input("Press enter to continue...")
 
     # Calculate the expected scores for the teams
     team1_expected_score = (player1_expected_score + player2_expected_score) / 2
     team2_expected_score = (player3_expected_score + player4_expected_score) / 2
-    print("Team 1 expected score: ", team1_expected_score)
-    print("Team 2 expected score: ", team2_expected_score)
 
+    logging.info("Team 1 expected score: %s", team1_expected_score)
+    logging.info("Team 2 expected score: %s", team2_expected_score)
     #input("Press enter to continue...")
 
     # Calculate the score difference to be used as a variable
-    team1_actual_score = team1_score / (team1_score + team2_score)
-    team2_actual_score = team2_score / (team1_score + team2_score)
-    print("Team 1 actual score: ", team1_actual_score)
-    print("Team 2 actual score: ", team2_actual_score)
+    team1_actual_score = team1_score / (team1_score + team2_score) * 1.025
+    team2_actual_score = team2_score / (team1_score + team2_score) * 1.025
 
-    #input("Press enter to continue...")
-
+    logging.info("Team 1 actual score: %s", team1_actual_score)
+    logging.info("Team 2 actual score: %s", team2_actual_score)
 
     # Calculate the point factor to be used as a variable
     score_difference = abs(team1_score - team2_score)
     point_factor = calculate_point_factor(score_difference)
-    print("Point factor: ", point_factor)
+    logging.info("Point factor: %s", point_factor)
 
-   #input("Press enter to continue...")
+    
 
-    # Calculate the K value for each player based on the number of games played
-    k1 = 300 / (1 + number_of_game_player1 / 300)
-    k2 = 300 / (1 + number_of_game_player2 / 300)
-    k3 = 300 / (1 + number_of_game_player3 / 300)
-    k4 = 300 / (1 + number_of_game_player4 / 300)
-    print("Player 1 K value: ", k1)
-    print("Player 2 K value: ", k2)
-    print("Player 3 K value: ", k3)
-    print("Player 4 K value: ", k4)
+    # Calculate the K value for each player based on the number of games played and their rating
+    k1 = 200 / (1 + number_of_game_player1 / 300)
+    k2 = 200 / (1 + number_of_game_player2 / 300) 
+    k3 = 200 / (1 + number_of_game_player3 / 300) 
+    k4 = 200 / (1 + number_of_game_player4 / 300) 
+
+    logging.info('Player %s K value: %s', player1_name,k1)
+    logging.info('Player %s K value: %s', player2_name,k2)
+    logging.info('Player %s K value: %s', player3_name,k3)
+    logging.info('Player %s K value: %s', player4_name,k4)
+
 
     # Calculate the K value for each team based on the number of games played
-    k5 = 50 / (1 + number_of_games_team1/ 100)
-    k6 = 50 / (1 + number_of_games_team2/ 100)
-    print("Team 1 K value: ", k5)
-    print("Team 2 K value: ", k6)
+    k5 = 200 / (1 + number_of_games_team1/ 100)
+    k6 = 200 / (1 + number_of_games_team2/ 100)
+
+    logging.info('Team %s K value: %s', team1_id,k5)
+    logging.info('Team %s K value: %s', team2_id,k6)
 
    #input("Press enter to continue...")
 
+ #logg the wining team
+    if team1_score > team2_score:
+       
+        logging.info('team 1 win with %s and : %s', player1_name,player2_name)
+        logging.info('team 2 lost with %s and : %s', player3_name,player4_name)
+
+    else:
+        logging.info('team 1 lost with %s and : %s', player1_name,player2_name)
+        logging.info('team 2 win with %s and : %s', player3_name,player4_name)
+        
+
+
     # Calculate the new Elo ratings for each player
-    player1_new_rating = player1_rating + k1 * point_factor * (team1_actual_score - player1_expected_score)
-    player2_new_rating = player2_rating + k2 * point_factor * (team1_actual_score - player2_expected_score)
-    player3_new_rating = player3_rating + k3 * point_factor * (team2_actual_score - player3_expected_score)
-    player4_new_rating = player4_rating + k4 * point_factor * (team2_actual_score - player4_expected_score)
-    print("player1_new_rating = ",player1_rating, "+", k1 * point_factor, "* (", team1_actual_score, "-", player1_expected_score,") =", player1_new_rating)
-    print("player2_new_rating = ",player2_rating, "+", k2 * point_factor, "* (", team1_actual_score, "-", player2_expected_score,") =", player2_new_rating)
-    print("player3_new_rating = ",player3_rating, "+", k3 * point_factor, "* (", team2_actual_score, "-", player3_expected_score,") =", player3_new_rating)
-    print("player4_new_rating = ",player4_rating, "+ ", k4 * point_factor, "* (", team2_actual_score, "-", player4_expected_score,") =", player4_new_rating)
+    player1_new_rating = player1_rating + k1 * point_factor  * (team1_actual_score - player1_expected_score)
+    player2_new_rating = player2_rating + k2 * point_factor  * (team1_actual_score - player2_expected_score)
+    player3_new_rating = player3_rating + k3 * point_factor  * (team2_actual_score - player3_expected_score)
+    player4_new_rating = player4_rating + k4 * point_factor  * (team2_actual_score - player4_expected_score)
+    
+    # Log the new ratings
+    logging.info('player1_new_rating = player1_rating + k1 * point_factor * weighting_factor_player1 * (team1_actual_score - player1_expected_score')
+    logging.info('%s new rating: %s = %s + %s * %s * (%s - %s)', player1_name, player1_new_rating, player1_rating, k1, point_factor, team1_actual_score, player1_expected_score)
+    logging.info('%s new rating: %s = %s + %s * %s * (%s - %s)', player2_name, player2_new_rating, player2_rating, k2, point_factor, team1_actual_score, player2_expected_score)
+    logging.info('%s new rating: %s = %s + %s * %s * (%s - %s)', player3_name, player3_new_rating, player3_rating, k3, point_factor, team2_actual_score, player3_expected_score)
+    logging.info('%s new rating: %s = %s + %s * %s * (%s - %s)', player4_name, player4_new_rating, player4_rating, k4, point_factor, team2_actual_score, player4_expected_score)
+
+
 
     #input("Press enter to continue...")
 
     # Calculate the new Elo ratings for each team
     team1_new_rating = team1_rating + k5 * point_factor * (team1_actual_score - team1_expected_score)
     team2_new_rating = team2_rating + k6 * point_factor * (team2_actual_score - team2_expected_score)
-    print("team1_new_rating = ",team1_rating, "+", k5,"*", point_factor, "* (", team1_actual_score, "-", team1_expected_score,") =", team1_new_rating)
-    print("team1_new_rating = ",team2_rating, "+", k6,"*", point_factor, "* (", team2_actual_score, "-", team2_expected_score,") =", team2_new_rating)
+    # Log the new ratings for teams
+    logging.info('Team 1 new rating: %s = %s + %s * %s * (%s - %s)', team1_new_rating, team1_rating, k5, point_factor, team1_actual_score, team1_expected_score)
+    logging.info('Team 2 new rating: %s = %s + %s * %s * (%s - %s)', team2_new_rating, team2_rating, k6, point_factor, team2_actual_score, team2_expected_score)
+
 
     #input("Press enter to continue...")
 
@@ -337,8 +377,10 @@ for row in ws.rows:
     cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match1_id, team1_new_rating, date))
     cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match2_id, team2_new_rating, date))
     conn.commit()
+    logging.info('_________________')
 
 
 # Close the cursor and connection
+print("Loop done")
 cur.close()
 conn.close()
