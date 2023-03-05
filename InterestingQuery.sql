@@ -27,7 +27,7 @@ JOIN Match m2 ON pm2.match_id = m2.match_id
 WHERE p.first_name = 'Lazare' AND p2.first_name = 'Matthieu'
 ORDER BY lazare_rating ASC, matthieu_rating ASC;
 
-/*work better */
+/*Show the elo score for two player all time*/
 SELECT
     m.match_timestamp,
     MAX(CASE WHEN p.first_name = 'Lazare' THEN pr.rating ELSE NULL END) AS lazare_rating,
@@ -41,7 +41,7 @@ WHERE p.first_name IN ('Lazare', 'Matthieu', 'Elie')
 GROUP BY m.match_timestamp
 ORDER BY m.match_timestamp ASC;
 
-/*work better by week*/
+/*Show the elo score for two player by week*/
 SELECT
     DATE_TRUNC('week', m.match_timestamp) AS week_start,
     MAX(CASE WHEN p.first_name = 'Lazare' THEN pr.rating ELSE NULL END) AS lazare_rating,

@@ -43,10 +43,10 @@ def get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, pl
         return (player1_match_id, player2_match_id, player3_match_id, player4_match_id)
 
 def get_team_match_id_by_timestamp_and_by_team_id(team1_id,team2_id, date, cur):
-        cur.execute("SELECT TeamMatch.team_match_id FROM Match JOIN TeamMatch ON Match.match_id = TeamMatch.match_id WHERE TeamMatch.team_id =%s AND Match.match_timestamp =%s;", (team1_id,date))
+        cur.execute("SELECT TeamMatch.team_match_id FROM Match JOIN TeamMatch ON Match.match_id = TeamMatch.match_id WHERE TeamMatch.team_id =%s AND Match.match_timestamp =%s;", (team1_id, date))
         team_match1_id = cur.fetchone()[0]
 
-        cur.execute("SELECT TeamMatch.team_match_id FROM Match JOIN TeamMatch ON Match.match_id = TeamMatch.match_id WHERE TeamMatch.team_id =%s AND Match.match_timestamp =%s;", (team2_id,date))
+        cur.execute("SELECT TeamMatch.team_match_id FROM Match JOIN TeamMatch ON Match.match_id = TeamMatch.match_id WHERE TeamMatch.team_id =%s AND Match.match_timestamp =%s;", (team2_id, date))
         team_match2_id = cur.fetchone()[0]
         return (team_match1_id,team_match2_id)
 
@@ -134,11 +134,11 @@ def number_of_games_player(player1_id, player2_id, player3_id, player4_id, date,
 
 
 def number_of_games_team(team1_id, team2_id,date, cur):
-    cur.execute("SELECT COUNT(*) FROM Match  WHERE winning_team_id =%s OR losing_team_id = %s AND match_timestamp <=%s", (team1_id,team1_id,date))
+    cur.execute("SELECT COUNT(*) FROM Match WHERE (winning_team_id =%s OR losing_team_id = %s ) AND match_timestamp <=%s", (team1_id,team1_id,date))
     number_of_game_team_1 = cur.fetchone()[0] or 0 
     logging.info(f'number of game for team {team1_id} on the {date} is {number_of_game_team_1}')
 
-    cur.execute("SELECT COUNT(*) FROM Match  WHERE winning_team_id =%s OR losing_team_id = %s AND match_timestamp <=%s", (team2_id,team2_id,date))
+    cur.execute("SELECT COUNT(*) FROM Match WHERE (winning_team_id =%s OR losing_team_id = %s ) AND match_timestamp <=%s", (team2_id,team2_id,date))
     number_of_game_team_2 = cur.fetchone()[0] or 0
     logging.info(f'number of game for team {team2_id} on the {date} is {number_of_game_team_2}')
     
@@ -306,6 +306,8 @@ for row in ws.rows:
     k3 = 50 / (1 + number_of_game_player3 / 300) 
     k4 = 50 / (1 + number_of_game_player4 / 300) 
 
+    #delta = 32 * (1 - winnerChanceToWin)
+
     logging.info('Player %s K value: %s', player1_name,k1)
     logging.info('Player %s K value: %s', player2_name,k2)
     logging.info('Player %s K value: %s', player3_name,k3)
@@ -313,8 +315,8 @@ for row in ws.rows:
 
 
     # Calculate the K value for each team based on the number of games played
-    k5 = 200 / (1 + number_of_games_team1/ 100)
-    k6 = 200 / (1 + number_of_games_team2/ 100)
+    k5 = 50 / (1 + number_of_games_team1/ 100)
+    k6 = 50 / (1 + number_of_games_team2/ 100)
 
     logging.info('Team %s K value: %s', team1_id,k5)
     logging.info('Team %s K value: %s', team2_id,k6)
@@ -369,11 +371,17 @@ for row in ws.rows:
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES ( %s, %s, %s)", (player_match2_id, player2_new_rating, date))
     cur.execute("INSERT INTO playerrating (player_match_id,rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match3_id,player3_new_rating, date))
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match4_id, player4_new_rating, date))
+    logging.info('Insert player in database :%s with rating %s on the %s',player1_name,player1_new_rating, date)
+    logging.info('Insert player in database :%s with rating %s on the %s',player2_name,player2_new_rating, date)
+    logging.info('Insert player in database :%s with rating %s on the %s',player3_name,player3_new_rating, date)
+    logging.info('Insert player in database :%s with rating %s on the %s',player4_name,player4_new_rating, date)
     conn.commit()
 
     # Update the database with the team ratings
     cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match1_id, team1_new_rating, date))
     cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match2_id, team2_new_rating, date))
+    logging.info('Insert team in database :%s with rating %s on the %s',team1_id,team1_new_rating, date)
+    logging.info('Insert team in database :%s with rating %s on the %s',team2_id,team2_new_rating, date)
     conn.commit()
     logging.info('_________________')
 
