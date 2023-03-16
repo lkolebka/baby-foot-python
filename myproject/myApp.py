@@ -41,6 +41,7 @@ def get_players():
         query = "SELECT first_name FROM player"  # Change the column name to match your database
         cursor.execute(query)
         players = cursor.fetchall()
+        print("Players fetched:", players)  # Add this line to print the fetched players
         return [player[0] for player in players]
        
     except Exception as e:
@@ -51,6 +52,7 @@ def get_players():
             cursor.close()
         if conn:
             conn.close()
+
 
 @app.route('/', methods=['GET', 'POST'])
 def create_game():
