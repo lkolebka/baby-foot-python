@@ -86,6 +86,19 @@ form {
     text-align: center;
 }
 
+.date-label {
+    color: rgb(0, 0, 0); 
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    margin-bottom: 0.5em; /* add some space below the label */
+    margin-top: 0.3em; /* add margin-top property */
+    font-weight: normal;
+    font-size: 1em;
+    line-height: 5px;
+    text-align: center;
+}
+
+
 label {
     font-size: 22px;
     line-height: 20px;
@@ -99,6 +112,8 @@ label {
     font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
 }
 
+
+
 input[type="text"], input[type="number"], select {
     width: 100%;
    /* padding: 0.8em;*/
@@ -107,6 +122,21 @@ input[type="text"], input[type="number"], select {
     margin-bottom: 0.5em;
     border: 1px solid #ddd;
     border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center;
+    text-align-last: center; 
+}
+
+input[type="date"], input[type="time"], select {
+    width: 100%;
+   /* padding: 0.8em;*/
+    font-size: 1em;
+    margin-top: 0.8em;
+    margin-bottom: 0.1em;
+    border: 0px solid #ddd;
+    border-radius: 5px;
+    display: block;
+    margin: auto;
     box-sizing: border-box;
     text-align: center;
     text-align-last: center; 
@@ -122,7 +152,7 @@ input[type="submit"] {
     font-size: 1.2em;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 1.5em;
+    margin-top: 0.8em;
 }
 
 input[type="submit"]:hover {
