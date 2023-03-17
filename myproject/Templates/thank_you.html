@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thank You</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Thank you for submitting the game data!</h1>
-    <p>Your game has been successfully created.</p>
-    <a href="/">Back to Home</a>
+    <h1>Thank you!</h1>
+    <p>Last match information:</p>
+    <ul>
+        <li>Match ID: {{ last_match[0] }}</li>
+        <li>Winning Team ID: {{ last_match[1] }}</li>
+        <li>Losing Team ID: {{ last_match[2] }}</li>
+        <li>Timestamp: {{ last_match[3] }}</li>
+    </ul>
 </body>
 </html>

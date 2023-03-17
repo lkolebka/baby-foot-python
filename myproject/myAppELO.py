@@ -1,9 +1,14 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import psycopg2
 from config import DATABASE_CONFIG
 from datetime import datetime
 import math
 import logging
+
+def get_last_match(cur):
+    cur.execute("SELECT * FROM Match ORDER BY match_id DESC LIMIT 1;")
+    last_match = cur.fetchone()
+    return last_match
 
 
 
@@ -403,9 +408,23 @@ def create_game():
         # Process the form data and update the database
         process_game_data(player1_name, player2_name, team1_score, player3_name, player4_name, team2_score, date_str)
         
-        return "Game created successfully!"
+        return redirect('/thank_you')
        
     return render_template('create_game.html', players=players)
+
+def get_last_match():
+    with psycopg2.connect(**DATABASE_CONFIG) as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM Match ORDER BY match_id DESC LIMIT 1;")
+        last_match = cur.fetchone()
+    return last_match
+
+
+@app.route('/thank_you')
+def thank_you():
+    last_match = get_last_match()
+    return render_template('thank_you.html', last_match=last_match)
+
 
 if __name__ == '__main__':
     app.static_folder = 'static'
