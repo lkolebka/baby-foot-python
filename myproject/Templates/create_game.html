@@ -25,9 +25,9 @@
     </select>
     <!-- Team 1 Score Label -->
     <label for="team1_score" class="score-label">Score</label>
-    <input type="number" name="team2_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
+    <input type="number" name="team1_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
     <br>
-    <!-- Team 1 Label -->
+    <!-- Team 2 Label -->
     <label for="player1_name" class="team-label">Team 2 </label>
     <select id="player3_name" name="player3_name">
         <option value="" disabled selected>Select player 3</option>
@@ -43,8 +43,22 @@
         {% endfor %}
     </select>
     <!-- Team 2 Score Label -->
-    <label for="team1_score" class="score-label">Score</label>
+    <label for="team2_score" class="score-label">Score</label>
     <input type="number" name="team2_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
+    <br>
+    <!-- Game Date Label -->
+    <label for="game_date" class="date-label">Date</label>
+        <input type="date" id="game_date" name="game_date" value="">
+    <script>
+        // Get today's date and format it as yyyy-mm-dd
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = ('0' + (today.getMonth() + 1)).slice(-2);
+        var day = ('0' + today.getDate()).slice(-2);
+        var formattedDate = year + '-' + month + '-' + day;
+        // Set the default value of the game_date input to today's date
+        document.getElementById("game_date").value = formattedDate;
+    </script>
     <br>
     <input type="submit" value="Create game">
   </form>
