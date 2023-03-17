@@ -7,55 +7,46 @@
 </head>
 <body>
   <h1>Create a game</h1>
-  <form id="game-form" method="POST">
-    <label for="player1_name">Player 1 name:</label>
+  <form method="POST">
+    <!-- Team 1 Label -->
+    <label for="player1_name" class="team-label">Team 1 </label>
     <select id="player1_name" name="player1_name">
-        <option value="" selected disabled>-- Select Player 1 --</option>
+        <option value="" disabled selected>Select player 1</option>
         {% for player in players %}
-        <option value="{{ player }}">{{ player }}</option>
+            <option value="{{ player }}">{{ player }}</option>
         {% endfor %}
     </select>
-    <!-- ... -->
-    <label for="player2_name">Player 2 name:</label>
+    <br>
     <select id="player2_name" name="player2_name">
-        <option value="" selected disabled>-- Select Player 2 --</option>
+        <option value="" disabled selected>Select player 2</option>
         {% for player in players %}
-        <option value="{{ player }}">{{ player }}</option>
+            <option value="{{ player }}">{{ player }}</option>
         {% endfor %}
     </select>
-    <!-- ... -->
-    <label for="player3_name">Player 3 name:</label>
+    <!-- Team 1 Score Label -->
+    <label for="team1_score" class="score-label">Score</label>
+    <input type="number" name="team2_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
+    <br>
+    <!-- Team 1 Label -->
+    <label for="player1_name" class="team-label">Team 2 </label>
     <select id="player3_name" name="player3_name">
-        <option value="" selected disabled>-- Select Player 3 --</option>
+        <option value="" disabled selected>Select player 3</option>
         {% for player in players %}
-        <option value="{{ player }}">{{ player }}</option>
+            <option value="{{ player }}">{{ player }}</option>
         {% endfor %}
     </select>
-    <!-- ... -->
-    <label for="player4_name">Player 4 name:</label>
+    <br>
     <select id="player4_name" name="player4_name">
-        <option value="" selected disabled>-- Select Player 4 --</option>
+        <option value="" disabled selected>Select player 4</option>
         {% for player in players %}
-        <option value="{{ player }}">{{ player }}</option>
+            <option value="{{ player }}">{{ player }}</option>
         {% endfor %}
     </select>
-    <!-- ... -->
+    <!-- Team 2 Score Label -->
+    <label for="team1_score" class="score-label">Score</label>
+    <input type="number" name="team2_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
+    <br>
     <input type="submit" value="Create game">
-</form>
-<script>
-  // Add an event listener for form submission
-  document.querySelector("form").addEventListener("submit", function() {
-    // Set a timeout to reset the select options after form submission
-    setTimeout(function() {
-      document.getElementById("player1_name").selectedIndex = 0;
-      document.getElementById("player2_name").selectedIndex = 0;
-      document.getElementById("player3_name").selectedIndex = 0;
-      document.getElementById("player4_name").selectedIndex = 0;
-    }, 100);
-  });
-</script>
-
+  </form>
 </body>
 </html>
-
-
