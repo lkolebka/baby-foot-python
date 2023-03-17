@@ -12,7 +12,7 @@ body {
 
 h1, h2, h3 {
     font-weight: 700;
-    margin-top: 0.3em;
+    margin-top: 0.5em;
 }
 h1 {
     font-weight: 700;
@@ -62,13 +62,41 @@ form {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.team-label {
+    /* Add styles specific to the Team 1 label */
+    margin-bottom: 0.5em;
+    padding-top: 0.1em;
+    color: rgb(0, 0, 0); /* Example */
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: center;
+
+}
+
+.score-label {
+    /* Add styles specific to the Score label */
+    color: rgb(0, 0, 0); 
+    padding-top: 0.8em;
+    padding-bottom: 0.3em;
+    font-weight: normal;
+    font-size: 1em;
+    line-height: 5px;
+    text-align: center;
+}
+
 label {
-    font-size: 16px;
-    line-height: 24px;
-    margin-top: 12px;
+    font-size: 22px;
+    line-height: 20px;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
     background: none;
     border: none;
-    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif
+    display: block;
+    text-align: left;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
 }
 
 input[type="text"], input[type="number"], select {
@@ -76,23 +104,25 @@ input[type="text"], input[type="number"], select {
    /* padding: 0.8em;*/
     font-size: 1em;
     margin-top: 0.8em;
-    margin-bottom: 0.8em;
+    margin-bottom: 0.5em;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
+    text-align: center;
+    text-align-last: center; 
 }
 
 input[type="submit"] {
     width: 100%;
-    padding: 1em;
+    padding: 0.8em;
     background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
     color: #1b4aef;
     border: 2px solid #174ae4;
     border-radius: 70px;
-    font-size: 1em;
+    font-size: 1.2em;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 2em;
+    margin-top: 1.5em;
 }
 
 input[type="submit"]:hover {
