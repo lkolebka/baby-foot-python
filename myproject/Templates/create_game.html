@@ -4,9 +4,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
   <title>Create Game</title>
+  <style>
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .action {
+      background-color: lightgray;
+      height: 100px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
 </head>
 <body>
   <h1>Create a game</h1>
+
   <form method="POST">
     <!-- Team 1 Label -->
     <label for="player1_name" class="team-label">Team 1 </label>
@@ -62,5 +78,25 @@
     <br>
     <input type="submit" value="Create game">
   </form>
+<!-- Do more section -->
+<div class="do-more">
+  <h2>Do more</h2>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin malesuada tortor eget massa ultrices dictum. Sed luctus libero ac est mollis lacinia. Donec maximus convallis ex, sed laoreet eros iaculis nec.</p>
+</div>
+
+
+<div class="action-grid">
+  <div class="action action1">Action 1</div>
+  <div class="action action2">Action 2</div>
+  <div class="action action3">Action 3</div>
+  <div class="action action4">Action 4</div>
+</div>
+
+</div>
+</body>
+</html>
+
+
+
 </body>
 </html>
