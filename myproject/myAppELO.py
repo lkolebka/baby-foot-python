@@ -425,11 +425,18 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
     # Log the new ratings for teams
 
     # Update the database with the player ratings
+    print("Inserting player rating for player 1 with match ID", player_match1_id, "and new rating", player1_new_rating)
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match1_id, player1_new_rating, date))
+
+    print("Inserting player rating for player 2 with match ID", player_match2_id, "and new rating", player2_new_rating)
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES ( %s, %s, %s)", (player_match2_id, player2_new_rating, date))
+
+    print("Inserting player rating for player 3 with match ID", player_match3_id, "and new rating", player3_new_rating)
     cur.execute("INSERT INTO playerrating (player_match_id,rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match3_id,player3_new_rating, date))
+
+    print("Inserting player rating for player 4 with match ID", player_match4_id, "and new rating", player4_new_rating)
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match4_id, player4_new_rating, date))
-  
+
     conn.commit()
 
     # Update the database with the team ratings
@@ -437,6 +444,228 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
     cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match2_id, team2_new_rating, date))
   
     conn.commit() 
+
+
+# Get the exptected score for odds   
+def calculate_expected_score(player1_name, player2_name, team1_score, player3_name, player4_name, team2_score,date):
+   # Connect to the database
+    conn = psycopg2.connect(
+        host=DATABASE_CONFIG['host'],
+        database=DATABASE_CONFIG['database'],
+        user=DATABASE_CONFIG['user'],
+        password=DATABASE_CONFIG['password']
+    )
+
+    print("date is",date)
+    
+    # Create a cursor
+    cur = conn.cursor()
+
+    # Check if the player name is not empty
+    if player1_name:
+      # Check if the player already exists in the Player table
+      cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player1_name,))
+      player1_id = cur.fetchone()
+      if player1_id is None:
+        # If the player does not exist, insert them into the players table with a unique id
+        cur.execute("SELECT nextval('player_id_seq')")
+        id = cur.fetchone()[0]
+        cur.execute("INSERT INTO player (player_id, first_name) VALUES (%s, %s)", (id, player1_name))
+        player1_id = id
+      else:
+        # If the player already exists, retrieve their player_id
+        player1_id = player1_id[0]
+      
+
+
+  # Check if the player2 first_name is not empty
+    if player2_name:
+      # Check if the player already exists in the Players table
+      cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player2_name,))
+      player2_id = cur.fetchone()
+      if player2_id is None:
+        # If the player does not exist, insert them into the players table with a unique id
+        cur.execute("SELECT nextval('player_id_seq')")
+        id = cur.fetchone()[0]
+        cur.execute("INSERT INTO player (player_id, first_name) VALUES (%s, %s)", (id, player2_name))
+        player2_id = id
+      else:
+        # If the player already exists, retrieve their player_id
+        player2_id = player2_id[0]
+  
+
+  # Check if the player3 first_name is not empty
+    if player3_name:
+      # Check if the player already exists in the Players table
+      cur.execute("SELECT player_id FROM player WHERE first_name=%s", (str(player3_name),))
+      player3_id = cur.fetchone()
+      if player3_id is None:
+        # If the player does not exist, insert them into the players table with a unique id
+        cur.execute("SELECT nextval('player_id_seq')")
+        id = cur.fetchone()[0]
+        cur.execute("INSERT INTO player (player_id, first_name) VALUES (%s, %s)", (id, player3_name))
+        player3_id = id
+      else:
+        # If the player already exists, retrieve their player_id
+        player3_id = player3_id[0]  
+
+
+  # Check if the player4 first_name is not empty
+    if player4_name:
+      # Check if the player already exists in the Players table
+      cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player4_name,))
+      player4_id = cur.fetchone()
+      if player4_id is None:
+        # If the player does not exist, insert them into the players table with a unique id
+        cur.execute("SELECT nextval('player_id_seq')")
+        id = cur.fetchone()[0]
+        cur.execute("INSERT INTO player (player_id, first_name) VALUES (%s, %s)", (id, player4_name))
+        player4_id = id
+      else:
+        # If the player already exists, retrieve their id
+        player4_id = player4_id[0]  
+
+
+  # Check if the team already exists in the Teams table
+      cur.execute("SELECT team_id FROM team WHERE (team_player_1_id=%s AND team_player_2_id=%s) OR (team_player_1_id=%s AND team_player_2_id=%s)", (player1_id, player2_id, player2_id, player1_id))
+      team_player_1_id = cur.fetchone()
+      if team_player_1_id is None:
+        # If the team does not exist, insert them into the teams table with a unique id
+        cur.execute("SELECT nextval('team_id_seq')")
+        id = cur.fetchone()[0]
+        cur.execute("INSERT INTO team (team_id, team_player_1_id, team_player_2_id) VALUES (%s, %s, %s)", (id, player1_id, player2_id))
+        team_player_1_id = id
+      else:
+        # If the team already exists, retrieve their id
+        team_player_1_id = team_player_1_id[0]  
+      
+  # Repeat the process for the other team
+      cur.execute("SELECT team_id FROM team WHERE (team_player_1_id=%s AND team_player_2_id=%s) OR (team_player_1_id=%s AND team_player_2_id=%s)", (player3_id, player4_id, player4_id, player3_id))
+      team_player_2_id = cur.fetchone()
+      if team_player_2_id is None:
+        cur.execute("SELECT nextval('team_id_seq')")
+        id = cur.fetchone()[0]
+        cur.execute("INSERT INTO team (team_id, team_player_1_id, team_player_2_id) VALUES (%s, %s, %s)", (id, player3_id, player4_id))
+        team_player_2_id = id
+      else:
+        team_player_2_id = team_player_2_id[0]    
+
+
+  # Commit the changes to the database
+    conn.commit()
+
+    # Function to check winning team
+    def get_winning_team(team1_score, team2_score):
+      if team1_score > team2_score:
+          return 1
+      elif team2_score > team1_score:
+          return 2
+      else:
+          return 0  
+
+
+  # Insert the game into the matches table
+    winning_team = get_winning_team(team1_score, team2_score)
+
+    if winning_team == 1:
+        winning_team_id = team_player_1_id
+        losing_team_id = team_player_2_id
+        winning_team_score = team1_score
+        losing_team_score = team2_score
+    elif winning_team == 2:
+        winning_team_id = team_player_2_id
+        losing_team_id = team_player_1_id
+        winning_team_score = team2_score
+        losing_team_score = team1_score
+    else:
+        winning_team_id = None
+        losing_team_id = None
+        winning_team_score = None
+        losing_team_score = None  
+
+    cur.execute("SELECT * FROM match WHERE match_timestamp=%s AND winning_team_id=%s AND losing_team_id=%s AND winning_team_score=%s AND losing_team_score=%s", (date, winning_team_id, losing_team_id, winning_team_score, losing_team_score))
+    match = cur.fetchone()
+    if match is None:
+            cur.execute("INSERT INTO match (match_timestamp, winning_team_id, losing_team_id, winning_team_score, losing_team_score) VALUES (%s, %s, %s, %s, %s)", (date, winning_team_id, losing_team_id, winning_team_score, losing_team_score))
+            print(f'processing match: {date} with {player1_name} and {player2_name} vs {player3_name} and {player4_name}: {team1_score} - {team2_score}  ')
+            conn.commit()
+
+            # get the last of the matches
+            cur.execute("SELECT match_id FROM match ORDER BY match_id DESC LIMIT 1")
+            match_id = cur.fetchone()[0]
+          
+            # Insert the players into the PlayerMatch table
+            cur.execute("INSERT INTO PlayerMatch (player_id,match_id) VALUES (%s, %s)", (player1_id,match_id))
+            cur.execute("INSERT INTO PlayerMatch (player_id,match_id) VALUES (%s, %s)", (player2_id,match_id))
+            cur.execute("INSERT INTO PlayerMatch (player_id,match_id) VALUES (%s, %s)", (player3_id,match_id))
+            cur.execute("INSERT INTO PlayerMatch (player_id,match_id) VALUES (%s, %s)", (player4_id,match_id))
+
+            # Insert the team into the TeamMatch table
+            cur.execute("INSERT INTO TeamMatch (team_id,match_id) VALUES (%s, %s)", (winning_team_id,match_id))
+            cur.execute("INSERT INTO TeamMatch (team_id,match_id) VALUES (%s, %s)", (losing_team_id,match_id))
+  
+    else:
+        print(f'Skipping match      : {date} with {player1_name} and {player2_name} vs {player3_name} and {player4_name}: {team1_score} - {team2_score}  , the match already exist')
+
+
+# Call the get_player_id function inside the loop
+    player1_id, player2_id, player3_id, player4_id = get_player_id(player1_name, player2_name, player3_name, player4_name, cur)
+
+    # Call the insert_team_or_get_team_id function inside the loop
+    team1_id, team2_id = insert_team_or_get_team_id(player1_id, player2_id, player3_id, player4_id, cur)
+
+    # Call the number_of_games_player function inside the loop
+    number_of_game_player1, number_of_game_player2, number_of_game_player3, number_of_game_player4 = number_of_games_player(player1_id, player2_id, player3_id, player4_id, date, cur)
+
+    # Call the number_of_games_team function inside the loop
+    number_of_games_team1, number_of_games_team2 = number_of_games_team(team1_id, team2_id, date, cur)
+
+    # Call the get_player_ratings function inside the loop
+    player1_rating, player2_rating, player3_rating, player4_rating = get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur)
+
+    # Call the get_teams_ratings function inside the loop
+    team1_rating, team2_rating = get_team_ratings(team1_id, team2_id, cur)
+
+    # Call the get_player_match_id_by_timestamp_and_by_player_id function inside the loop
+    player_match1_id, player_match2_id, player_match3_id, player_match4_id  = get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, player3_id, player4_id, date, cur)
+
+    # Call the get_team_match_id_by_timestamp_and_by_team_id function inside the loop
+    team_match1_id, team_match2_id  = get_team_match_id_by_timestamp_and_by_team_id(team1_id, team2_id, date, cur)
+
+ # Calculate the expected scores for the players
+    player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 500))
+    player1_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player1_rating) / 500))
+    player1_expected_score = (player1_expected_score_against_player3 + player1_expected_score_against_player4) / 2
+   
+    player2_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player2_rating) / 500))
+    player2_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player2_rating) / 500))
+    player2_expected_score = (player2_expected_score_against_player3 + player2_expected_score_against_player4) / 2
+   
+
+    player3_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player3_rating) / 500))
+    player3_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player3_rating) / 500))
+    player3_expected_score = (player3_expected_score_against_player1 + player3_expected_score_against_player2) / 2
+   
+
+    player4_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player4_rating) / 500))
+    player4_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player4_rating) / 500))
+    player4_expected_score = (player4_expected_score_against_player1 + player4_expected_score_against_player2) / 2
+   
+    #input("Press enter to continue...")
+
+    # Calculate the expected scores for the teams
+    team1_expected_score = (player1_expected_score + player2_expected_score) / 2
+    team2_expected_score = (player3_expected_score + player4_expected_score) / 2
+
+    print(f"Player 1 ({player1_name}) expected score: {player1_expected_score}")
+    print(f"Player 2 ({player2_name}) expected score: {player2_expected_score}")
+    print(f"Player 3 ({player3_name}) expected score: {player3_expected_score}")
+    print(f"Player 4 ({player4_name}) expected score: {player4_expected_score}")
+    print(f"Team 1 expected score: {team1_expected_score}")
+    print(f"Team 2 expected score: {team2_expected_score}")
+
+    return team1_expected_score, team2_expected_score
+
 
 # Get the players from the database
 def get_players():
@@ -498,7 +727,7 @@ def create_game():
 def get_last_match():
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
-        cur.execute("SELECT m.match_id as matchid,m.match_timestamp as time, p1.first_name AS player1_name, p2.first_name AS player2_name, p3.first_name AS player3_name, p4.first_name AS player4_name, m.winning_team_score AS team1_score, m.losing_team_score AS team2_score FROM Match m INNER JOIN Team wt ON m.winning_team_id = wt.team_id INNER JOIN Team lt ON m.losing_team_id = lt.team_id INNER JOIN Player p1 ON wt.team_player_1_id = p1.player_id INNER JOIN Player p2 ON wt.team_player_2_id = p2.player_id INNER JOIN Player p3 ON lt.team_player_1_id = p3.player_id INNER JOIN Player p4 ON lt.team_player_2_id = p4.player_id ORDER BY m.match_timestamp DESC LIMIT 1;")
+        cur.execute("SELECT m.match_id as matchid,m.match_timestamp as time, p1.first_name AS player1_name, p2.first_name AS player2_name, p3.first_name AS player3_name, p4.first_name AS player4_name, m.winning_team_score AS team1_score, m.losing_team_score AS team2_score FROM Match m INNER JOIN Team wt ON m.winning_team_id = wt.team_id INNER JOIN Team lt ON m.losing_team_id = lt.team_id INNER JOIN Player p1 ON wt.team_player_1_id = p1.player_id INNER JOIN Player p2 ON wt.team_player_2_id = p2.player_id INNER JOIN Player p3 ON lt.team_player_1_id = p3.player_id INNER JOIN Player p4 ON lt.team_player_2_id = p4.player_id ORDER BY m.match_id DESC LIMIT 1;")
         last_match = cur.fetchone()
         
     return last_match
@@ -547,15 +776,39 @@ def delete_last_match_route():
     delete_last_match()
     return redirect(url_for('create_game'), code=302)
 
+@app.route('/calculate_expected_score', methods=['GET', 'POST'])
+def calculate_expected_score_route():
+    
+    if request.method == 'POST':
+        # Get the form data
+        player1_name = request.form['player1_name']
+        player2_name = request.form['player2_name']
+        team1_score = request.form['team1_score']
+        player3_name = request.form['player3_name']
+        player4_name = request.form['player4_name']
+        team2_score = request.form['team2_score']
+        date = request.form['date']
+
+        # Call the calculate_expected_score function with the form data
+        player1_expected_score, player2_expected_score, player3_expected_score, player4_expected_score = calculate_expected_score(player1_name, player2_name, team1_score, player3_name, player4_name, team2_score, date)
+
+        # Render the template with the expected scores
+        return render_template('expected_score.html', player1_name=player1_name, player1_expected_score=player1_expected_score, player2_name=player2_name, player2_expected_score=player2_expected_score, player3_name=player3_name, player3_expected_score=player3_expected_score, player4_name=player4_name, player4_expected_score=player4_expected_score)
+        
+    else:
+        # Render the form for entering the game details
+        players = get_players()
+        return render_template('calculate_odds.html', players=players)
+
+    
+
 @app.route('/calculate_odds')
 def calculate_odds():
+    # Add your code here to calculate odds
     players = get_players()
     return render_template('calculate_odds.html', players=players)
 
 
-@app.route('/button_click')
-def button_click():
-    return redirect(url_for('calculate_odds'))
 
 if __name__ == '__main__':
     app.static_folder = 'static'
