@@ -1,46 +1,275 @@
+html {
+    overflow-x: hidden;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #fafafa;
-    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+    color: #111;
+   
+
 }
 
 h1, h2, h3 {
-    font-weight: bold;
-    margin-top: 1em;
+    font-weight: 700;
+    margin-top: 0.5em;
+}
+h1 {
+    font-weight: 700;
+    color: #1b4aef;
+    font-size: 64px;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+    text-align: center;
+}
+
+.do-more {
+  margin-top: 0.0em;
+  border-top: 0px solid #ccc;
+  padding-top: 0.0em;
+  background-color: #EEF0F9; /* light blue */
+  color: #000000; /* white */
+}
+
+  .do-more h2 {
+    font-weight: 700;
+    margin-top: 0.5em;
+    padding-top: 0.2em;
+    color: #000000;
+    font-size: 36px;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+    text-align: center;
+  }
+  
+  .do-more p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 0;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+    text-align: center;
+
+  }
+
+  @media only screen and (max-width: 1000px) {
+    h1 {
+        font-size: 50px;
+    }
+    h2 {
+        font-size: 36px;
+    }
+}
+
+@media only screen and (max-width: 700px) {
+    h1 {
+        font-size: 40px;
+    }
+    h2 {
+        font-size: 24px;
+    }
+}
+
+
+.cdx_mkt_subtext_container {
+    max-width: 1200px;
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+@media only screen and (max-width: 700px) {
+    .cdx_mkt_subtext_container {
+        max-width: 80%;
+        margin-bottom: 22px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .cdx_mkt_subtext_container {
+        max-width: 90%;
+    }
 }
 
 form {
-    width: 50%;
-    margin: 2em auto;
-    padding: 2em;
+    width: 90%;
+    margin: 0.5em auto;
+    padding: 0.4em;
     background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
-input[type="text"], input[type="number"] {
-    width: 100%;
-    padding: 0.8em;
+.team-label {
+    /* Add styles specific to the Team 1 label */
+    margin-bottom: 0.5em;
+    padding-top: 0.1em;
+    color: rgb(0, 0, 0); /* Example */
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: center;
+
+}
+
+.score-label {
+    /* Add styles specific to the Score label */
+    color: rgb(0, 0, 0); 
+    padding-top: 0.8em;
+    padding-bottom: 0.3em;
+    font-weight: normal;
     font-size: 1em;
-    margin-top: 1em;
+    line-height: 5px;
+    text-align: center;
+}
+
+.date-label {
+    color: rgb(0, 0, 0); 
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    margin-bottom: 0.5em; /* add some space below the label */
+    margin-top: 0.3em; /* add margin-top property */
+    font-weight: normal;
+    font-size: 1em;
+    line-height: 5px;
+    text-align: center;
+}
+
+
+label {
+    font-size: 22px;
+    line-height: 20px;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    background: none;
+    border: none;
+    display: block;
+    text-align: left;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+}
+
+
+
+input[type="text"], input[type="number"], select {
+    width: 100%;
+   /* padding: 0.8em;*/
+    font-size: 1em;
+    margin-top: 0.8em;
+    margin-bottom: 0.5em;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
+    text-align: center;
+    text-align-last: center; 
+}
+
+input[type="date"], input[type="time"], select {
+    width: 100%;
+   /* padding: 0.8em;*/
+    font-size: 1em;
+    margin-top: 0.8em;
+    margin-bottom: 0.1em;
+    border: 0px solid #ddd;
+    border-radius: 5px;
+    display: block;
+    margin: auto;
+    box-sizing: border-box;
+    text-align: center;
+    text-align-last: center; 
 }
 
 input[type="submit"] {
     width: 100%;
-    padding: 1em;
-    background-color: #1DB954;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    font-weight: bold;
+    padding: 0.5em;
+    background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
+    color: #1b4aef;
+    border: 2px solid #174ae4;
+    border-radius: 70px;
+    font-size: 1.2em;
+    font-weight: 700;
     cursor: pointer;
-    margin-top: 2em;
+    margin-top: 0.2em;
+    margin-bottom: 0.4em;
 }
 
 input[type="submit"]:hover {
-    background-color: #1ED760;
+    background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
+    box-shadow: 0 .6px 1.8px rgba(0, 0, 0, .1), 0 3.2px 7.2px rgba(0, 0, 0, .13);
+    overflow: hidden;
 }
+@media only screen and (max-width: 575px) {
+    form {
+        width: 80%;
+    }
+}
+@media only screen and (min-width: 576px) {
+    form {
+        width: 80%;
+    }
+}
+@media only screen and (min-width: 768px) {
+    form {
+        width: 60%;
+    }
+}
+@media only screen and (min-width: 992px) {
+    form {
+        width: 50%;
+    }
+}
+@media only screen and (min-width: 1200px) {
+    form {
+        width: 25%;
+    }
+}
+
+/* Grid control */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+    grid-gap: 30px;
+    border: 0px solid rgba(0, 0, 0, 0.1);
+    padding: 1em;
+    overflow: hidden;
+    background-color: #EBF0F9;
+    
+    
+  }
+  
+  /* Individual actions */
+  .action:nth-child(1) {
+    background: linear-gradient(141.69deg, #3077e2 0%, #1b42ab 39%);
+    color: #fff;
+  }
+  
+  .action:nth-child(2) {
+    background: linear-gradient(141.13deg, #106cde 26.29%, #36a5ef 100%);
+    color: #fff;
+  }
+  
+  .action:nth-child(3) {
+    background: linear-gradient(141.69deg, #2f61e9 10%, #106cde 100%);
+    color: #fff;
+  }
+  
+  .action:nth-child(4) {
+    background: linear-gradient(141.13deg, #3077e2 26.29%, #1b42ab 100%);
+    color: #fff;
+  }
+  
+  /* Common styles for all actions */
+  .action {
+  padding: 0.2em;
+  border-radius: 90px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.5em;
+  font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+  word-wrap: normal;
+
+  }
+  

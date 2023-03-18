@@ -3,7 +3,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
-  <title>Create Game</title>
+  <title>Calculate odds</title>
   <style>
     .action-grid {
       display: grid;
@@ -21,7 +21,7 @@
   </style>
 </head>
 <body>
-  <h1>Create a game</h1>
+  <h1>Calculate odds</h1>
 
   <form method="POST">
     <!-- Team 1 Label -->
@@ -62,21 +62,8 @@
     <label for="team2_score" class="score-label">Score</label>
     <input type="number" name="team2_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
     <br>
-    <!-- Game Date Label -->
-    <label for="game_date" class="date-label">Date</label>
-        <input type="date" id="game_date" name="game_date" value="">
-    <script>
-        // Get today's date and format it as yyyy-mm-dd
-        var today = new Date();
-        var year = today.getFullYear();
-        var month = ('0' + (today.getMonth() + 1)).slice(-2);
-        var day = ('0' + today.getDate()).slice(-2);
-        var formattedDate = year + '-' + month + '-' + day;
-        // Set the default value of the game_date input to today's date
-        document.getElementById("game_date").value = formattedDate;
-    </script>
     <br>
-    <input type="submit" value="Create game">
+    <input type="submit" value="calculate odds">
   </form>
 <!-- Do more section -->
 <div class="do-more">

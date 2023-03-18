@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Thank you!</h1>
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
+    <p>Last match information:</p>
+    <table>
+        <tr>
+            <td>Match ID:</td>
+            <td>{{ last_match[0] }}</td>
+        </tr>
+        <tr>
+            <td>Date:</td>
+            <td>{{ last_match[1].strftime('%d/%m/%Y') }}</td>
+        </tr>
+        <tr>
+            <td>Winning Team:</td>
+            <td>{{ last_match[2] }} & {{ last_match[3] }} (Score: {{ last_match[6] }})</td>
+        </tr>
+        <tr>
+            <td>Losing Team:</td>
+            <td>{{ last_match[4] }} & {{ last_match[5] }} (Score: {{ last_match[7] }})</td>
+        </tr>
+    </table>
+    <form id="deleteForm" action="{{ url_for('delete_last_match_route') }}" method="post">
+        <button type="submit" id="deleteButton">Delete Last Match</button>
+    </form>
+    
+    <script>
+        var deleteForm = document.getElementById("deleteForm");
+        var deleteButton = document.getElementById("deleteButton");
+        
+        deleteForm.addEventListener("submit", function(event) {
+            // Prevent form submission
+            event.preventDefault();
+            
+            // Confirm deletion
+            var confirmed = confirm("Are you sure you want to delete the last match?");
+            
+            if (confirmed) {
+                // Disable the delete button to prevent multiple submissions
+                deleteButton.disabled = true;
+                
+                // Submit the form
+                deleteForm.submit();
+                
+                // Display a success message and redirect to the main page
+                alert("Match deleted successfully");
+                window.location.replace('create_game.html'); // Replace with the main page URL
+            }
+        });
+    </script>
+    
+</body>
+</html>
