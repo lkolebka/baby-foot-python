@@ -1,14 +1,11 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 from config import DATABASE_CONFIG
 from datetime import datetime
 import math
-import logging
 
-def get_last_match(cur):
-    cur.execute("SELECT * FROM Match ORDER BY match_id DESC LIMIT 1;")
-    last_match = cur.fetchone()
-    return last_match
+
+
 
 
 
@@ -415,15 +412,54 @@ def create_game():
 def get_last_match():
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
-        cur.execute("SELECT * FROM Match ORDER BY match_id DESC LIMIT 1;")
+        cur.execute("SELECT m.match_id as matchid,m.match_timestamp as time, p1.first_name AS player1_name, p2.first_name AS player2_name, p3.first_name AS player3_name, p4.first_name AS player4_name, m.winning_team_score AS team1_score, m.losing_team_score AS team2_score FROM Match m INNER JOIN Team wt ON m.winning_team_id = wt.team_id INNER JOIN Team lt ON m.losing_team_id = lt.team_id INNER JOIN Player p1 ON wt.team_player_1_id = p1.player_id INNER JOIN Player p2 ON wt.team_player_2_id = p2.player_id INNER JOIN Player p3 ON lt.team_player_1_id = p3.player_id INNER JOIN Player p4 ON lt.team_player_2_id = p4.player_id ORDER BY m.match_timestamp DESC LIMIT 1;")
         last_match = cur.fetchone()
+        
     return last_match
+
+import psycopg2
+
+def delete_last_match():
+    with psycopg2.connect(**DATABASE_CONFIG) as conn:
+        cur = conn.cursor()
+
+        # Begin transaction
+        cur.execute("BEGIN;")
+
+        # Find the latest match_id
+        cur.execute("SELECT match_id FROM \"match\" ORDER BY match_timestamp DESC LIMIT 1;")
+        latest_match_id = cur.fetchone()[0]
+
+        # Delete related player ratings
+        cur.execute(f"DELETE FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE match_id = {latest_match_id});")
+
+        # Delete related team ratings
+        cur.execute(f"DELETE FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE match_id = {latest_match_id});")
+
+        # Delete related player matches
+        cur.execute(f"DELETE FROM playermatch WHERE match_id = {latest_match_id};")
+
+        # Delete related team matches
+        cur.execute(f"DELETE FROM teammatch WHERE match_id = {latest_match_id};")
+
+        # Delete the match itself
+        cur.execute(f"DELETE FROM \"match\" WHERE match_id = {latest_match_id};")
+
+        # Commit transaction
+        cur.execute("COMMIT;")
 
 
 @app.route('/thank_you')
 def thank_you():
     last_match = get_last_match()
-    return render_template('thank_you.html', last_match=last_match)
+    message = request.args.get('message', None)
+    return render_template('thank_you.html', last_match=last_match, message=message)
+
+
+@app.route('/delete_last_match', methods=['POST'])
+def delete_last_match_route():
+    delete_last_match()
+    return redirect(url_for('create_game'), code=302)
 
 
 if __name__ == '__main__':
