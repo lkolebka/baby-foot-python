@@ -46,11 +46,14 @@ h1 {
     font-size: 16px;
     line-height: 1.5;
     margin-bottom: 0;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+    text-align: center;
+
   }
 
   @media only screen and (max-width: 1000px) {
     h1 {
-        font-size: 48px;
+        font-size: 50px;
     }
     h2 {
         font-size: 36px;
@@ -59,7 +62,7 @@ h1 {
 
 @media only screen and (max-width: 700px) {
     h1 {
-        font-size: 36px;
+        font-size: 40px;
     }
     h2 {
         font-size: 24px;
@@ -230,6 +233,8 @@ input[type="submit"]:hover {
     padding: 1em;
     overflow: hidden;
     background-color: #EBF0F9;
+    
+    
   }
   
   /* Individual actions */
@@ -255,15 +260,16 @@ input[type="submit"]:hover {
   
   /* Common styles for all actions */
   .action {
-    padding: 0.2em;
-    border-radius: 40px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 600;
-    font-size: 20px;
-    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
-    word-wrap: normal;
+  padding: 0.2em;
+  border-radius: 90px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.5em;
+  font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+  word-wrap: normal;
+
   }
   

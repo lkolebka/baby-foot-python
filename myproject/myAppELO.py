@@ -5,10 +5,6 @@ from datetime import datetime
 import math
 
 
-
-
-
-
 app = Flask(__name__)
 
 def get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, player3_id, player4_id, date, cur):
@@ -185,17 +181,8 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
         password=DATABASE_CONFIG['password']
     )
 
-    # Convert date string to datetime object
-    
-
-
-
     print("date is",date)
     
-
-
-
-
     # Create a cursor
     cur = conn.cursor()
 
@@ -215,7 +202,7 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
         player1_id = player1_id[0]
       
 
-    
+
   # Check if the player2 first_name is not empty
     if player2_name:
       # Check if the player already exists in the Players table
@@ -231,8 +218,6 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
         # If the player already exists, retrieve their player_id
         player2_id = player2_id[0]
   
-
-
 
   # Check if the player3 first_name is not empty
     if player3_name:
@@ -250,7 +235,6 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
         player3_id = player3_id[0]  
 
 
-
   # Check if the player4 first_name is not empty
     if player4_name:
       # Check if the player already exists in the Players table
@@ -265,8 +249,6 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
       else:
         # If the player already exists, retrieve their id
         player4_id = player4_id[0]  
-
-    
 
 
   # Check if the team already exists in the Teams table
@@ -350,7 +332,111 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
     else:
         print(f'Skipping match      : {date} with {player1_name} and {player2_name} vs {player3_name} and {player4_name}: {team1_score} - {team2_score}  , the match already exist')
 
+
+# Call the get_player_id function inside the loop
+    player1_id, player2_id, player3_id, player4_id = get_player_id(player1_name, player2_name, player3_name, player4_name, cur)
+
+    # Call the insert_team_or_get_team_id function inside the loop
+    team1_id, team2_id = insert_team_or_get_team_id(player1_id, player2_id, player3_id, player4_id, cur)
+
+    # Call the number_of_games_player function inside the loop
+    number_of_game_player1, number_of_game_player2, number_of_game_player3, number_of_game_player4 = number_of_games_player(player1_id, player2_id, player3_id, player4_id, date, cur)
+
+    # Call the number_of_games_team function inside the loop
+    number_of_games_team1, number_of_games_team2 = number_of_games_team(team1_id, team2_id, date, cur)
+
+    # Call the get_player_ratings function inside the loop
+    player1_rating, player2_rating, player3_rating, player4_rating = get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur)
+
+    # Call the get_teams_ratings function inside the loop
+    team1_rating, team2_rating = get_team_ratings(team1_id, team2_id, cur)
+
+    # Call the get_player_match_id_by_timestamp_and_by_player_id function inside the loop
+    player_match1_id, player_match2_id, player_match3_id, player_match4_id  = get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, player3_id, player4_id, date, cur)
+
+    # Call the get_team_match_id_by_timestamp_and_by_team_id function inside the loop
+    team_match1_id, team_match2_id  = get_team_match_id_by_timestamp_and_by_team_id(team1_id, team2_id, date, cur)
+
+ # Calculate the expected scores for the players
+    player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 500))
+    player1_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player1_rating) / 500))
+    player1_expected_score = (player1_expected_score_against_player3 + player1_expected_score_against_player4) / 2
+   
+    player2_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player2_rating) / 500))
+    player2_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player2_rating) / 500))
+    player2_expected_score = (player2_expected_score_against_player3 + player2_expected_score_against_player4) / 2
+   
+
+    player3_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player3_rating) / 500))
+    player3_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player3_rating) / 500))
+    player3_expected_score = (player3_expected_score_against_player1 + player3_expected_score_against_player2) / 2
+   
+
+    player4_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player4_rating) / 500))
+    player4_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player4_rating) / 500))
+    player4_expected_score = (player4_expected_score_against_player1 + player4_expected_score_against_player2) / 2
+   
+    #input("Press enter to continue...")
+
+    # Calculate the expected scores for the teams
+    team1_expected_score = (player1_expected_score + player2_expected_score) / 2
+    team2_expected_score = (player3_expected_score + player4_expected_score) / 2
+
+   
+    #input("Press enter to continue...")
+
+
+
+    # Calculate the point factor to be used as a variable
+    score_difference = abs(team1_score - team2_score)
+    point_factor = calculate_point_factor(score_difference)
+   
+    # Calculate the K value for each player based on the number of games played and their rating
+
+    k1 = 50 / (1 + number_of_game_player1 / 300)
+    k2 = 50 / (1 + number_of_game_player2 / 300) 
+    k3 = 50 / (1 + number_of_game_player3 / 300) 
+    k4 = 50 / (1 + number_of_game_player4 / 300) 
+
+    #delta = 32 * (1 - winnerChanceToWin)
+
+    # Calculate the K value for each team based on the number of games played
+    k5 = 50 / (1 + number_of_games_team1/ 100)
+    k6 = 50 / (1 + number_of_games_team2/ 100)
+
+ #logg the wining team
+    if team1_score > team2_score:
+        team1_actual_score = 1
+        team2_actual_score = 0
+
+    else:
+        team1_actual_score = 0
+        team2_actual_score = 1
+       
+    # Calculate the new Elo ratings for each player
+    player1_new_rating = player1_rating + k1 * point_factor  * (team1_actual_score - player1_expected_score)
+    player2_new_rating = player2_rating + k2 * point_factor  * (team1_actual_score - player2_expected_score)
+    player3_new_rating = player3_rating + k3 * point_factor  * (team2_actual_score - player3_expected_score)
+    player4_new_rating = player4_rating + k4 * point_factor  * (team2_actual_score - player4_expected_score)
+
+    # Calculate the new Elo ratings for each team
+    team1_new_rating = team1_rating + k5 * point_factor * (team1_actual_score - team1_expected_score)
+    team2_new_rating = team2_rating + k6 * point_factor * (team2_actual_score - team2_expected_score)
+    # Log the new ratings for teams
+
+    # Update the database with the player ratings
+    cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match1_id, player1_new_rating, date))
+    cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES ( %s, %s, %s)", (player_match2_id, player2_new_rating, date))
+    cur.execute("INSERT INTO playerrating (player_match_id,rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match3_id,player3_new_rating, date))
+    cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match4_id, player4_new_rating, date))
   
+    conn.commit()
+
+    # Update the database with the team ratings
+    cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match1_id, team1_new_rating, date))
+    cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match2_id, team2_new_rating, date))
+  
+    conn.commit() 
 
 # Get the players from the database
 def get_players():
@@ -461,6 +547,15 @@ def delete_last_match_route():
     delete_last_match()
     return redirect(url_for('create_game'), code=302)
 
+@app.route('/calculate_odds')
+def calculate_odds():
+    players = get_players()
+    return render_template('calculate_odds.html', players=players)
+
+
+@app.route('/button_click')
+def button_click():
+    return redirect(url_for('calculate_odds'))
 
 if __name__ == '__main__':
     app.static_folder = 'static'

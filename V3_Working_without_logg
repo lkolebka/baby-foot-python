@@ -156,7 +156,6 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
         player3_rating = result[0]
     else:
      player3_rating = 1500
-    logging.info(f'current rating of player {player3_name} is {player3_rating}')
 
     cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player4_id,))
     result = cur.fetchone()
