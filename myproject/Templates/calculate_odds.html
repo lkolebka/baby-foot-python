@@ -23,8 +23,8 @@
 <body>
   <h1>Calculate odds</h1>
 
-  <form method="POST">
-    <!-- Team 1 Label -->
+  <form method="POST" action="/calculate_odds">
+      <!-- Team 1 Label -->
     <label for="player1_name" class="team-label">Team 1 </label>
     <select id="player1_name" name="player1_name">
         <option value="" disabled selected>Select player 1</option>
@@ -39,9 +39,7 @@
             <option value="{{ player }}">{{ player }}</option>
         {% endfor %}
     </select>
-    <!-- Team 1 Score Label -->
-    <label for="team1_score" class="score-label">Score</label>
-    <input type="number" name="team1_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
+    
     <br>
     <!-- Team 2 Label -->
     <label for="player1_name" class="team-label">Team 2 </label>
@@ -58,10 +56,16 @@
             <option value="{{ player }}">{{ player }}</option>
         {% endfor %}
     </select>
-    <!-- Team 2 Score Label -->
-    <label for="team2_score" class="score-label">Score</label>
-    <input type="number" name="team2_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
-    <br>
+    <table>
+      <tr>
+          <th>Team 1</th>
+          <th>Team 2</th>
+      </tr>
+      <tr>
+          <td>{{ team1_expected_score }}</td>
+          <td>{{ team2_expected_score }}</td>
+      </tr>
+  </table>
     <br>
     <input type="submit" value="calculate odds">
   </form>
