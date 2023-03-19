@@ -273,3 +273,29 @@ input[type="submit"]:hover {
 
   }
   
+  /*table odds and probability*/
+  .centered-table {
+    margin: 0 auto;
+    margin-top: 0.3em;
+    border-collapse: separate;
+    border-spacing: 10px;
+    border: #000000;
+    
+  
+  }
+  
+  .emoji {
+    text-align: center;
+  }
+  
+
+  .chance-of-winning {
+    text-align: center;
+  }
+  
+  .odds-number {
+   text-align: left;
+  }
+  
+
+  

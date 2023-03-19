@@ -425,11 +425,18 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
     # Log the new ratings for teams
 
     # Update the database with the player ratings
+    print("Inserting player rating for player 1 with match ID", player_match1_id, "and new rating", player1_new_rating)
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match1_id, player1_new_rating, date))
+
+    print("Inserting player rating for player 2 with match ID", player_match2_id, "and new rating", player2_new_rating)
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES ( %s, %s, %s)", (player_match2_id, player2_new_rating, date))
+
+    print("Inserting player rating for player 3 with match ID", player_match3_id, "and new rating", player3_new_rating)
     cur.execute("INSERT INTO playerrating (player_match_id,rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match3_id,player3_new_rating, date))
+
+    print("Inserting player rating for player 4 with match ID", player_match4_id, "and new rating", player4_new_rating)
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match4_id, player4_new_rating, date))
-  
+
     conn.commit()
 
     # Update the database with the team ratings
@@ -437,6 +444,64 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
     cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match2_id, team2_new_rating, date))
   
     conn.commit() 
+
+
+# Get the exptected score for odds   
+def calculate_expected_score(player1_name, player2_name, player3_name, player4_name,):
+   # Connect to the database
+    conn = psycopg2.connect(
+        host=DATABASE_CONFIG['host'],
+        database=DATABASE_CONFIG['database'],
+        user=DATABASE_CONFIG['user'],
+        password=DATABASE_CONFIG['password']
+    )
+
+    
+    # Create a cursor
+    cur = conn.cursor()
+
+    
+  # Call the get_player_id function inside the loop
+    player1_id, player2_id, player3_id, player4_id = get_player_id(player1_name, player2_name, player3_name, player4_name, cur)
+
+  # Call the get_player_ratings function inside the loop
+    player1_rating, player2_rating, player3_rating, player4_rating = get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur)
+
+ # Calculate the expected scores for the players
+    player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 500))
+    player1_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player1_rating) / 500))
+    player1_expected_score = (player1_expected_score_against_player3 + player1_expected_score_against_player4) / 2
+   
+    player2_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player2_rating) / 500))
+    player2_expected_score_against_player4 = 1 / (1 + 10**((player4_rating - player2_rating) / 500))
+    player2_expected_score = (player2_expected_score_against_player3 + player2_expected_score_against_player4) / 2
+   
+
+    player3_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player3_rating) / 500))
+    player3_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player3_rating) / 500))
+    player3_expected_score = (player3_expected_score_against_player1 + player3_expected_score_against_player2) / 2
+   
+
+    player4_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player4_rating) / 500))
+    player4_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player4_rating) / 500))
+    player4_expected_score = (player4_expected_score_against_player1 + player4_expected_score_against_player2) / 2
+   
+
+    # Calculate the expected scores for the teams
+    team1_expected_score = (player1_expected_score + player2_expected_score) / 2
+    team2_expected_score = (player3_expected_score + player4_expected_score) / 2
+    team1_expected_scoreQuotation = 1/ team1_expected_score 
+    team2_expected_scoreQuotation = 1/ team2_expected_score
+
+    print(f"Player 1 ({player1_name}) expected score: {player1_expected_score}")
+    print(f"Player 2 ({player2_name}) expected score: {player2_expected_score}")
+    print(f"Player 3 ({player3_name}) expected score: {player3_expected_score}")
+    print(f"Player 4 ({player4_name}) expected score: {player4_expected_score}")
+    print(f"Team 1 expected score: {team1_expected_score}")
+    print(f"Team 2 expected score: {team2_expected_score}")
+
+    return team1_expected_score, team2_expected_score, team1_expected_scoreQuotation, team2_expected_scoreQuotation
+
 
 # Get the players from the database
 def get_players():
@@ -498,7 +563,7 @@ def create_game():
 def get_last_match():
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
-        cur.execute("SELECT m.match_id as matchid,m.match_timestamp as time, p1.first_name AS player1_name, p2.first_name AS player2_name, p3.first_name AS player3_name, p4.first_name AS player4_name, m.winning_team_score AS team1_score, m.losing_team_score AS team2_score FROM Match m INNER JOIN Team wt ON m.winning_team_id = wt.team_id INNER JOIN Team lt ON m.losing_team_id = lt.team_id INNER JOIN Player p1 ON wt.team_player_1_id = p1.player_id INNER JOIN Player p2 ON wt.team_player_2_id = p2.player_id INNER JOIN Player p3 ON lt.team_player_1_id = p3.player_id INNER JOIN Player p4 ON lt.team_player_2_id = p4.player_id ORDER BY m.match_timestamp DESC LIMIT 1;")
+        cur.execute("SELECT m.match_id as matchid,m.match_timestamp as time, p1.first_name AS player1_name, p2.first_name AS player2_name, p3.first_name AS player3_name, p4.first_name AS player4_name, m.winning_team_score AS team1_score, m.losing_team_score AS team2_score FROM Match m INNER JOIN Team wt ON m.winning_team_id = wt.team_id INNER JOIN Team lt ON m.losing_team_id = lt.team_id INNER JOIN Player p1 ON wt.team_player_1_id = p1.player_id INNER JOIN Player p2 ON wt.team_player_2_id = p2.player_id INNER JOIN Player p3 ON lt.team_player_1_id = p3.player_id INNER JOIN Player p4 ON lt.team_player_2_id = p4.player_id ORDER BY m.match_id DESC LIMIT 1;")
         last_match = cur.fetchone()
         
     return last_match
@@ -547,15 +612,47 @@ def delete_last_match_route():
     delete_last_match()
     return redirect(url_for('create_game'), code=302)
 
+@app.route('/calculate_odds', methods=['GET', 'POST'])
+def calculate_expected_score_route():
+    print("calculate_expected_score_route called")
+    if request.method == 'POST':
+        # Get the form data and process it
+        player1_name = request.form['player1_name']
+        player2_name = request.form['player2_name']
+        player3_name = request.form['player3_name']
+        player4_name = request.form['player4_name']
+    
+        print(f"Form data: player1_name={player1_name}, player2_name={player2_name}, player3_name={player3_name}, player4_name={player4_name}")
+
+        team1_expected_score, team2_expected_score, team1_expected_scoreQuotation, team2_expected_scoreQuotation = calculate_expected_score(player1_name, player2_name, player3_name, player4_name)
+        
+        # Pass the expected scores and form data to the template
+        return render_template('calculate_odds.html', players=get_players(), 
+                               team1_expected_score= "{:.2f}".format(team1_expected_score * 100), 
+                               team2_expected_score= "{:.2f}".format(team2_expected_score * 100), 
+                               team1_expected_scoreQuotation= round(team1_expected_scoreQuotation,2), 
+                               team2_expected_scoreQuotation= round(team2_expected_scoreQuotation,2),
+                               player1_name=player1_name, player2_name=player2_name,
+                               player3_name=player3_name, player4_name=player4_name)
+    else:
+        # Render the form for entering the game details
+        players = get_players()
+        print(f"Available players: {players}")
+        return render_template('calculate_odds.html', players=players)
+
+
+
+
+
+
+
 @app.route('/calculate_odds')
 def calculate_odds():
+    # Add your code here to calculate odds
     players = get_players()
     return render_template('calculate_odds.html', players=players)
 
 
-@app.route('/button_click')
-def button_click():
-    return redirect(url_for('calculate_odds'))
 
 if __name__ == '__main__':
     app.static_folder = 'static'

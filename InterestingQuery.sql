@@ -111,3 +111,50 @@ FROM Team t
 JOIN Player p1 ON t.team_player_1_id = p1.player_id
 JOIN Player p2 ON t.team_player_2_id = p2.player_id
 WHERE p1.first_name = 'Lazare' AND p2.first_name = 'Matthieu'
+
+
+/* retrieve the last uplaod */
+SELECT
+    m.match_id as matchid,
+	m.match_timestamp as time,
+	p1.first_name AS player1_name,
+    p2.first_name AS player2_name,
+    p3.first_name AS player3_name,
+    p4.first_name AS player4_name,
+    m.winning_team_score AS team1_score,
+    m.losing_team_score AS team2_score
+FROM
+    Match m
+INNER JOIN Team wt ON m.winning_team_id = wt.team_id
+INNER JOIN Team lt ON m.losing_team_id = lt.team_id
+INNER JOIN Player p1 ON wt.team_player_1_id = p1.player_id
+INNER JOIN Player p2 ON wt.team_player_2_id = p2.player_id
+INNER JOIN Player p3 ON lt.team_player_1_id = p3.player_id
+INNER JOIN Player p4 ON lt.team_player_2_id = p4.player_id
+ORDER BY
+    m.match_timestamp DESC
+LIMIT 1;
+
+/*delete last match*/
+WITH latest_match AS (
+    SELECT match_id FROM "match" ORDER BY match_timestamp DESC LIMIT 1
+),
+player_rating_deletion AS (
+    DELETE FROM PlayerRating
+    WHERE player_match_id IN (
+        SELECT player_match_id FROM PlayerMatch WHERE match_id = (SELECT match_id FROM latest_match)
+    )
+),
+team_rating_deletion AS (
+    DELETE FROM TeamRating
+    WHERE team_match_id IN (
+        SELECT team_match_id FROM TeamMatch WHERE match_id = (SELECT match_id FROM latest_match)
+    )
+),
+player_match_deletion AS (
+    DELETE FROM PlayerMatch WHERE match_id = (SELECT match_id FROM latest_match)
+),
+team_match_deletion AS (
+    DELETE FROM TeamMatch WHERE match_id = (SELECT match_id FROM latest_match)
+)
+DELETE FROM "match" WHERE match_id = (SELECT match_id FROM latest_match);
