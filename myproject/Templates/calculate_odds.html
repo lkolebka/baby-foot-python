@@ -24,51 +24,72 @@
   <h1>Calculate odds</h1>
 
   <form method="POST" action="/calculate_odds">
-      <!-- Team 1 Label -->
-    <label for="player1_name" class="team-label">Team 1 </label>
-    <select id="player1_name" name="player1_name">
-        <option value="" disabled selected>Select player 1</option>
-        {% for player in players %}
-            <option value="{{ player }}">{{ player }}</option>
-        {% endfor %}
+    <!-- Team 1 Label -->
+  <label for="player1_name" class="team-label">Team 1 </label>
+  <select id="player1_name" name="player1_name">
+      <option value="" {% if not player1_name %}selected{% endif %} disabled>Select player 1</option>
+      {% for player in players %}
+          <option value="{{ player }}" {% if player == player1_name %}selected{% endif %}>{{ player }}</option>
+      {% endfor %}
+  </select>
+  
+  <br>
+  <select id="player2_name" name="player2_name">
+      <option value="" {% if not player2_name %}selected{% endif %} disabled>Select player 2</option>
+      {% for player in players %}
+          <option value="{{ player }}" {% if player == player2_name %}selected{% endif %}>{{ player }}</option>
+      {% endfor %}
     </select>
-    <br>
-    <select id="player2_name" name="player2_name">
-        <option value="" disabled selected>Select player 2</option>
-        {% for player in players %}
-            <option value="{{ player }}">{{ player }}</option>
-        {% endfor %}
-    </select>
+    {% if team1_expected_score is defined and team1_expected_scoreQuotation is defined %}
+        <table class="centered-table">
+          <tr>
+            <td class="chance-of-winning">🏆 Chance of winning: {{ team1_expected_score }}% </td>
+          </tr>
+          <tr>
+            <td class="chance-of-winning">💰 Odds: {{ team1_expected_scoreQuotation }} </td>
+
+          </tr>
+        </table>
     
-    <br>
-    <!-- Team 2 Label -->
-    <label for="player1_name" class="team-label">Team 2 </label>
-    <select id="player3_name" name="player3_name">
-        <option value="" disabled selected>Select player 3</option>
-        {% for player in players %}
-            <option value="{{ player }}">{{ player }}</option>
-        {% endfor %}
+        {% endif %}
+  
+  <br>
+    <!-- Team 1 Label -->
+  <label for="player3_name" class="team-label">Team 2 </label>
+  <select id="player3_name" name="player3_name">
+      <option value="" {% if not player2_name %}selected{% endif %} disabled>Select player 3</option>
+      {% for player in players %}
+          <option value="{{ player }}" {% if player == player3_name %}selected{% endif %}>{{ player }}</option>
+      {% endfor %}
+  </select>
+  
+  <br>
+  <select id="player4_name" name="player4_name">
+      <option value="" {% if not player4_name %}selected{% endif %} disabled>Select player 4</option>
+      {% for player in players %}
+          <option value="{{ player }}" {% if player == player4_name %}selected{% endif %}>{{ player }}</option>
+      {% endfor %}
     </select>
-    <br>
-    <select id="player4_name" name="player4_name">
-        <option value="" disabled selected>Select player 4</option>
-        {% for player in players %}
-            <option value="{{ player }}">{{ player }}</option>
-        {% endfor %}
-    </select>
-    <table>
-      <tr>
-          <th>Team 1</th>
-          <th>Team 2</th>
-      </tr>
-      <tr>
-          <td>{{ team1_expected_score }}</td>
-          <td>{{ team2_expected_score }}</td>
-      </tr>
-  </table>
+    {% if team1_expected_score is defined and team1_expected_scoreQuotation is defined %}
+        <table class="centered-table">
+          <tr>
+            <td class="chance-of-winning">🏆 Chance of winning: {{ team2_expected_score }}% </td>
+          </tr>
+          <tr>
+            <td class="chance-of-winning">💰 Odds: {{ team2_expected_scoreQuotation }} </td>
+
+          </tr>
+        </table>
+    
+        {% endif %}
+  
+  <br>
+  
     <br>
     <input type="submit" value="calculate odds">
   </form>
+  
+
 <!-- Do more section -->
 <div class="do-more">
   <h2>Do more</h2>

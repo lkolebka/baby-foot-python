@@ -490,6 +490,8 @@ def calculate_expected_score(player1_name, player2_name, player3_name, player4_n
     # Calculate the expected scores for the teams
     team1_expected_score = (player1_expected_score + player2_expected_score) / 2
     team2_expected_score = (player3_expected_score + player4_expected_score) / 2
+    team1_expected_scoreQuotation = 1/ team1_expected_score 
+    team2_expected_scoreQuotation = 1/ team2_expected_score
 
     print(f"Player 1 ({player1_name}) expected score: {player1_expected_score}")
     print(f"Player 2 ({player2_name}) expected score: {player2_expected_score}")
@@ -498,7 +500,7 @@ def calculate_expected_score(player1_name, player2_name, player3_name, player4_n
     print(f"Team 1 expected score: {team1_expected_score}")
     print(f"Team 2 expected score: {team2_expected_score}")
 
-    return team1_expected_score, team2_expected_score
+    return team1_expected_score, team2_expected_score, team1_expected_scoreQuotation, team2_expected_scoreQuotation
 
 
 # Get the players from the database
@@ -612,7 +614,7 @@ def delete_last_match_route():
 
 @app.route('/calculate_odds', methods=['GET', 'POST'])
 def calculate_expected_score_route():
-    print("calculate_expected_score_route called")  # Add this print statement
+    print("calculate_expected_score_route called")
     if request.method == 'POST':
         # Get the form data and process it
         player1_name = request.form['player1_name']
@@ -622,18 +624,23 @@ def calculate_expected_score_route():
     
         print(f"Form data: player1_name={player1_name}, player2_name={player2_name}, player3_name={player3_name}, player4_name={player4_name}")
 
-        team1_expected_score, team2_expected_score = calculate_expected_score(player1_name, player2_name, player3_name, player4_name)
-        print(f"Team 1 expected score: {team1_expected_score}")
-        print(f"Team 2 expected score: {team2_expected_score}")
-
-        print("Calling render_template")  # Add this print statement
-        # Render the result template with the expected scores
-        return render_template('calculate_odds_result.html', team1_expected_score=team1_expected_score, team2_expected_score=team2_expected_score)
+        team1_expected_score, team2_expected_score, team1_expected_scoreQuotation, team2_expected_scoreQuotation = calculate_expected_score(player1_name, player2_name, player3_name, player4_name)
+        
+        # Pass the expected scores and form data to the template
+        return render_template('calculate_odds.html', players=get_players(), 
+                               team1_expected_score= "{:.2f}".format(team1_expected_score * 100), 
+                               team2_expected_score= "{:.2f}".format(team2_expected_score * 100), 
+                               team1_expected_scoreQuotation= round(team1_expected_scoreQuotation,2), 
+                               team2_expected_scoreQuotation= round(team2_expected_scoreQuotation,2),
+                               player1_name=player1_name, player2_name=player2_name,
+                               player3_name=player3_name, player4_name=player4_name)
     else:
         # Render the form for entering the game details
         players = get_players()
         print(f"Available players: {players}")
         return render_template('calculate_odds.html', players=players)
+
+
 
 
 
