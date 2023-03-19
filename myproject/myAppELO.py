@@ -607,6 +607,7 @@ def thank_you():
     return render_template('thank_you.html', last_match=last_match, message=message)
 
 
+
 @app.route('/delete_last_match', methods=['POST'])
 def delete_last_match_route():
     delete_last_match()
@@ -640,17 +641,9 @@ def calculate_expected_score_route():
         print(f"Available players: {players}")
         return render_template('calculate_odds.html', players=players)
 
-
-
-
-
-
-
-@app.route('/calculate_odds')
-def calculate_odds():
-    # Add your code here to calculate odds
-    players = get_players()
-    return render_template('calculate_odds.html', players=players)
+@app.route('/upload_game')
+def upload_game():
+    return redirect(url_for('create_game.html'))
 
 
 

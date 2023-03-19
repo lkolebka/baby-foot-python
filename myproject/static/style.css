@@ -12,6 +12,11 @@ body {
 
 }
 
+a {
+    text-decoration: none;
+  }
+  
+
 h1, h2, h3 {
     font-weight: 700;
     margin-top: 0.5em;
