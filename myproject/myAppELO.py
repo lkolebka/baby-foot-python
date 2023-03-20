@@ -641,10 +641,6 @@ def calculate_expected_score_route():
         print(f"Available players: {players}")
         return render_template('calculate_odds.html', players=players)
 
-@app.route('/upload_game')
-def upload_game():
-    return redirect(url_for('create_game.html'))
-
 
 
 if __name__ == '__main__':

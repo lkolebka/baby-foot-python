@@ -166,10 +166,11 @@ input[type="text"], input[type="number"], select {
     box-sizing: border-box;
     text-align: center;
     text-align-last: center; 
+
 }
 
 input[type="date"], input[type="time"], select {
-    width: 100%;
+    width: 80%;
    /* padding: 0.8em;*/
     font-size: 1em;
     margin-top: 0.8em;
