@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thank You</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .action-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+        .action {
+          background-color: lightgray;
+          height: 100px;
+          border-radius: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      </style>
     <body class="thank-you-page">
 </head>
 <body>
@@ -61,6 +76,23 @@
             }
         });
     </script>
-    
-</body>
+    <!-- Do more section -->
+<div class="do-more">
+    <h2>Do more</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin malesuada tortor eget massa ultrices dictum. Sed luctus libero ac est mollis lacinia. Donec maximus convallis ex, sed laoreet eros iaculis nec.</p>
+  </div>
+  
+  
+  <div class="action-grid">
+    <a href="/" class="action action2">Upload game</a>
+    <a href="calculate_odds" class="action action2">Calculate odds</a>
+    <div class="rankning">Ranking</div>
+    <div class="action action4">Action 4</div>
+  
+  
+  </div>
+  
+  </div>
+  </body>
+
 </html>
