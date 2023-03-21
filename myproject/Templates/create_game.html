@@ -65,56 +65,62 @@
     <!-- Game Date Label -->
     <label for="game_date" class="date-label">Date</label>
         <input type="date" id="game_date" name="game_date" value="">
-    <script>
-        // Get today's date and format it as yyyy-mm-dd
-        var today = new Date();
-        var year = today.getFullYear();
-        var month = ('0' + (today.getMonth() + 1)).slice(-2);
-        var day = ('0' + today.getDate()).slice(-2);
-        var formattedDate = year + '-' + month + '-' + day;
-        // Set the default value of the game_date input to today's date
-        document.getElementById("game_date").value = formattedDate;
-
-        function validateForm() {
-        // Get the selected player names
-        const player1 = document.getElementById("player1_name").value;
-        const player2 = document.getElementById("player2_name").value;
-        const player3 = document.getElementById("player3_name").value;
-        const player4 = document.getElementById("player4_name").value;
-
-        // Check if all four players are different
-        if (player1 === player2 || player1 === player3 || player1 === player4 || player2 === player3 || player2 === player4 || player3 === player4) {
-            alert("Please select four different players.");
-            return false;
-        }
-
-        // Get the scores
-        const team1_score = document.getElementsByName("team1_score")[0].value;
-        const team2_score = document.getElementsByName("team2_score")[0].value;
-
-        // Check if the scores are integers between 0 and 11
-        if (!Number.isInteger(+team1_score) || !Number.isInteger(+team2_score)) {
-            alert("Scores must be integers between 0 and 11.");
-            return false;
-        } 
-       
-        // Check if the scores are not equal
-        if (team1_score === team2_score) {
-            alert("Scores cannot be equal.");
-            return false;
-        }
-
-        // Check if the scores are not greater than 11
-        if (team1_score > 11 || team2_score > 11) {
-            alert("Scores cannot be greater than 11.");
-            return false;
-        }
-        
-        // If all conditions are met, submit the form
-        document.getElementById("game_form").submit();
-    }
-
-    </script>
+        <script>
+          // Get today's date and format it as yyyy-mm-dd
+          var today = new Date();
+          var year = today.getFullYear();
+          var month = ('0' + (today.getMonth() + 1)).slice(-2);
+          var day = ('0' + today.getDate()).slice(-2);
+          var formattedDate = year + '-' + month + '-' + day;
+          // Set the default value of the game_date input to today's date
+          document.getElementById("game_date").value = formattedDate;
+      
+          function validateForm() {
+              // Get the selected player names
+              const player1 = document.getElementById("player1_name").value;
+              const player2 = document.getElementById("player2_name").value;
+              const player3 = document.getElementById("player3_name").value;
+              const player4 = document.getElementById("player4_name").value;
+      
+              // Check if all four players are different
+              if (player1 === player2 || player1 === player3 || player1 === player4 || player2 === player3 || player2 === player4 || player3 === player4) {
+                  alert("Please select four different players.");
+                  return false;
+              }
+      
+              // Get the scores
+              const team1_score = document.getElementsByName("team1_score")[0].value;
+              const team2_score = document.getElementsByName("team2_score")[0].value;
+      
+              // Check if the scores are integers between 0 and 11
+              if (!Number.isInteger(+team1_score) || !Number.isInteger(+team2_score)) {
+                  alert("Scores must be integers between 0 and 11.");
+                  return false;
+              } 
+      
+              // Check if the scores are not equal
+              if (team1_score === team2_score) {
+                  alert("Scores cannot be equal.");
+                  return false;
+              }
+      
+              // Check if the scores are not greater than 11
+              if (team1_score > 11 || team2_score > 11) {
+                  alert("Scores cannot be greater than 11.");
+                  return false;
+              }
+      
+              // Check if one of the scores is equal to 11
+              if (team1_score != 11 && team2_score != 11) {
+                  alert("One of the scores must be equal to 11.");
+                  return false;
+              }
+      
+              // If all conditions are met, submit the form
+              document.getElementById("game_form").submit();
+          }
+      </script>
+      
     <br>
     <input type="submit" value="Create game" onclick="return validateForm()">
   </form>
