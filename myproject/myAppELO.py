@@ -528,6 +528,33 @@ def get_players():
         if conn:
             conn.close()
 
+def get_latest_player_ratings():
+    query = '''
+     WITH latest_player_ratings AS (
+        SELECT pm.player_id, pr.rating, pr.player_rating_timestamp
+        FROM PlayerRating pr
+        JOIN PlayerMatch pm ON pr.player_match_id = pm.player_match_id
+        WHERE pr.player_rating_timestamp = (
+            SELECT MAX(pr2.player_rating_timestamp)
+            FROM PlayerRating pr2
+            JOIN PlayerMatch pm2 ON pr2.player_match_id = pm2.player_match_id
+            WHERE pm2.player_id = pm.player_id
+        )
+    )
+
+    SELECT p.first_name, p.last_name, lpr.rating, lpr.player_rating_timestamp
+    FROM Player p
+    JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
+    WHERE p.active = true
+    ORDER BY lpr.rating DESC;
+    '''
+    with psycopg2.connect(**DATABASE_CONFIG) as conn:
+        cur = conn.cursor()
+        cur.execute(query)
+        player_ratings = cur.fetchall()
+
+    return player_ratings
+
 
 @app.route('/', methods=['GET', 'POST'])
 def create_game():
@@ -645,6 +672,10 @@ def calculate_expected_score_route():
         print(f"Available players: {players}")
         return render_template('calculate_odds.html', players=players)
 
+@app.route('/rating')
+def rating():
+    player_ratings = get_latest_player_ratings()
+    return render_template('rating.html', player_ratings=player_ratings)
 
 
 if __name__ == '__main__':
