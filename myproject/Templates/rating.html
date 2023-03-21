@@ -50,34 +50,7 @@
 
         <p>If you need to make any corrections, you can delete the match by clicking the button below:</p>
 
-        <form class="thank-you-form" id="deleteForm" action="{{ url_for('delete_last_match_route') }}" method="post">
-            <button type="submit" id="deleteButton">Delete Last Match</button>
-        </form>
-    
-    <script>
-        var deleteForm = document.getElementById("deleteForm");
-        var deleteButton = document.getElementById("deleteButton");
-        
-        deleteForm.addEventListener("submit", function(event) {
-            // Prevent form submission
-            event.preventDefault();
-            
-            // Confirm deletion
-            var confirmed = confirm("Are you sure you want to delete the last match?");
-            
-            if (confirmed) {
-                // Disable the delete button to prevent multiple submissions
-                deleteButton.disabled = true;
-                
-                // Submit the form
-                deleteForm.submit();
-                
-                // Display a success message and redirect to the main page
-                alert("Match deleted successfully");
-                window.location.replace('create_game.html'); // Replace with the main page URL
-            }
-        });
-    </script>
+
     <!-- Do more section -->
 <div class="do-more">
     <h2>Do more</h2>
@@ -88,11 +61,10 @@
   <div class="action-grid">
     <a href="/" class="action action2">Upload game</a>
     <a href="calculate_odds" class="action action2">Calculate odds</a>
-    <div class="rankning">Ranking</div>
-    <div class="action action4">Action 4</div>
-  
-  
+    <a href="/rating" class="action action3">Ranking</a>
+    <a href="/rating" class="action action4">Ranking analysis</a>
   </div>
+  
   
   </div>
   </body>
