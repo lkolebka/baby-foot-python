@@ -19,54 +19,62 @@
           justify-content: center;
           align-items: center;
         }
+       
       </style>
-    <body class="thank-you-page">
+          <body class="thank-you-page">
+
 </head>
 <body>
-    <h1>Rating!</h1>
+    <h1>Player Rankings</h1>
+<p>See where you stand in the competition!
 
-    <p>Thank you for uploading the match details. <br>Here is a summary of the match:</p>
-
-    <table>
-        <thead>
+<table style="text-align: center;">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Rating</th>
+            <th>Last Match</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in player_ratings %}
             <tr>
-                <th>Rank</th>
-                <th>First Name</th>
-                <th>Rating</th>
-                <th>Last Match</th>
+                <td>
+                    {% if loop.index == 1 %}
+                        🥇
+                    {% elif loop.index == 2 %}
+                        🥈
+                    {% elif loop.index == 3 %}
+                        🥉
+                    {% else %}
+                        {{ loop.index }}
+                    {% endif %}
+                </td>
+                <td>{{ player[0] }}</td>
+                <td>{{ player[1] }}</td>
+                <td>{{ player[2].strftime('%d-%m-%y %H:%M') }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for player in player_ratings %}
-                <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ player[0] }}</td>
-                    <td>{{ player[1] }}</td>
-                    <td>{{ player[2].strftime('%d-%m-%y %H:%M') }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
 
-        <p>If you need to make any corrections, you can delete the match by clicking the button below:</p>
+</div>
+</div>
 
 
-    <!-- Do more section -->
+<!-- Do more section -->
 <div class="do-more">
-    <h2>Do more</h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin malesuada tortor eget massa ultrices dictum. Sed luctus libero ac est mollis lacinia. Donec maximus convallis ex, sed laoreet eros iaculis nec.</p>
-  </div>
-  
-  
-  <div class="action-grid">
-    <a href="/" class="action action2">Upload game</a>
-    <a href="calculate_odds" class="action action2">Calculate odds</a>
-    <a href="/rating" class="action action3">Ranking</a>
-    <a href="/rating" class="action action4">Ranking analysis</a>
-  </div>
-  
-  
-  </div>
-  </body>
+  <h2>Explore more options</h2>
+  <p>Make the most of your game time with our all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+</div>
+
+<div class="action-grid">
+  <a href="/" class="action action2">Upload game</a>
+  <a href="calculate_odds" class="action action2">Calculate odds</a>
+  <a href="/rating" class="action action3">Ranking</a>
+  <a href="/rating" class="action action4">Ranking analysis</a>
+</div>
+</body>
 
 </html>

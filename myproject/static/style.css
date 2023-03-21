@@ -20,6 +20,7 @@ a {
 h1, h2, h3 {
     font-weight: 700;
     margin-top: 0.5em;
+    font-weight: 80%;
 }
 h1 {
     font-weight: 700;
@@ -38,17 +39,21 @@ h1 {
 }
 
   .do-more h2 {
+
     font-weight: 700;
     margin-top: 0.5em;
     padding-top: 0.2em;
     color: #000000;
-    font-size: 36px;
+    font-size: 30px;
     font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
     text-align: center;
   }
   
   .do-more p {
-    font-size: 16px;
+    font-size: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    text-align: center;
     line-height: 1.5;
     margin-bottom: 0;
     font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
@@ -105,8 +110,8 @@ form {
 
 .team-label {
     /* Add styles specific to the Team 1 label */
-    margin-bottom: 0.5em;
     padding-top: 0.1em;
+    margin-bottom: 0.3em;
     color: rgb(0, 0, 0); /* Example */
     font-weight: bold;
     margin-left: auto;
@@ -129,7 +134,7 @@ form {
 
 .date-label {
     color: rgb(0, 0, 0); 
-    padding-top: 0.3em;
+    padding-top: 1em;
     padding-bottom: 0.3em;
     margin-bottom: 0.5em; /* add some space below the label */
     margin-top: 0.3em; /* add margin-top property */
@@ -320,35 +325,48 @@ input[type="submit"]:hover {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    display: flex;
+
     flex-direction: column;
     align-items: center;
 }
 
-.thank-you-page h1 {
-    font-size: 2em;
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-}
 
 .thank-you-page p {
     font-size: 1em;
     padding-left: 2em;
     padding-right: 2em;
-    margin: 0.5em;
-    margin-bottom: 1em;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 0;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
     text-align: center;
 }
+
 
 .thank-you-page table {
     font-size: 1em;
     border-collapse: collapse;
     margin-bottom: 1em;
+    margin: 0 auto;
+    text-align: center;
+
 }
 
 .thank-you-page table tr td {
-    padding: 0.5em 1em; /* Increase the padding */
+    padding: 0.2em 0.5em; 
     border-bottom: 1px solid #ddd;
+    text-align: center;
+    margin: 0 auto;
+
+}
+
+.thank-you-page table th {
+    padding-top: 1em;
+    padding-right: 0.2em;
+    padding-bottom: 0.3em;
+    padding-left: 0.2em;
+    border-bottom: 2px solid #ddd;
+    text-align: center;
 }
 
 
