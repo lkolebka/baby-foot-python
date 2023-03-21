@@ -23,7 +23,7 @@
 <body>
   <h1>Create a game</h1>
 
-  <form method="POST">
+  <form method="POST" id="game_form">
     <!-- Team 1 Label -->
     <label for="player1_name" class="team-label">Team 1 </label>
     <select id="player1_name" name="player1_name">
@@ -41,7 +41,7 @@
     </select>
     <!-- Team 1 Score Label -->
     <label for="team1_score" class="score-label">Score</label>
-    <input type="number" name="team1_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
+    <input type="number" id="team1_score" name="team1_score" value="" min="0" max="11" inputmode="numeric">
     <br>
     <!-- Team 2 Label -->
     <label for="player1_name" class="team-label">Team 2 </label>
@@ -60,7 +60,7 @@
     </select>
     <!-- Team 2 Score Label -->
     <label for="team2_score" class="score-label">Score</label>
-    <input type="number" name="team2_score" value="" min="0" max="11" pattern="\d*" inputmode="numeric">
+    <input type="number" id="team2_score" name="team2_score" value="" min="0" max="11" inputmode="numeric">
     <br>
     <!-- Game Date Label -->
     <label for="game_date" class="date-label">Date</label>
@@ -74,9 +74,49 @@
         var formattedDate = year + '-' + month + '-' + day;
         // Set the default value of the game_date input to today's date
         document.getElementById("game_date").value = formattedDate;
+
+        function validateForm() {
+        // Get the selected player names
+        const player1 = document.getElementById("player1_name").value;
+        const player2 = document.getElementById("player2_name").value;
+        const player3 = document.getElementById("player3_name").value;
+        const player4 = document.getElementById("player4_name").value;
+
+        // Check if all four players are different
+        if (player1 === player2 || player1 === player3 || player1 === player4 || player2 === player3 || player2 === player4 || player3 === player4) {
+            alert("Please select four different players.");
+            return false;
+        }
+
+        // Get the scores
+        const team1_score = document.getElementsByName("team1_score")[0].value;
+        const team2_score = document.getElementsByName("team2_score")[0].value;
+
+        // Check if the scores are integers between 0 and 11
+        if (!Number.isInteger(+team1_score) || !Number.isInteger(+team2_score)) {
+            alert("Scores must be integers between 0 and 11.");
+            return false;
+        } 
+       
+        // Check if the scores are not equal
+        if (team1_score === team2_score) {
+            alert("Scores cannot be equal.");
+            return false;
+        }
+
+        // Check if the scores are not greater than 11
+        if (team1_score > 11 || team2_score > 11) {
+            alert("Scores cannot be greater than 11.");
+            return false;
+        }
+        
+        // If all conditions are met, submit the form
+        document.getElementById("game_form").submit();
+    }
+
     </script>
     <br>
-    <input type="submit" value="Create game">
+    <input type="submit" value="Create game" onclick="return validateForm()">
   </form>
 <!-- Do more section -->
 <div class="do-more">
