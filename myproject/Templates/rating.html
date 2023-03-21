@@ -32,7 +32,6 @@
             <tr>
                 <th>Rank</th>
                 <th>First Name</th>
-                <th>Last Name</th>
                 <th>Rating</th>
                 <th>Last Match</th>
             </tr>
@@ -43,8 +42,7 @@
                     <td>{{ loop.index }}</td>
                     <td>{{ player[0] }}</td>
                     <td>{{ player[1] }}</td>
-                    <td>{{ player[2] }}</td>
-                    <td>{{ player[3].strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                    <td>{{ player[2].strftime('%d-%m-%y %H:%M') }}</td>
                 </tr>
             {% endfor %}
         </tbody>

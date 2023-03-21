@@ -542,7 +542,7 @@ def get_latest_player_ratings():
         )
     )
 
-    SELECT p.first_name, p.last_name, lpr.rating, lpr.player_rating_timestamp
+    SELECT p.first_name, lpr.rating, lpr.player_rating_timestamp
     FROM Player p
     JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
     WHERE p.active = true
