@@ -10,7 +10,7 @@
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 10px;
-        }
+        } 
         .action {
           background-color: lightgray;
           height: 100px;
@@ -19,82 +19,62 @@
           justify-content: center;
           align-items: center;
         }
+       
       </style>
-    <body class="thank-you-page">
+          <body class="thank-you-page">
+
 </head>
 <body>
-    <h1>Rating!</h1>
+    <h1>Player Rankings</h1>
+<p>See where you stand in the competition!
 
-    <p>Thank you for uploading the match details. <br>Here is a summary of the match:</p>
-
-    <table>
-        <thead>
+<table style="text-align: center;">
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Rating</th>
+            <th>Last Match</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in player_ratings %}
             <tr>
-                <th>Rank</th>
-                <th>First Name</th>
-                <th>Rating</th>
-                <th>Last Match</th>
+                <td>
+                    {% if loop.index == 1 %}
+                        🥇
+                    {% elif loop.index == 2 %}
+                        🥈
+                    {% elif loop.index == 3 %}
+                        🥉
+                    {% else %}
+                        {{ loop.index }}
+                    {% endif %}
+                </td>
+                <td>{{ player[0] }}</td>
+                <td>{{ player[1] }}</td>
+                <td>{{ player[2].strftime('%d-%m-%y %H:%M') }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for player in player_ratings %}
-                <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ player[0] }}</td>
-                    <td>{{ player[1] }}</td>
-                    <td>{{ player[2].strftime('%d-%m-%y %H:%M') }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% endfor %}
+    </tbody>
+</table>
 
-        <p>If you need to make any corrections, you can delete the match by clicking the button below:</p>
+</div>
+</div>
 
-        <form class="thank-you-form" id="deleteForm" action="{{ url_for('delete_last_match_route') }}" method="post">
-            <button type="submit" id="deleteButton">Delete Last Match</button>
-        </form>
-    
-    <script>
-        var deleteForm = document.getElementById("deleteForm");
-        var deleteButton = document.getElementById("deleteButton");
-        
-        deleteForm.addEventListener("submit", function(event) {
-            // Prevent form submission
-            event.preventDefault();
-            
-            // Confirm deletion
-            var confirmed = confirm("Are you sure you want to delete the last match?");
-            
-            if (confirmed) {
-                // Disable the delete button to prevent multiple submissions
-                deleteButton.disabled = true;
-                
-                // Submit the form
-                deleteForm.submit();
-                
-                // Display a success message and redirect to the main page
-                alert("Match deleted successfully");
-                window.location.replace('create_game.html'); // Replace with the main page URL
-            }
-        });
-    </script>
-    <!-- Do more section -->
+
+<!-- Do more section -->
 <div class="do-more">
-    <h2>Do more</h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin malesuada tortor eget massa ultrices dictum. Sed luctus libero ac est mollis lacinia. Donec maximus convallis ex, sed laoreet eros iaculis nec.</p>
-  </div>
-  
-  
-  <div class="action-grid">
-    <a href="/" class="action action2">Upload game</a>
-    <a href="calculate_odds" class="action action2">Calculate odds</a>
-    <div class="rankning">Ranking</div>
-    <div class="action action4">Action 4</div>
-  
-  
-  </div>
-  
-  </div>
-  </body>
+  <h2>Explore more options</h2>
+  <p>Make the most of your game time with our all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+</div>
+
+<div class="action-grid">
+  <a href="/" class="action action2">Upload game</a>
+  <a href="calculate_odds" class="action action2">Calculate odds</a>
+  <a href="/rating" class="action action3">Ranking</a>
+  <a href="/rating" class="action action4">Ranking analysis</a>
+</div>
+</body>
 
 </html>
