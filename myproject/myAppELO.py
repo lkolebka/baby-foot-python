@@ -550,8 +550,12 @@ def create_game():
     
         print(f"date: {date}")
 
-        # Convert date to string in the desired format
-        date_str = datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%d')
+         # Get the current time
+        now = datetime.now().strftime('%H:%M:%S')
+        
+        # Convert date to string in the desired format with current time
+        date_str = datetime.strptime(date, '%Y-%m-%d').strftime(f'%Y-%m-%d {now}')
+
 
         # Process the form data and update the database
         process_game_data(player1_name, player2_name, team1_score, player3_name, player4_name, team2_score, date_str)
