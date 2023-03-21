@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Match upploaded</title>
+    <title>Ranking</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         .action-grid {
@@ -23,28 +23,30 @@
     <body class="thank-you-page">
 </head>
 <body>
-    <h1>Match Uploaded Successfully!</h1>
+    <h1>Rating!</h1>
 
     <p>Thank you for uploading the match details. <br>Here is a summary of the match:</p>
 
-        <table>
+    <table>
+        <thead>
             <tr>
-                <td>Match ID:</td>
-                <td>{{ last_match[0] }}</td>
+                <th>Rank</th>
+                <th>First Name</th>
+                <th>Rating</th>
+                <th>Last Match</th>
             </tr>
-            <tr>
-                <td>Date:</td>
-                <td>{{ last_match[1].strftime('%d/%m/%Y %H:%M:%S') }}</td>
-            </tr>
-            <tr>
-                <td>Winning Team:</td>
-                <td>{{ last_match[2] }} & {{ last_match[3] }} (score: {{ last_match[6] }})</td>
-            </tr>
-            <tr>
-                <td>Losing Team:</td>
-                <td>{{ last_match[4] }} & {{ last_match[5] }} (score: {{ last_match[7] }})</td>
-            </tr>
-        </table>
+        </thead>
+        <tbody>
+            {% for player in player_ratings %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ player[0] }}</td>
+                    <td>{{ player[1] }}</td>
+                    <td>{{ player[2].strftime('%d-%m-%y %H:%M') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
         <p>If you need to make any corrections, you can delete the match by clicking the button below:</p>
 

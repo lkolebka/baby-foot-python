@@ -158,3 +158,23 @@ team_match_deletion AS (
     DELETE FROM TeamMatch WHERE match_id = (SELECT match_id FROM latest_match)
 )
 DELETE FROM "match" WHERE match_id = (SELECT match_id FROM latest_match);
+
+/*ranking*/ 
+WITH latest_player_ratings AS (
+    SELECT pm.player_id, pr.rating, pr.player_rating_timestamp
+    FROM PlayerRating pr
+    JOIN PlayerMatch pm ON pr.player_match_id = pm.player_match_id
+    WHERE pr.player_rating_timestamp = (
+        SELECT MAX(pr2.player_rating_timestamp)
+        FROM PlayerRating pr2
+        JOIN PlayerMatch pm2 ON pr2.player_match_id = pm2.player_match_id
+        WHERE pm2.player_id = pm.player_id
+    )
+)
+
+SELECT p.player_id, p.first_name, p.last_name, lpr.rating, lpr.player_rating_timestamp
+FROM Player p
+JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
+WHERE p.active = true
+ORDER BY lpr.rating DESC;
+

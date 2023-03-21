@@ -12,6 +12,11 @@ body {
 
 }
 
+a {
+    text-decoration: none;
+  }
+  
+
 h1, h2, h3 {
     font-weight: 700;
     margin-top: 0.5em;
@@ -151,20 +156,24 @@ label {
 
 
 input[type="text"], input[type="number"], select {
-    width: 100%;
-   /* padding: 0.8em;*/
+    width: 80%;
+    /* padding: 0.8em;*/
     font-size: 1em;
     margin-top: 0.8em;
     margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;
     text-align: center;
-    text-align-last: center; 
+    text-align-last: center;
+    display: block;
 }
 
+
 input[type="date"], input[type="time"], select {
-    width: 100%;
+    width: 80%;
    /* padding: 0.8em;*/
     font-size: 1em;
     margin-top: 0.8em;
@@ -179,7 +188,7 @@ input[type="date"], input[type="time"], select {
 }
 
 input[type="submit"] {
-    width: 100%;
+    width: 80%;
     padding: 0.5em;
     background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
     color: #1b4aef;
@@ -190,7 +199,12 @@ input[type="submit"] {
     cursor: pointer;
     margin-top: 0.2em;
     margin-bottom: 0.4em;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
 }
+
+
 
 input[type="submit"]:hover {
     background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
@@ -297,5 +311,90 @@ input[type="submit"]:hover {
    text-align: left;
   }
   
+
+  /*THANK YOU PAGE */
+  .thank-you-page {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.thank-you-page h1 {
+    font-size: 2em;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+.thank-you-page p {
+    font-size: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    margin: 0.5em;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+.thank-you-page table {
+    font-size: 1em;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+
+.thank-you-page table tr td {
+    padding: 0.5em 1em; /* Increase the padding */
+    border-bottom: 1px solid #ddd;
+}
+
+
+.thank-you-page table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.thank-you-page .thank-you-form {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.thank-you-page .thank-you-form {
+    width: 80%;
+    margin: 0.5em auto;
+    padding: 0.4em;
+    border-radius: 15px;
+    box-shadow : 0px;
+}
+
+
+.thank-you-page button {
+    width: 40%;
+    width: 40%;
+    min-width: 200px; /* Set a minimum width for the button*/
+    padding: 0.5em;
+    background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
+    color: #ef1b1b;
+    border: 2px solid #e41717;
+    border-radius: 70px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 0.2em;
+    margin-bottom: 0.4em;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.thank-you-page button:hover {
+    background-color: #e41717;
+}
 
   
