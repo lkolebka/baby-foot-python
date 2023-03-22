@@ -47,3 +47,11 @@ CREATE TABLE TeamRating (
     team_rating_timestamp timestamp  NOT NULL
 
 );
+
+CREATE SEQUENCE player_id_seq START 1;
+CREATE SEQUENCE team_id_seq START 1;
+CREATE SEQUENCE match_id_seq START 1;
+CREATE SEQUENCE player_match_id_seq START 1;
+CREATE SEQUENCE player_rating_id_seq START 1;
+CREATE SEQUENCE team_match_id_seq START 1;
+CREATE SEQUENCE team_rating_id_seq START 1;

@@ -4,7 +4,7 @@ from config import DATABASE_CONFIG
 from datetime import datetime
 import math
 
-
+app = Flask(__name__, template_folder='myproject/Templates')
 
 app = Flask(__name__)
 
@@ -682,3 +682,5 @@ def rating():
 if __name__ == '__main__':
     app.static_folder = 'static'
     app.run(host='0.0.0.0', port=8081)
+
+app = Flask(__name__, template_folder='Templates')
