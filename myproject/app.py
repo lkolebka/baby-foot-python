@@ -1,34 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
+from config import DATABASE_CONFIG
 from datetime import datetime
 import math
-from urllib.parse import urlparse
-
-ENV = "PROD"
-
-if ENV == 'dev':
-    DATABASE_CONFIG = {
-        'host': "localhost",
-        'database': "babyfoot",
-        'user': "postgres",
-        'password': "519173"
-    }
-else: 
-
-    uri = "postgres://sbizzhblpgkxep:1d908f276d27a024a11e115e880bde5221483445737911f2cb1e3d927b35d400@ec2-3-234-204-26.compute-1.amazonaws.com:5432/df3id0m5ik8i37"
-    parsed_uri = urlparse(uri)
-
-    DATABASE_CONFIG = {
-        'host': "ec2-3-234-204-26.compute-1.amazonaws.com",
-        'database': "df3id0m5ik8i37",
-        'user': "sbizzhblpgkxep",
-        'password': "1d908f276d27a024a11e115e880bde5221483445737911f2cb1e3d927b35d400",
-        'port': "5432"
-    }
 
 
-
-app = Flask(__name__, template_folder='myproject/Templates')
 
 app = Flask(__name__)
 
@@ -706,5 +682,3 @@ def rating():
 if __name__ == '__main__':
     app.static_folder = 'static'
     app.run(host='0.0.0.0', port=8081)
-
-app = Flask(__name__, template_folder='Templates')
