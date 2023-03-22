@@ -4,9 +4,8 @@ from config import DATABASE_CONFIG
 from datetime import datetime
 import math
 
+app = Flask(__name__, template_folder='Templates')
 
-
-app = Flask(__name__)
 
 def get_player_match_id_by_timestamp_and_by_player_id(player1_id, player2_id, player3_id, player4_id, date, cur):
         cur.execute("SELECT PlayerMatch.player_match_id FROM Match JOIN PlayerMatch ON Match.match_id = PlayerMatch.match_id WHERE PlayerMatch.player_id = %s AND Match.match_timestamp =%s;", (player1_id, date))
