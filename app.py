@@ -555,6 +555,33 @@ def get_latest_player_ratings():
 
     return player_ratings
 
+def get_match_list():
+    query = '''
+            SELECT 
+    m.match_id as ID,
+	P1.first_name AS player_1,
+    P2.first_name AS player_2,
+    M.winning_team_score AS score_team_1,
+    P3.first_name AS player_3,
+    P4.first_name AS player_4,
+    M.losing_team_score AS score_team_2,
+    M.match_timestamp
+    FROM Match M
+    JOIN Team WT ON M.winning_team_id = WT.team_id
+    JOIN Team LT ON M.losing_team_id = LT.team_id
+    JOIN Player P1 ON WT.team_player_1_id = P1.player_id
+    JOIN Player P2 ON WT.team_player_2_id = P2.player_id
+    JOIN Player P3 ON LT.team_player_1_id = P3.player_id
+    JOIN Player P4 ON LT.team_player_2_id = P4.player_id
+    WHERE M.match_timestamp >= '2023-03-01 13:33:15'AND M.match_timestamp <= '2023-04-01 13:33:15'
+    ORDER by M.match_timestamp DESC;
+    '''
+    with psycopg2.connect(**DATABASE_CONFIG) as conn:
+        cur = conn.cursor()
+        cur.execute(query)
+        matches = cur.fetchall()
+
+    return matches
 
 @app.route('/', methods=['GET', 'POST'])
 def create_game():
@@ -675,7 +702,13 @@ def calculate_expected_score_route():
 @app.route('/rating')
 def rating():
     player_ratings = get_latest_player_ratings()
-    return render_template('rating.html', player_ratings=player_ratings)
+    return render_template('rating.html', player_ratings= player_ratings)
+
+
+@app.route('/match_list')
+def match_list():
+    matches = get_match_list()
+    return render_template('match_list.html', matches=matches)
 
 
 if __name__ == '__main__':

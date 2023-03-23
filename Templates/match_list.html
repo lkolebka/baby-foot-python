@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match history</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .action-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        } 
+        .action {
+          background-color: lightgray;
+          height: 100px;
+          border-radius: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+       
+
+     </style>
+          <body class="match-page">
+             
+                </style>
+
+</head>
+<body>
+    <h1>Match history</h1>
+<p>All the matches in one place
+<p>
+<table style="text-align: center;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Team 1</th>
+                <th>Team 1</th>
+                <th class="score">Score</th>
+                <th>Team 2</th>
+                <th>Team 1</th>
+                <th class="score">Score</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for match in matches %}
+                <tr>
+                    <td>{{ match[0] }}</td>
+                    <td>{{ match[1] }}</td>
+                    <td>{{ match[2] }}</td>
+                    <td>{{ match[3] }}</td>
+                    <td>{{ match[4] }}</td>
+                    <td>{{ match[5] }}</td>
+                    <td>{{ match[6] }}</td>
+                    <td>{{ match[7].strftime('%d-%m-%y %H:%M') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</p>
+    <div class="do-more">
+        <h2>Explore more options</h2>
+        <p>Make the most of your game time with our all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+    </div>
+
+    <div class="action-grid">
+        <a href="/" class="action action2">Upload game</a>
+        <a href="calculate_odds" class="action action2">Calculate odds</a>
+        <a href="/rating" class="action action3">Ranking</a>
+        <a href="/match_list" class="action action4">Match list</a>
+    </div>
+</body>
+</html>

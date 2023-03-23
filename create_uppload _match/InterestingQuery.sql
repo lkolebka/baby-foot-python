@@ -178,3 +178,21 @@ JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
 WHERE p.active = true
 ORDER BY lpr.rating DESC;
 
+/*retrive all the matchs*/
+SELECT 
+    m.match_id as ID,
+	P1.first_name AS player_1,
+    P2.first_name AS player_2,
+    M.winning_team_score AS score_team_1,
+    P3.first_name AS player_3,
+    P4.first_name AS player_4,
+    M.losing_team_score AS score_team_2,
+    M.match_timestamp
+FROM Match M
+JOIN Team WT ON M.winning_team_id = WT.team_id
+JOIN Team LT ON M.losing_team_id = LT.team_id
+JOIN Player P1 ON WT.team_player_1_id = P1.player_id
+JOIN Player P2 ON WT.team_player_2_id = P2.player_id
+JOIN Player P3 ON LT.team_player_1_id = P3.player_id
+JOIN Player P4 ON LT.team_player_2_id = P4.player_id
+WHERE M.match_timestamp >= '2023-03-01 13:33:15'AND M.match_timestamp <= '2023-04-01 13:33:15';

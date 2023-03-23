@@ -19,7 +19,7 @@ a {
 
 h1, h2, h3 {
     font-weight: 700;
-    margin-top: 0.5em;
+    margin-top: 0.3em;
     font-weight: 80%;
 }
 h1 {
@@ -352,13 +352,19 @@ input[type="submit"]:hover {
 
 }
 
+.thank-you-page table tr td.score {
+    text-align: center;
+    width: 60px;
+  }
+
 .thank-you-page table tr td {
     padding: 0.2em 0.5em; 
     border-bottom: 1px solid #ddd;
-    text-align: center;
+    text-align: left;
     margin: 0 auto;
-
-}
+  }
+  
+ 
 
 .thank-you-page table th {
     padding-top: 1em;
@@ -415,4 +421,116 @@ input[type="submit"]:hover {
     background-color: #e41717;
 }
 
+  /*MATCH LIST */
+  .match-page{
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.match-page p {
+    font-size: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 0;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+    text-align: center;
+}
+
+
+.match-page table {
+    font-size: 1em;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+    margin: 0 auto;
+    text-align: center;
+
+}
+
+@media only screen and (max-width: 768px) {
+    .match-page table {
+      font-size: 0.65em;
+      border-collapse: collapse;
+      margin-bottom: 1em;
+      margin: 0 auto;
+      text-align: center;
+    }
+  }
   
+
+.match-page table tr td.score {
+    text-align: center;
+    width: 60px;
+  }
+
+.match-page table tr td {
+    padding: 0.2em 0.5em; 
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    margin: 0 auto;
+  }
+  
+ 
+
+.match-page table th {
+    padding-top: 1em;
+    padding-right: 0.2em;
+    padding-bottom: 0.3em;
+    padding-left: 0.2em;
+    border-bottom: 2px solid #ddd;
+    text-align: center;
+}
+
+
+.match-page table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.match-page .thank-you-form {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.match-page .thank-you-form {
+    width: 80%;
+    margin: 0.5em auto;
+    padding: 0.4em;
+    border-radius: 15px;
+    box-shadow : 0px;
+}
+
+
+.match-page button {
+    width: 40%;
+    width: 40%;
+    min-width: 200px; /* Set a minimum width for the button*/
+    padding: 0.5em;
+    background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
+    color: #ef1b1b;
+    border: 2px solid #e41717;
+    border-radius: 70px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 0.2em;
+    margin-bottom: 0.4em;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.match-page button:hover {
+    background-color: #e41717;
+}
