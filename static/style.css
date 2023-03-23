@@ -457,7 +457,7 @@ input[type="submit"]:hover {
 
 @media only screen and (max-width: 768px) {
     .match-page table {
-      font-size: 0.65em;
+      font-size: 0.60em;
       border-collapse: collapse;
       margin-bottom: 1em;
       margin: 0 auto;
@@ -478,7 +478,10 @@ input[type="submit"]:hover {
     margin: 0 auto;
   }
   
- 
+  .match-page h1 {
+    padding-bottom: 0em;
+
+  }
 
 .match-page table th {
     padding-top: 1em;
@@ -524,13 +527,42 @@ input[type="submit"]:hover {
     font-size: 1em;
     font-weight: 500;
     cursor: pointer;
-    margin-top: 0.2em;
+    margin-top: 1em;
     margin-bottom: 0.4em;
     margin-left: auto;
     margin-right: auto;
     display: block;
 }
 
+.match-page button {
+    min-width: 200px; /* Set a minimum width for the button*/
+    padding: 0.5em;
+    text-align: center;
+    margin: auto;
+}
+
 .match-page button:hover {
     background-color: #e41717;
 }
+
+  .month-label {
+    padding-top: 0.1em;
+    margin-bottom: 0.3em;
+    color: rgb(0, 0, 0); /* Example */
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: center;
+}
+
+  form input[type="submit"] {
+    margin-top: 1em;
+    
+  }
+  
+  .match-description{
+    margin-top: 0.5em!important;
+    margin-bottom: 0.5em!important;
+
+  }

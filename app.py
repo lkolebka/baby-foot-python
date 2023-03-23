@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 from config import DATABASE_CONFIG
-from datetime import datetime
+import datetime
 import math
+import calendar
+
 
 app = Flask(__name__, template_folder='Templates')
 
@@ -555,32 +557,46 @@ def get_latest_player_ratings():
 
     return player_ratings
 
-def get_match_list():
-    query = '''
-            SELECT 
-    m.match_id as ID,
-	P1.first_name AS player_1,
-    P2.first_name AS player_2,
-    M.winning_team_score AS score_team_1,
-    P3.first_name AS player_3,
-    P4.first_name AS player_4,
-    M.losing_team_score AS score_team_2,
-    M.match_timestamp
-    FROM Match M
-    JOIN Team WT ON M.winning_team_id = WT.team_id
-    JOIN Team LT ON M.losing_team_id = LT.team_id
-    JOIN Player P1 ON WT.team_player_1_id = P1.player_id
-    JOIN Player P2 ON WT.team_player_2_id = P2.player_id
-    JOIN Player P3 ON LT.team_player_1_id = P3.player_id
-    JOIN Player P4 ON LT.team_player_2_id = P4.player_id
-    ORDER by M.match_timestamp DESC;
+def get_match_list(month=None):
+    now = datetime.datetime.now()
+    default_month = now.month
+    default_year = now.year
+    selected_month = int(month) if month else default_month
+    start_date = f'{default_year}-{selected_month:02d}-01 00:00:00'
+    end_date = f'{default_year}-{selected_month:02d}-{get_last_day_of_month(selected_month, default_year):02d} 23:59:59'
+    query = f'''
+        SELECT 
+            m.match_id as ID,
+            P1.first_name AS player_1,
+            P2.first_name AS player_2,
+            M.winning_team_score AS score_team_1,
+            P3.first_name AS player_3,
+            P4.first_name AS player_4,
+            M.losing_team_score AS score_team_2,
+            M.match_timestamp
+        FROM Match M
+        JOIN Team WT ON M.winning_team_id = WT.team_id
+        JOIN Team LT ON M.losing_team_id = LT.team_id
+        JOIN Player P1 ON WT.team_player_1_id = P1.player_id
+        JOIN Player P2 ON WT.team_player_2_id = P2.player_id
+        JOIN Player P3 ON LT.team_player_1_id = P3.player_id
+        JOIN Player P4 ON LT.team_player_2_id = P4.player_id
+        WHERE M.match_timestamp >= %s AND M.match_timestamp <= %s
+        ORDER BY M.match_timestamp DESC;
     '''
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
-        cur.execute(query)
+        cur.execute(query, (start_date, end_date))
         matches = cur.fetchall()
 
     return matches
+
+def get_last_day_of_month(month, year):
+    if month == 12:
+        return 31
+    else:
+        return (datetime.date(year, month+1, 1) - datetime.timedelta(days=1)).day
+
 
 @app.route('/', methods=['GET', 'POST'])
 def create_game():
@@ -706,8 +722,12 @@ def rating():
 
 @app.route('/match_list')
 def match_list():
-    matches = get_match_list()
-    return render_template('match_list.html', matches=matches)
+    month = request.args.get('month')
+    if not month:
+       month = request.args.get('month', datetime.datetime.now().strftime('%m'))
+    matches = get_match_list(month=month)
+    return render_template('match_list.html', matches=matches, month=month)
+
 
 
 if __name__ == '__main__':

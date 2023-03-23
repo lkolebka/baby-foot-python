@@ -29,9 +29,31 @@
 </head>
 <body>
     <h1>Match history</h1>
-<p>All the matches in one place
-<p>
-<table style="text-align: center;">
+    <p class="match-description">Please choose a month to view matches</p>
+    <form method="GET" class="form-month">
+        <label for="month" class="month-label">Month</label>
+        <select name="month" id="month">
+            <option value="01" {% if month == "01" %}selected{% endif %}>January</option>
+            <option value="02" {% if month == "02" %}selected{% endif %}>February</option>
+            <option value="03" {% if month == "03" %}selected{% endif %}>March</option>
+            <option value="04" {% if month == "04" %}selected{% endif %}>April</option>
+            <option value="05" {% if month == "05" %}selected{% endif %}>May</option>
+            <option value="06" {% if month == "06" %}selected{% endif %}>June</option>
+            <option value="07" {% if month == "07" %}selected{% endif %}>July</option>
+            <option value="08" {% if month == "08" %}selected{% endif %}>August</option>
+            <option value="09" {% if month == "09" %}selected{% endif %}>September</option>
+            <option value="10" {% if month == "10" %}selected{% endif %}>October</option>
+            <option value="11" {% if month == "11" %}selected{% endif %}>November</option>
+            <option value="12" {% if month == "12" %}selected{% endif %}>December</option>
+        </select>
+ 
+        <input type="submit" class="button" value="Submit">
+    </form>
+
+    <br>
+
+
+    <table style="text-align: center;">
         <thead>
             <tr>
                 <th>ID</th>
@@ -54,12 +76,12 @@
                     <td>{{ match[4] }}</td>
                     <td>{{ match[5] }}</td>
                     <td>{{ match[6] }}</td>
-                    <td>{{ match[7].strftime('%d-%m-%y %H:%M') }}</td>
+                    <td>{{ match[7].strftime('%d-%m %H:%M') }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-</p>
+
     <div class="do-more">
         <h2>Explore more options</h2>
         <p>Make the most of your game time with this all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
