@@ -573,7 +573,6 @@ def get_match_list():
     JOIN Player P2 ON WT.team_player_2_id = P2.player_id
     JOIN Player P3 ON LT.team_player_1_id = P3.player_id
     JOIN Player P4 ON LT.team_player_2_id = P4.player_id
-    WHERE M.match_timestamp >= '2023-03-01 13:33:15'AND M.match_timestamp <= '2023-04-01 13:33:15'
     ORDER by M.match_timestamp DESC;
     '''
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
