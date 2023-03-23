@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 
-ENV = "PROD"
+ENV = "prod"
 
 if ENV == 'dev':
     DATABASE_CONFIG = {
