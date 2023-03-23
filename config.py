@@ -11,14 +11,14 @@ if ENV == 'dev':
     }
 else: 
 
-    uri = "postgres://sbizzhblpgkxep:1d908f276d27a024a11e115e880bde5221483445737911f2cb1e3d927b35d400@ec2-3-234-204-26.compute-1.amazonaws.com:5432/df3id0m5ik8i37"
+    uri = "postgres://mzallduhesqqds:f18bf72dfd0e2415db010290b8192be8c92e4e1d257205808e9dedead1d0c091@ec2-44-214-132-149.compute-1.amazonaws.com:5432/dd2oto7f7bkek8"
     parsed_uri = urlparse(uri)
 
     DATABASE_CONFIG = {
-        'host': "ec2-3-234-204-26.compute-1.amazonaws.com",
-        'database': "df3id0m5ik8i37",
-        'user': "sbizzhblpgkxep",
-        'password': "1d908f276d27a024a11e115e880bde5221483445737911f2cb1e3d927b35d400",
+        'host': "ec2-44-214-132-149.compute-1.amazonaws.com",
+        'database': "dd2oto7f7bkek8",
+        'user': "mzallduhesqqds",
+        'password': "f18bf72dfd0e2415db010290b8192be8c92e4e1d257205808e9dedead1d0c091",
         'port': "5432"
     }
 
