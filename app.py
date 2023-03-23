@@ -513,7 +513,7 @@ def get_players():
             password=DATABASE_CONFIG['password']
         )
         cursor = conn.cursor()
-        query = "SELECT first_name FROM player"  # Change the column name to match your database
+        query = "SELECT first_name FROM player ORDER BY first_name ASC;"  # 
         cursor.execute(query)
         players = cursor.fetchall()
         print("Players fetched:", players)  # Add this line to print the fetched players
@@ -530,23 +530,23 @@ def get_players():
 
 def get_latest_player_ratings():
     query = '''
-     WITH latest_player_ratings AS (
-        SELECT pm.player_id, pr.rating, pr.player_rating_timestamp
-        FROM PlayerRating pr
-        JOIN PlayerMatch pm ON pr.player_match_id = pm.player_match_id
-        WHERE pr.player_rating_timestamp = (
-            SELECT MAX(pr2.player_rating_timestamp)
-            FROM PlayerRating pr2
-            JOIN PlayerMatch pm2 ON pr2.player_match_id = pm2.player_match_id
-            WHERE pm2.player_id = pm.player_id
+            WITH latest_player_ratings AS (
+            SELECT pm.player_id, pr.rating, pr.player_rating_timestamp
+            FROM PlayerRating pr
+            JOIN PlayerMatch pm ON pr.player_match_id = pm.player_match_id
+            WHERE pr.player_rating_timestamp = (
+                SELECT MAX(pr2.player_rating_timestamp)
+                FROM PlayerRating pr2
+                JOIN PlayerMatch pm2 ON pr2.player_match_id = pm2.player_match_id
+                WHERE pm2.player_id = pm.player_id
+            )
         )
-    )
 
-    SELECT p.first_name, lpr.rating, lpr.player_rating_timestamp
-    FROM Player p
-    JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
-    WHERE p.active = true
-    ORDER BY lpr.rating DESC;
+        SELECT CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, lpr.rating, lpr.player_rating_timestamp
+        FROM Player p
+        JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
+        WHERE p.active = true
+        ORDER BY lpr.rating DESC;
     '''
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
