@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, abort
 import psycopg2
 from config import DATABASE_CONFIG
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import math
+
 
 
 
@@ -541,7 +542,7 @@ def get_players_full_list():
     return players
 
 def get_latest_player_ratings(month=None):
-    now = datetime.datetime.now()
+    now = datetime.now()
     default_month = now.month
     default_year = now.year
     selected_month = int(month) if month else default_month
@@ -589,10 +590,11 @@ def get_latest_player_ratings(month=None):
         cur.execute(query, (start_date, end_date, start_date, end_date,start_date, end_date))
         player_ratings = cur.fetchall()
 
+
     return player_ratings
 
 def get_match_list(month=None):
-    now = datetime.datetime.now()
+    now = datetime.now()
     default_month = now.month
     default_year = now.year
     selected_month = int(month) if month else default_month
@@ -632,8 +634,7 @@ def get_last_day_of_month(month, year):
     if month == 12:
         return 31
     else:
-        return (datetime.date(year, month+1, 1) - datetime.timedelta(days=1)).day
-
+        return (date(year, month+1, 1) - timedelta(days=1)).day
 
 @app.route('/', methods=['GET', 'POST'])
 def create_game():
@@ -755,7 +756,7 @@ def calculate_expected_score_route():
 def rating():
     month = request.args.get('month')
     if not month:
-       month = request.args.get('month', datetime.datetime.now().strftime('%m'))
+       month = request.args.get('month', datetime.now().strftime('%m'))
     player_ratings = get_latest_player_ratings(month=month)
     return render_template('rating.html', player_ratings=player_ratings, month=month)
 
@@ -764,7 +765,7 @@ def rating():
 def match_list():
     month = request.args.get('month')
     if not month:
-       month = request.args.get('month', datetime.datetime.now().strftime('%m'))
+        month = request.args.get('month', datetime.now().strftime('%m'))
     matches = get_match_list(month=month)
     return render_template('match_list.html', matches=matches, month=month)
 
