@@ -530,29 +530,53 @@ def get_players():
         if conn:
             conn.close()
 
-def get_latest_player_ratings():
+def get_latest_player_ratings(month=None):
+    now = datetime.datetime.now()
+    default_month = now.month
+    default_year = now.year
+    selected_month = int(month) if month else default_month
+    start_date = f'{default_year}-{selected_month:02d}-01 00:00:00'
+    end_date = f'{default_year}-{selected_month:02d}-{get_last_day_of_month(selected_month, default_year):02d} 23:59:59'
+
     query = '''
-            WITH latest_player_ratings AS (
-            SELECT pm.player_id, pr.rating, pr.player_rating_timestamp
-            FROM PlayerRating pr
-            JOIN PlayerMatch pm ON pr.player_match_id = pm.player_match_id
+                SELECT 
+            CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, 
+            pr.rating, 
+            COUNT(DISTINCT pm.match_id) as num_matches,
+            pr.player_rating_timestamp
+        FROM Player p
+        JOIN (
+            SELECT 
+                pm.player_id, 
+                pr.rating, 
+                pr.player_rating_timestamp,
+                pm.match_id
+            FROM PlayerMatch pm
+            JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
             WHERE pr.player_rating_timestamp = (
                 SELECT MAX(pr2.player_rating_timestamp)
-                FROM PlayerRating pr2
-                JOIN PlayerMatch pm2 ON pr2.player_match_id = pm2.player_match_id
+                FROM PlayerMatch pm2
+                JOIN PlayerRating pr2 ON pm2.player_match_id = pr2.player_match_id
                 WHERE pm2.player_id = pm.player_id
+                AND pr2.player_rating_timestamp >= %s AND pr2.player_rating_timestamp <= %s
+            ) AND pm.player_id IN (
+                SELECT DISTINCT pm3.player_id
+                FROM PlayerMatch pm3
+                JOIN PlayerRating pr3 ON pm3.player_match_id = pr3.player_match_id
+                WHERE pr3.player_rating_timestamp >= %s AND pr3.player_rating_timestamp <= %s
             )
+        ) pr ON p.player_id = pr.player_id
+        JOIN PlayerMatch pm ON p.player_id = pm.player_id
+        WHERE p.active = true AND pm.match_id IN (
+            SELECT match_id FROM Match
+            WHERE match_timestamp >= %s AND match_timestamp <= %s
         )
-
-        SELECT CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, lpr.rating, lpr.player_rating_timestamp
-        FROM Player p
-        JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
-        WHERE p.active = true
-        ORDER BY lpr.rating DESC;
+        GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
+        ORDER BY pr.rating DESC;
     '''
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
-        cur.execute(query)
+        cur.execute(query, (start_date, end_date, start_date, end_date,start_date, end_date))
         player_ratings = cur.fetchall()
 
     return player_ratings
@@ -587,6 +611,7 @@ def get_match_list(month=None):
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
         cur.execute(query, (start_date, end_date))
+        print(start_date,end_date)
         matches = cur.fetchall()
 
     return matches
@@ -716,8 +741,11 @@ def calculate_expected_score_route():
 
 @app.route('/rating')
 def rating():
-    player_ratings = get_latest_player_ratings()
-    return render_template('rating.html', player_ratings= player_ratings)
+    month = request.args.get('month')
+    if not month:
+       month = request.args.get('month', datetime.datetime.now().strftime('%m'))
+    player_ratings = get_latest_player_ratings(month=month)
+    return render_template('rating.html', player_ratings=player_ratings, month=month)
 
 
 @app.route('/match_list')

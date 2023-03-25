@@ -196,3 +196,41 @@ JOIN Player P2 ON WT.team_player_2_id = P2.player_id
 JOIN Player P3 ON LT.team_player_1_id = P3.player_id
 JOIN Player P4 ON LT.team_player_2_id = P4.player_id
 WHERE M.match_timestamp >= '2023-03-01 13:33:15'AND M.match_timestamp <= '2023-04-01 13:33:15';
+
+
+/*retrieve the rating from a specific date*/
+SELECT 
+    CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, 
+    pr.rating, 
+    COUNT(DISTINCT pm.match_id) as num_matches,
+    pr.player_rating_timestamp
+FROM Player p
+JOIN (
+    SELECT 
+        pm.player_id, 
+        pr.rating, 
+        pr.player_rating_timestamp,
+        pm.match_id
+    FROM PlayerMatch pm
+    JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+    WHERE pr.player_rating_timestamp = (
+        SELECT MAX(pr2.player_rating_timestamp)
+        FROM PlayerMatch pm2
+        JOIN PlayerRating pr2 ON pm2.player_match_id = pr2.player_match_id
+        WHERE pm2.player_id = pm.player_id
+          AND pr2.player_rating_timestamp >= '2023-01-23' AND pr2.player_rating_timestamp <= '2023-02-22'
+    ) AND pm.player_id IN (
+        SELECT DISTINCT pm3.player_id
+        FROM PlayerMatch pm3
+        JOIN PlayerRating pr3 ON pm3.player_match_id = pr3.player_match_id
+        WHERE pr3.player_rating_timestamp >= '2023-01-23' AND pr3.player_rating_timestamp <= '2023-02-22'
+    )
+) pr ON p.player_id = pr.player_id
+JOIN PlayerMatch pm ON p.player_id = pm.player_id
+WHERE p.active = true AND pm.match_id IN (
+    SELECT match_id FROM Match
+    WHERE match_timestamp >= '2023-01-23' AND match_timestamp <= '2023-02-22'
+)
+GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
+ORDER BY pr.rating DESC;
+
