@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, abort
 import psycopg2
 from config import DATABASE_CONFIG
-import datetime
+from datetime import datetime
 import math
 
 
