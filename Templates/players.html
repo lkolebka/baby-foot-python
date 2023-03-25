@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .action-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        } 
+        .action {
+          background-color: lightgray;
+          height: 100px;
+          border-radius: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+       
+
+     </style>
+          <body class="match-page">
+             
+                </style>
+
+</head>
+<body>
+    <h1>Player list</h1>
+    <p class="match-description">Please select the player to update</p>
+    
+    <br>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Active</th>
+            <th>Actions</th>
+        </tr>
+        {% for player in players_list %}
+            <tr>
+                <td>{{ player[0] }}</td>
+                <td>{{ player[1] }}</td>
+                <td>{{ player[2] }}</td>
+                <td>{{ player[3] }}</td>
+                <td><a href="{{ url_for('edit_player', player_id=player[0]) }}">Edit</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="do-more">
+        <h2>Explore more options</h2>
+        <p>Make the most of your game time with this all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+    </div>
+
+    <div class="action-grid">
+        <a href="/" class="action action1">Upload game</a>
+        <a href="calculate_odds" class="action action2">Calculate odds</a>
+        <a href="/add_player" class="action action3">Add player</a>
+        <a href="/players" class="action action4">Player list</a>
+    </div>
+</body>
+</html>

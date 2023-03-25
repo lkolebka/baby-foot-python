@@ -584,3 +584,7 @@ input[type="submit"]:hover {
         text-align: center;
     }
 }
+
+.rating-table tbody tr.less-than-10 {
+    background-color: #bbbbbb;
+}

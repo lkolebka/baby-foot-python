@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 import psycopg2
 from config import DATABASE_CONFIG
 import datetime
 import math
-import calendar
+
 
 
 app = Flask(__name__, template_folder='Templates')
@@ -530,6 +530,15 @@ def get_players():
         if conn:
             conn.close()
 
+def get_players_full_list():
+    query = 'SELECT player_id, first_name, last_name, active FROM Player ORDER BY player_id'
+    with psycopg2.connect(**DATABASE_CONFIG) as conn:
+        cur = conn.cursor()
+        cur.execute(query)
+        players = cur.fetchall()
+
+    return players
+
 def get_latest_player_ratings(month=None):
     now = datetime.datetime.now()
     default_month = now.month
@@ -615,6 +624,8 @@ def get_match_list(month=None):
         matches = cur.fetchall()
 
     return matches
+
+
 
 def get_last_day_of_month(month, year):
     if month == 12:
@@ -756,8 +767,57 @@ def match_list():
     matches = get_match_list(month=month)
     return render_template('match_list.html', matches=matches, month=month)
 
+@app.route('/players')
+def players_list_showed():
+    players_list = get_players_full_list()
+    print(players_list)  # Add this line to print the contents of players_list
+    return render_template('players.html', players_list=players_list)
 
 
+@app.route('/add_player', methods=['GET', 'POST'])
+def add_player():
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        conn = psycopg2.connect(**DATABASE_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("SELECT nextval('player_id_seq')")
+        id_next_player = cursor.fetchone()[0]
+        cursor.execute("INSERT INTO player (player_id, first_name, last_name) VALUES (%s, %s, %s)", (id_next_player, first_name, last_name))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('players_list_showed'))
+    else:
+        return render_template('add_player.html')
+
+    
+@app.route('/edit_player/<int:player_id>', methods=['GET', 'POST'])
+def edit_player(player_id):
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        active = True if request.form.get('active') else False
+
+        with psycopg2.connect(**DATABASE_CONFIG) as conn:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE Player SET first_name = %s, last_name = %s, active = %s WHERE player_id = %s",
+                            (first_name, last_name, active, player_id))
+                conn.commit()
+
+        return redirect(url_for('players_list_showed'))
+    else:
+        with psycopg2.connect(**DATABASE_CONFIG) as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT player_id, first_name, last_name, active FROM Player WHERE player_id = %s", (player_id,))
+                player = cur.fetchone()
+
+        if player:
+            return render_template('edit_player.html', player_id=player[0], player=player[1:])
+        else:
+            abort(404)
+
+    
 if __name__ == '__main__':
     app.static_folder = 'static'
     app.run(host='0.0.0.0', port=8081) 

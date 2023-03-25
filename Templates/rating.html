@@ -48,55 +48,49 @@
         <input type="submit" class="button" value="Submit">
     </form>
     <table class="rating-table">
-        <thead>
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Rating</th>
+            <th>Games Played</th>
+            <th>Last Game</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player in player_ratings if player[2] >= 10 %}
             <tr>
-                <th>Rank</th>
-                <th>Name</th>
-                <th>Rating</th>
-                <th>Games Played</th>
-                <th>Last Game</th>
+                <td style="text-align: center;">
+                    {% if loop.index == 1 %}
+                        🥇
+                    {% elif loop.index == 2 %}
+                        🥈
+                    {% elif loop.index == 3 %}
+                        🥉
+                    {% elif loop.last %}
+                        💩
+                    {% else %}
+                        {{ loop.index }}
+                    {% endif %}
+                </td>
+                <td>{{ player[0] }}</td>
+                <td>{{ player[1] }}</td>
+                <td style="text-align: center;">{{ player[2] }}</td>
+                <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for player in player_ratings if player[2] >= 10 %}
-                <tr>
-                    <td style="text-align: center;">
-                        {% if loop.index == 1 %}
-                            🥇
-                        {% elif loop.index == 2 %}
-                            🥈
-                        {% elif loop.index == 3 %}
-                            🥉
-                        {% else %}
-                            {{ loop.index }}
-                        {% endif %}
-                    </td>
-                    <td>{{ player[0] }}</td>
-                    <td>{{ player[1] }}</td>
-                    <td style="text-align: center;">{{ player[2] }}</td>
-                    <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
-                </tr>
-                {% if loop.last %}
-                    <tr>
-                        <td style="text-align: center;">💩</td>
-                        <td>{{ player[0] }}</td>
-                        <td>{{ player[1] }}</td>
-                        <td style="text-align: center;">{{ player[2] }}</td>
-                        <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-            {% for player in player_ratings if player[2] < 10 %}
-                <tr>
-                    <td style="text-align: center;">🚫</td>
-                    <td>{{ player[0] }}</td>
-                    <td>{{ player[1] }}</td>
-                    <td style="text-align: center;">{{ player[2] }}</td>
-                    <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+        {% endfor %}
+        {% for player in player_ratings if player[2] < 10 %}
+            <tr class="less-than-10">
+                <td style="text-align: center;">🚫</td>
+                <td>{{ player[0] }}</td>
+                <td>{{ player[1] }}</td>
+                <td style="text-align: center;">{{ player[2] }}</td>
+                <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
     
     
 
