@@ -578,7 +578,7 @@ def get_latest_player_ratings(month=None):
             )
         ) pr ON p.player_id = pr.player_id
         JOIN PlayerMatch pm ON p.player_id = pm.player_id
-        WHERE p.active = true AND pm.match_id IN (
+        WHERE pm.match_id IN (
             SELECT match_id FROM Match
             WHERE match_timestamp >= %s AND match_timestamp <= %s
         )
