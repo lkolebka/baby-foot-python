@@ -722,7 +722,8 @@ def thank_you():
 @app.route('/delete_last_match', methods=['POST'])
 def delete_last_match_route():
     delete_last_match()
-    return redirect(url_for('create_game'), code=302)
+    return redirect(url_for('/'))
+
 
 @app.route('/calculate_odds', methods=['GET', 'POST'])
 def calculate_expected_score_route():
