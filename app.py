@@ -517,7 +517,7 @@ def get_players():
             password=DATABASE_CONFIG['password']
         )
         cursor = conn.cursor()
-        query = "SELECT first_name FROM player ORDER BY first_name ASC;"  # 
+        query = "SELECT first_name FROM player WHERE active = true ORDER BY first_name ASC;"  # 
         cursor.execute(query)
         players = cursor.fetchall()
         print("Players fetched:", players)  # Add this line to print the fetched players
