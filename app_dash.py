@@ -15,23 +15,28 @@ engine = create_engine(
     f"{DATABASE_CONFIG['host']}/{DATABASE_CONFIG['database']}"
 )
 
+
+
 app = dash.Dash(__name__, external_stylesheets=['/static/style.css'])
 server = app.server
 
 app.layout = html.Div([
     html.H1('Player Rating Evolution Dashboard'),
+    html.Link(href='/static/style.css', rel='stylesheet'),
     html.Div(className='dropdown-container', children=[
+
        dcc.Dropdown(
-    id='player-dropdown',
-    options=[{'label': player, 'value': player} for player in get_players()],
-    value=['Matthieu', 'Lazare'],
-    multi=True
-)
-    ]),
+            id='player-dropdown',
+            options=[{'label': player, 'value': player} for player in get_players()],
+            value=['Matthieu', 'Lazare'],
+            multi=True
+        )
+    ], style={'width': '50%', 'margin': 'auto'}), # set the width and center the container horizontally
     html.Div(className='chart-container', children=[
         dcc.Graph(id='rating-graph')
-    ])
-])
+    ], style={'width': '80%', 'margin': 'auto'}), # set the width and center the container horizontally
+], style={'max-width': '1200px', 'margin': 'auto'}) # set the maximum width of the layout and center it horizontally
+
 
 @app.callback(
     Output('rating-graph', 'figure'),
