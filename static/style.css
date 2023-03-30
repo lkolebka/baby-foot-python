@@ -257,26 +257,36 @@ input[type="submit"]:hover {
   }
   
   /* Individual actions */
-  .action:nth-child(1) {
-    background: linear-gradient(141.69deg, #3077e2 0%, #1b42ab 39%);
-    color: #fff;
-  }
-  
-  .action:nth-child(2) {
-    background: linear-gradient(141.13deg, #106cde 26.29%, #36a5ef 100%);
-    color: #fff;
-  }
-  
-  .action:nth-child(3) {
-    background: linear-gradient(141.69deg, #2f61e9 10%, #106cde 100%);
-    color: #fff;
-  }
-  
-  .action:nth-child(4) {
-    background: linear-gradient(141.13deg, #3077e2 26.29%, #1b42ab 100%);
-    color: #fff;
-  }
-  
+.action:nth-child(1) {
+  background: linear-gradient(141.69deg, #3077e2 0%, #1b42ab 39%);
+  color: #fff;
+}
+
+.action:nth-child(2) {
+  background: linear-gradient(141.13deg, #106cde 26.29%, #36a5ef 100%);
+  color: #fff;
+}
+
+.action:nth-child(3) {
+  background: linear-gradient(141.69deg, #2f61e9 10%, #106cde 100%);
+  color: #fff;
+}
+
+.action:nth-child(4) {
+  background: linear-gradient(141.13deg, #3077e2 26.29%, #1b42ab 100%);
+  color: #fff;
+}
+
+.action:nth-child(5) {
+  background: linear-gradient(141.13deg, #2f61e9 26.29%, #1b42ab 100%);
+  color: #fff;
+}
+
+.action:nth-child(6) {
+  background: linear-gradient(141.13deg, #3077e2 26.29%, #36a5ef 100%);
+  color: #fff;
+}
+
   /* Common styles for all actions */
   .action {
   padding: 0.2em;
