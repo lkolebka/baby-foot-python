@@ -20,4 +20,4 @@ else:
         'user': "mzallduhesqqds",
         'password': "f18bf72dfd0e2415db010290b8192be8c92e4e1d257205808e9dedead1d0c091",
         'port': "5432"
-    }
+    } 
