@@ -234,3 +234,10 @@ WHERE p.active = true AND pm.match_id IN (
 GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
 ORDER BY pr.rating DESC;
 
+/*delete a specific match*/
+DELETE FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE match_id = 1157);
+DELETE FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE match_id = 1157);
+DELETE FROM playermatch WHERE match_id = 1157;
+DELETE FROM teammatch WHERE match_id = 1557;
+DELETE FROM match WHERE match_id = 1557
+
