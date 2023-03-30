@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match history</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .action-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        } 
+        .action {
+          background-color: lightgray;
+          height: 100px;
+          border-radius: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+       
+
+     </style>
+          <body class="match-page">
+             
+                </style>
+
+</head>
+<body>
+    <h1>Match history</h1>
+    <p class="match-description">Please choose a month to view matches</p>
+    <form method="GET" class="form-month">
+        <label for="month" class="month-label">Month</label>
+        <select name="month" id="month">
+            <option value="01" {% if month == "01" %}selected{% endif %}>January</option>
+            <option value="02" {% if month == "02" %}selected{% endif %}>February</option>
+            <option value="03" {% if month == "03" %}selected{% endif %}>March</option>
+            <option value="04" {% if month == "04" %}selected{% endif %}>April</option>
+            <option value="05" {% if month == "05" %}selected{% endif %}>May</option>
+            <option value="06" {% if month == "06" %}selected{% endif %}>June</option>
+            <option value="07" {% if month == "07" %}selected{% endif %}>July</option>
+            <option value="08" {% if month == "08" %}selected{% endif %}>August</option>
+            <option value="09" {% if month == "09" %}selected{% endif %}>September</option>
+            <option value="10" {% if month == "10" %}selected{% endif %}>October</option>
+            <option value="11" {% if month == "11" %}selected{% endif %}>November</option>
+            <option value="12" {% if month == "12" %}selected{% endif %}>December</option>
+        </select>
+ 
+        <input type="submit" class="button" value="Submit">
+    </form>
+
+    <br>
+
+
+    <table style="text-align: center;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Player 1</th>
+                <th>Player 2</th>
+                <th class="score">Score</th>
+                <th>Player 3</th>
+                <th>Player 4</th>
+                <th class="score">Score</th>
+                <th>Last Game</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for match in matches %}
+                <tr>
+                    <td>{{ match[0] }}</td>
+                    <td>{{ match[1] }}</td>
+                    <td>{{ match[2] }}</td>
+                    <td>{{ match[3] }}</td>
+                    <td>{{ match[4] }}</td>
+                    <td>{{ match[5] }}</td>
+                    <td>{{ match[6] }}</td>
+                    <td>{{ match[7].strftime('%d-%m %H:%M') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="do-more">
+        <h2>Explore more options</h2>
+        <p>Make the most of your game time with this all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+    </div>
+
+    <div class="action-grid">
+        <a href="/" class="action action2">Upload game</a>
+        <a href="calculate_odds" class="action action2">Calculate odds</a>
+        <a href="/rating" class="action action3">Ranking</a>
+        <a href="/match_list" class="action action4">Match list</a>
+    </div>
+</body>
+</html>

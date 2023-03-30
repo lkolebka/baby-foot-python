@@ -19,7 +19,7 @@ a {
 
 h1, h2, h3 {
     font-weight: 700;
-    margin-top: 0.5em;
+    margin-top: 0.3em;
     font-weight: 80%;
 }
 h1 {
@@ -257,26 +257,36 @@ input[type="submit"]:hover {
   }
   
   /* Individual actions */
-  .action:nth-child(1) {
-    background: linear-gradient(141.69deg, #3077e2 0%, #1b42ab 39%);
-    color: #fff;
-  }
-  
-  .action:nth-child(2) {
-    background: linear-gradient(141.13deg, #106cde 26.29%, #36a5ef 100%);
-    color: #fff;
-  }
-  
-  .action:nth-child(3) {
-    background: linear-gradient(141.69deg, #2f61e9 10%, #106cde 100%);
-    color: #fff;
-  }
-  
-  .action:nth-child(4) {
-    background: linear-gradient(141.13deg, #3077e2 26.29%, #1b42ab 100%);
-    color: #fff;
-  }
-  
+.action:nth-child(1) {
+  background: linear-gradient(141.69deg, #3077e2 0%, #1b42ab 39%);
+  color: #fff;
+}
+
+.action:nth-child(2) {
+  background: linear-gradient(141.13deg, #106cde 26.29%, #36a5ef 100%);
+  color: #fff;
+}
+
+.action:nth-child(3) {
+  background: linear-gradient(141.69deg, #2f61e9 10%, #106cde 100%);
+  color: #fff;
+}
+
+.action:nth-child(4) {
+  background: linear-gradient(141.13deg, #3077e2 26.29%, #1b42ab 100%);
+  color: #fff;
+}
+
+.action:nth-child(5) {
+  background: linear-gradient(141.13deg, #2f61e9 26.29%, #1b42ab 100%);
+  color: #fff;
+}
+
+.action:nth-child(6) {
+  background: linear-gradient(141.13deg, #3077e2 26.29%, #36a5ef 100%);
+  color: #fff;
+}
+
   /* Common styles for all actions */
   .action {
   padding: 0.2em;
@@ -325,7 +335,6 @@ input[type="submit"]:hover {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-
     flex-direction: column;
     align-items: center;
 }
@@ -352,13 +361,19 @@ input[type="submit"]:hover {
 
 }
 
+.thank-you-page table tr td.score {
+    text-align: center;
+    width: 60px;
+  }
+
 .thank-you-page table tr td {
     padding: 0.2em 0.5em; 
     border-bottom: 1px solid #ddd;
-    text-align: center;
+    text-align: left;
     margin: 0 auto;
-
-}
+  }
+  
+ 
 
 .thank-you-page table th {
     padding-top: 1em;
@@ -415,4 +430,210 @@ input[type="submit"]:hover {
     background-color: #e41717;
 }
 
+  /*MATCH LIST */
+  .match-page{
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.match-page p {
+    font-size: 1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 0;
+    font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+    text-align: center;
+}
+
+
+.match-page table {
+    font-size: 1em;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+    margin: 0 auto;
+    text-align: center;
+
+}
+
+@media only screen and (max-width: 768px) {
+    .match-page table {
+      font-size: 0.60em;
+      border-collapse: collapse;
+      margin-bottom: 1em;
+      margin: 0 auto;
+      text-align: center;
+    }
+  }
   
+
+.match-page table tr td.score {
+    text-align: center;
+    width: 60px;
+  }
+
+.match-page table tr td {
+    padding: 0.2em 0.5em; 
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    margin: 0 auto;
+  }
+  
+  .match-page h1 {
+    padding-bottom: 0em;
+
+  }
+
+.match-page table th {
+    padding-top: 1em;
+    padding-right: 0.2em;
+    padding-bottom: 0.3em;
+    padding-left: 0.2em;
+    border-bottom: 2px solid #ddd;
+    text-align: center;
+}
+
+
+.match-page table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.match-page .thank-you-form {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.match-page .thank-you-form {
+    width: 80%;
+    margin: 0.5em auto;
+    padding: 0.4em;
+    border-radius: 15px;
+    box-shadow : 0px;
+}
+
+
+.match-page button {
+    width: 40%;
+    width: 40%;
+    min-width: 200px; /* Set a minimum width for the button*/
+    padding: 0.5em;
+    background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
+    color: #ef1b1b;
+    border: 2px solid #e41717;
+    border-radius: 70px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 1em;
+    margin-bottom: 0.4em;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.match-page button {
+    min-width: 200px; /* Set a minimum width for the button*/
+    padding: 0.5em;
+    text-align: center;
+    margin: auto;
+}
+
+.match-page button:hover {
+    background-color: #e41717;
+}
+
+  .month-label {
+    padding-top: 0.1em;
+    margin-bottom: 0.3em;
+    color: rgb(0, 0, 0); /* Example */
+    font-weight: bold;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: center;
+}
+
+  form input[type="submit"] {
+    margin-top: 1em;
+    
+  }
+  
+  .match-description{
+    margin-top: 0.5em!important;
+    margin-bottom: 0.5em!important;
+
+  }
+
+  .rating-table {
+    padding-top: 1em;
+    padding-right: 0.2em;
+    padding-bottom: 0.3em;
+    padding-left: 0.2em;
+    border-bottom: 2px solid #ddd;
+    text-align: center;
+}
+
+@media only screen and (max-width: 768px) {
+    .rating-table {
+        font-size: 0.75em!important;
+        border-collapse: collapse;
+        margin-bottom: 1em;
+        margin: 0 auto;
+        text-align: center;
+    }
+}
+
+.rating-table tbody tr.less-than-10 {
+    background-color: #bbbbbb;
+}
+
+
+/* Chart DASH */
+/* Style the dropdown container */
+.dropdown-container {
+    width: 80%;
+    max-width: 30em;
+    margin: auto;
+  }
+  
+  /* Style the chart container */
+  .chart-container {
+    width: 100%;
+    margin: auto;
+    position: relative;
+  }
+  
+  /* Add some space between the dropdown and chart containers on small screens */
+  @media screen and (max-width: 576px) {
+    .dropdown-container {
+      margin-bottom: 1em;
+    }
+    .chart-container {
+      margin-top: 1em;
+    }
+    /* Move the legend below the chart on small screens */
+    .chart-container .plotly .legend {
+      position: absolute;
+      bottom: -2em;
+      left: 0;
+      right: 0;
+      margin: 0;
+    }
+  }
+  /* Make the chart responsive on small screens */
+  .chart-container .plotly-graph {
+    max-width: 100%;
+    height: auto;
+  }

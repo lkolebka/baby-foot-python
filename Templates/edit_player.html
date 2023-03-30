@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+  <title>Calculate odds</title>
+  <style>
+    .action-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+        } 
+        .action {
+          background-color: lightgray;
+          height: 100px;
+          border-radius: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .action:nth-child(5) {
+        background: linear-gradient(141.13deg, #2f61e9 26.29%, #1b42ab 100%);
+        color: #fff;
+        }
+
+        .action:nth-child(6) {
+        background: linear-gradient(141.13deg, #3077e2 26.29%, #36a5ef 100%);
+        color: #fff;
+         }
+  </style>
+  <script>
+    function confirmSubmit() {
+      var result = confirm("Are you sure you want to modify this player?");
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  </script>
+</head>
+<body>
+    <h1>Edit Player</h1>
+    <form method="POST" action="/edit_player/{{ player_id }}">
+        <input type="hidden" name="player_id" value="{{ player_id }}">
+        <label for="first_name"class="team-label">First Name</label>
+        <input type="text" id="first_name" name="first_name" value="{{ player.first_name }}"><br><br>
+        <label for="last_name"class="team-label">Last Name</label>
+        <input type="text" id="last_name" name="last_name" value="{{ player.last_name }}"><br><br>
+        <label for="active"class="team-label">Active</label>
+        <input type="checkbox" class="team-label" id="active" name="active" {% if player.active %}checked{% endif %}><br><br>
+        <input type="submit" value="Save">
+    </form>
+</table>
+
+<div class="do-more">
+    <h2>Explore more options</h2>
+    <p>Make the most of your game time with this all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+</div>
+
+<div class="action-grid">
+  <a href="/" class="action action1">Upload game</a>
+  <a href="calculate_odds" class="action action2">Calculate odds</a>
+  <a href="/add_player" class="action action3">Add player</a>
+  <a href="/players" class="action action4">Player list</a>
+  <a href="/delete_match" class="action action5">Delete Match</a>
+  <a href="/players" class="action action6">Player list</a>
+</div>
+</body>
+</html>

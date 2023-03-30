@@ -178,3 +178,66 @@ JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
 WHERE p.active = true
 ORDER BY lpr.rating DESC;
 
+/*retrive all the matchs*/
+SELECT 
+    m.match_id as ID,
+	P1.first_name AS player_1,
+    P2.first_name AS player_2,
+    M.winning_team_score AS score_team_1,
+    P3.first_name AS player_3,
+    P4.first_name AS player_4,
+    M.losing_team_score AS score_team_2,
+    M.match_timestamp
+FROM Match M
+JOIN Team WT ON M.winning_team_id = WT.team_id
+JOIN Team LT ON M.losing_team_id = LT.team_id
+JOIN Player P1 ON WT.team_player_1_id = P1.player_id
+JOIN Player P2 ON WT.team_player_2_id = P2.player_id
+JOIN Player P3 ON LT.team_player_1_id = P3.player_id
+JOIN Player P4 ON LT.team_player_2_id = P4.player_id
+WHERE M.match_timestamp >= '2023-03-01 13:33:15'AND M.match_timestamp <= '2023-04-01 13:33:15';
+
+
+/*retrieve the rating from a specific date*/
+SELECT 
+    CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, 
+    pr.rating, 
+    COUNT(DISTINCT pm.match_id) as num_matches,
+    pr.player_rating_timestamp
+FROM Player p
+JOIN (
+    SELECT 
+        pm.player_id, 
+        pr.rating, 
+        pr.player_rating_timestamp,
+        pm.match_id
+    FROM PlayerMatch pm
+    JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+    WHERE pr.player_rating_timestamp = (
+        SELECT MAX(pr2.player_rating_timestamp)
+        FROM PlayerMatch pm2
+        JOIN PlayerRating pr2 ON pm2.player_match_id = pr2.player_match_id
+        WHERE pm2.player_id = pm.player_id
+          AND pr2.player_rating_timestamp >= '2023-01-23' AND pr2.player_rating_timestamp <= '2023-02-22'
+    ) AND pm.player_id IN (
+        SELECT DISTINCT pm3.player_id
+        FROM PlayerMatch pm3
+        JOIN PlayerRating pr3 ON pm3.player_match_id = pr3.player_match_id
+        WHERE pr3.player_rating_timestamp >= '2023-01-23' AND pr3.player_rating_timestamp <= '2023-02-22'
+    )
+) pr ON p.player_id = pr.player_id
+JOIN PlayerMatch pm ON p.player_id = pm.player_id
+WHERE p.active = true AND pm.match_id IN (
+    SELECT match_id FROM Match
+    WHERE match_timestamp >= '2023-01-23' AND match_timestamp <= '2023-02-22'
+)
+GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
+ORDER BY pr.rating DESC;
+
+/*delete a specific match*/
+DELETE FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE match_id = 1157);
+DELETE FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE match_id = 1157);
+DELETE FROM playermatch WHERE match_id = 1157;
+DELETE FROM teammatch WHERE match_id = 1557;
+DELETE FROM match WHERE match_id = 1557
+

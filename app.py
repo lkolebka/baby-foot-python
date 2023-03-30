@@ -1,8 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 import psycopg2
 from config import DATABASE_CONFIG
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import math
+
+
+
+
 
 app = Flask(__name__, template_folder='Templates')
 
@@ -513,7 +517,7 @@ def get_players():
             password=DATABASE_CONFIG['password']
         )
         cursor = conn.cursor()
-        query = "SELECT first_name FROM player ORDER BY first_name ASC;"  # 
+        query = "SELECT first_name FROM player WHERE active = true ORDER BY first_name ASC;"  # 
         cursor.execute(query)
         players = cursor.fetchall()
         print("Players fetched:", players)  # Add this line to print the fetched players
@@ -528,33 +532,109 @@ def get_players():
         if conn:
             conn.close()
 
-def get_latest_player_ratings():
-    query = '''
-            WITH latest_player_ratings AS (
-            SELECT pm.player_id, pr.rating, pr.player_rating_timestamp
-            FROM PlayerRating pr
-            JOIN PlayerMatch pm ON pr.player_match_id = pm.player_match_id
-            WHERE pr.player_rating_timestamp = (
-                SELECT MAX(pr2.player_rating_timestamp)
-                FROM PlayerRating pr2
-                JOIN PlayerMatch pm2 ON pr2.player_match_id = pm2.player_match_id
-                WHERE pm2.player_id = pm.player_id
-            )
-        )
-
-        SELECT CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, lpr.rating, lpr.player_rating_timestamp
-        FROM Player p
-        JOIN latest_player_ratings lpr ON p.player_id = lpr.player_id
-        WHERE p.active = true
-        ORDER BY lpr.rating DESC;
-    '''
+def get_players_full_list():
+    query = 'SELECT player_id, first_name, last_name, active FROM Player ORDER BY player_id'
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
         cur.execute(query)
+        players = cur.fetchall()
+
+    return players
+
+def get_latest_player_ratings(month=None):
+    now = datetime.now()
+    default_month = now.month
+    default_year = now.year
+    selected_month = int(month) if month else default_month
+    start_date = f'{default_year}-{selected_month:02d}-01 00:00:00'
+    end_date = f'{default_year}-{selected_month:02d}-{get_last_day_of_month(selected_month, default_year):02d} 23:59:59'
+
+    query = '''
+                SELECT 
+            CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, 
+            pr.rating, 
+            COUNT(DISTINCT pm.match_id) as num_matches,
+            pr.player_rating_timestamp
+        FROM Player p
+        JOIN (
+            SELECT 
+                pm.player_id, 
+                pr.rating, 
+                pr.player_rating_timestamp,
+                pm.match_id
+            FROM PlayerMatch pm
+            JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+            WHERE pr.player_rating_timestamp = (
+                SELECT MAX(pr2.player_rating_timestamp)
+                FROM PlayerMatch pm2
+                JOIN PlayerRating pr2 ON pm2.player_match_id = pr2.player_match_id
+                WHERE pm2.player_id = pm.player_id
+                AND pr2.player_rating_timestamp >= %s AND pr2.player_rating_timestamp <= %s
+            ) AND pm.player_id IN (
+                SELECT DISTINCT pm3.player_id
+                FROM PlayerMatch pm3
+                JOIN PlayerRating pr3 ON pm3.player_match_id = pr3.player_match_id
+                WHERE pr3.player_rating_timestamp >= %s AND pr3.player_rating_timestamp <= %s
+            )
+        ) pr ON p.player_id = pr.player_id
+        JOIN PlayerMatch pm ON p.player_id = pm.player_id
+        WHERE pm.match_id IN (
+            SELECT match_id FROM Match
+            WHERE match_timestamp >= %s AND match_timestamp <= %s
+        )
+        GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
+        ORDER BY pr.rating DESC;
+    '''
+    with psycopg2.connect(**DATABASE_CONFIG) as conn:
+        cur = conn.cursor()
+        cur.execute(query, (start_date, end_date, start_date, end_date,start_date, end_date))
         player_ratings = cur.fetchall()
+
 
     return player_ratings
 
+def get_match_list(month=None):
+    now = datetime.now()
+    default_month = now.month
+    default_year = now.year
+    selected_month = int(month) if month else default_month
+    start_date = f'{default_year}-{selected_month:02d}-01 00:00:00'
+    end_date = f'{default_year}-{selected_month:02d}-{get_last_day_of_month(selected_month, default_year):02d} 23:59:59'
+    query = f'''
+        SELECT 
+            m.match_id as ID,
+            P1.first_name AS player_1,
+            P2.first_name AS player_2,
+            M.winning_team_score AS score_team_1,
+            P3.first_name AS player_3,
+            P4.first_name AS player_4,
+            M.losing_team_score AS score_team_2,
+            M.match_timestamp
+        FROM Match M
+        JOIN Team WT ON M.winning_team_id = WT.team_id
+        JOIN Team LT ON M.losing_team_id = LT.team_id
+        JOIN Player P1 ON WT.team_player_1_id = P1.player_id
+        JOIN Player P2 ON WT.team_player_2_id = P2.player_id
+        JOIN Player P3 ON LT.team_player_1_id = P3.player_id
+        JOIN Player P4 ON LT.team_player_2_id = P4.player_id
+        WHERE M.match_timestamp >= %s AND M.match_timestamp <= %s
+        ORDER BY M.match_timestamp DESC;
+    '''
+    with psycopg2.connect(**DATABASE_CONFIG) as conn:
+        cur = conn.cursor()
+        cur.execute(query, (start_date, end_date))
+        print(start_date,end_date)
+        matches = cur.fetchall()
+
+    return matches
+
+
+
+def get_last_day_of_month(month, year):
+    if month == 12:
+        return 31
+    else:
+        return (date(year, month+1, 1) - timedelta(days=1)).day
 
 @app.route('/', methods=['GET', 'POST'])
 def create_game():
@@ -642,7 +722,8 @@ def thank_you():
 @app.route('/delete_last_match', methods=['POST'])
 def delete_last_match_route():
     delete_last_match()
-    return redirect(url_for('create_game'), code=302)
+    return redirect(url_for('/'))
+
 
 @app.route('/calculate_odds', methods=['GET', 'POST'])
 def calculate_expected_score_route():
@@ -674,10 +755,93 @@ def calculate_expected_score_route():
 
 @app.route('/rating')
 def rating():
-    player_ratings = get_latest_player_ratings()
-    return render_template('rating.html', player_ratings=player_ratings)
+    month = request.args.get('month')
+    if not month:
+       month = request.args.get('month', datetime.now().strftime('%m'))
+    player_ratings = get_latest_player_ratings(month=month)
+    return render_template('rating.html', player_ratings=player_ratings, month=month)
 
 
+@app.route('/match_list')
+def match_list():
+    month = request.args.get('month')
+    if not month:
+        month = request.args.get('month', datetime.now().strftime('%m'))
+    matches = get_match_list(month=month)
+    return render_template('match_list.html', matches=matches, month=month)
+
+@app.route('/players')
+def players_list_showed():
+    players_list = get_players_full_list()
+    print(players_list)  # Add this line to print the contents of players_list
+    return render_template('players.html', players_list=players_list)
+
+
+@app.route('/add_player', methods=['GET', 'POST'])
+def add_player():
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        conn = psycopg2.connect(**DATABASE_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("SELECT nextval('player_id_seq')")
+        id_next_player = cursor.fetchone()[0]
+        cursor.execute("INSERT INTO player (player_id, first_name, last_name) VALUES (%s, %s, %s)", (id_next_player, first_name, last_name))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return redirect(url_for('players_list_showed'))
+    else:
+        return render_template('add_player.html')
+
+    
+@app.route('/edit_player/<int:player_id>', methods=['GET', 'POST'])
+def edit_player(player_id):
+    if request.method == 'POST':
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        active = True if request.form.get('active') else False
+
+        with psycopg2.connect(**DATABASE_CONFIG) as conn:
+            with conn.cursor() as cur:
+                cur.execute("UPDATE Player SET first_name = %s, last_name = %s, active = %s WHERE player_id = %s",
+                            (first_name, last_name, active, player_id))
+                conn.commit()
+
+        return redirect(url_for('players_list_showed'))
+    else:
+        with psycopg2.connect(**DATABASE_CONFIG) as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT player_id, first_name, last_name, active FROM Player WHERE player_id = %s", (player_id,))
+                player = cur.fetchone()
+
+        if player:
+            return render_template('edit_player.html', player_id=player[0], player=player[1:])
+        else:
+            abort(404)
+
+@app.route('/delete_match', methods=['GET', 'POST'])
+def delete_match():
+    if request.method == 'POST':
+        match_id = request.form['match_id']
+
+        with psycopg2.connect(**DATABASE_CONFIG) as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    DELETE FROM playerrating WHERE player_match_id IN (
+                        SELECT player_match_id FROM playermatch WHERE match_id = %s);
+                    DELETE FROM teamrating WHERE team_match_id IN (
+                        SELECT team_match_id FROM teammatch WHERE match_id = %s);
+                    DELETE FROM playermatch WHERE match_id = %s;
+                    DELETE FROM teammatch WHERE match_id = %s;
+                    DELETE FROM match WHERE match_id = %s;
+                """, (match_id, match_id, match_id, match_id, match_id))
+                conn.commit()
+
+        return redirect(url_for('add_player'))
+    else:
+        return render_template('delete_match.html')
+    
 if __name__ == '__main__':
     app.static_folder = 'static'
     app.run(host='0.0.0.0', port=8081) 

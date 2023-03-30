@@ -3,6 +3,14 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/android-chrome-192x192.png')}}">
+  <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='icons/android-chrome-512x512.png')}}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='icons/apple-touch-icon.png')}}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/favicon-32x32.png')}}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/favicon-16x16.png')}}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='icons/favicon.ico')}}">
+
   <title>Calculate odds</title>
   <style>
     .action-grid {
@@ -85,7 +93,6 @@
   
   <br>
   
-    <br>
     <input type="submit" value="calculate odds">
   </form>
   
@@ -93,7 +100,7 @@
 <!-- Do more section -->
 <div class="do-more">
   <h2>Explore more options</h2>
-  <p>Make the most of your game time with our all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+  <p>Make the most of your game time with this all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
 </div>
 
 
@@ -103,7 +110,7 @@
   <a href="/" class="action action2">Upload game</a>
   <a href="calculate_odds" class="action action2">Calculate odds</a>
   <a href="/rating" class="action action3">Ranking</a>
-  <a href="/rating" class="action action4">Comming soon</a>
+  <a href="/match_list" class="action action4">Match history</a>
 </div>
 
 

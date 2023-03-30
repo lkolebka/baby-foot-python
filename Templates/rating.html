@@ -21,43 +21,78 @@
         }
        
       </style>
-          <body class="thank-you-page">
+          <body class="match-page">
 
 </head>
 <body>
-    <h1>Player Rankings</h1>
-<p>See where you stand in the competition!
-
-<table style="text-align: center;">
+    <h1>Player rankings</h1>
+<p>See where you stand in the competition!<br>
+    <span class="match-description">Please choose a month to view the ranking</span></p>
+    <form method="GET" class="form-month">
+        <label for="month" class="month-label">Month</label>
+        <select name="month" id="month">
+            <option value="01" {% if month == "01" %}selected{% endif %}>January</option>
+            <option value="02" {% if month == "02" %}selected{% endif %}>February</option>
+            <option value="03" {% if month == "03" %}selected{% endif %}>March</option>
+            <option value="04" {% if month == "04" %}selected{% endif %}>April</option>
+            <option value="05" {% if month == "05" %}selected{% endif %}>May</option>
+            <option value="06" {% if month == "06" %}selected{% endif %}>June</option>
+            <option value="07" {% if month == "07" %}selected{% endif %}>July</option>
+            <option value="08" {% if month == "08" %}selected{% endif %}>August</option>
+            <option value="09" {% if month == "09" %}selected{% endif %}>September</option>
+            <option value="10" {% if month == "10" %}selected{% endif %}>October</option>
+            <option value="11" {% if month == "11" %}selected{% endif %}>November</option>
+            <option value="12" {% if month == "12" %}selected{% endif %}>December</option>
+        </select>
+ 
+        <input type="submit" class="button" value="Submit">
+    </form>
+    <table class="rating-table">
     <thead>
         <tr>
             <th>Rank</th>
             <th>Name</th>
             <th>Rating</th>
-            <th>Last Match</th>
+            <th>Games Played</th>
+            <th>Last Game</th>
         </tr>
     </thead>
     <tbody>
-        {% for player in player_ratings %}
+        {% for player in player_ratings if player[2] >= 10 %}
             <tr>
-                <td>
+                <td style="text-align: center;">
                     {% if loop.index == 1 %}
                         🥇
                     {% elif loop.index == 2 %}
                         🥈
                     {% elif loop.index == 3 %}
                         🥉
+                    {% elif loop.last %}
+                        💩
                     {% else %}
                         {{ loop.index }}
                     {% endif %}
                 </td>
                 <td>{{ player[0] }}</td>
                 <td>{{ player[1] }}</td>
-                <td>{{ player[2].strftime('%d-%m-%y %H:%M') }}</td>
+                <td style="text-align: center;">{{ player[2] }}</td>
+                <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
+            </tr>
+
+        {% endfor %}
+        {% for player in player_ratings if player[2] < 10 %}
+            <tr class="less-than-10">
+                <td style="text-align: center;">🚫</td>
+                <td>{{ player[0] }}</td>
+                <td>{{ player[1] }}</td>
+                <td style="text-align: center;">{{ player[2] }}</td>
+                <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+    
+    
 
 </div>
 </div>
@@ -66,14 +101,14 @@
 <!-- Do more section -->
 <div class="do-more">
   <h2>Explore more options</h2>
-  <p>Make the most of your game time with our all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+  <p>Make the most of your game time with this all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
 </div>
 
 <div class="action-grid">
-  <a href="/" class="action action2">Upload game</a>
-  <a href="calculate_odds" class="action action2">Calculate odds</a>
-  <a href="/rating" class="action action3">Ranking</a>
-  <a href="/rating" class="action action4">Comming soon</a>
+    <a href="/" class="action action2">Upload game</a>
+    <a href="calculate_odds" class="action action2">Calculate odds</a>
+    <a href="/rating" class="action action3">Ranking</a>
+    <a href="/match_list" class="action action4">Match history</a>
 </div>
 </body>
 
