@@ -820,6 +820,27 @@ def edit_player(player_id):
         else:
             abort(404)
 
+@app.route('/delete_match', methods=['GET', 'POST'])
+def delete_match():
+    if request.method == 'POST':
+        match_id = request.form['match_id']
+
+        with psycopg2.connect(**DATABASE_CONFIG) as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    DELETE FROM playerrating WHERE player_match_id IN (
+                        SELECT player_match_id FROM playermatch WHERE match_id = %s);
+                    DELETE FROM teamrating WHERE team_match_id IN (
+                        SELECT team_match_id FROM teammatch WHERE match_id = %s);
+                    DELETE FROM playermatch WHERE match_id = %s;
+                    DELETE FROM teammatch WHERE match_id = %s;
+                    DELETE FROM match WHERE match_id = %s;
+                """, (match_id, match_id, match_id, match_id, match_id))
+                conn.commit()
+
+        return redirect(url_for('add_player'))
+    else:
+        return render_template('delete_match.html')
     
 if __name__ == '__main__':
     app.static_folder = 'static'
