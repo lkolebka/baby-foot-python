@@ -234,6 +234,59 @@ WHERE p.active = true AND pm.match_id IN (
 GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
 ORDER BY pr.rating DESC;
 
+/*retreive ranking with % of winning*/
+SELECT 
+    wp.player_name,
+    wp.rating,
+    wp.num_matches,
+    wp.winning_percentage,
+    wp.player_rating_timestamp
+FROM (
+    SELECT 
+        CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) AS player_name,
+        pr.rating,
+        COUNT(DISTINCT pm.match_id) AS num_matches,
+        pr.player_rating_timestamp,
+        ROUND(100 * COUNT(CASE 
+                            WHEN tm.team_id = m.winning_team_id THEN 1
+                            ELSE NULL 
+                        END) / COUNT(pm.match_id), 2) AS winning_percentage
+    FROM Player p
+    JOIN (
+        SELECT 
+            pm.player_id, 
+            pr.rating, 
+            pr.player_rating_timestamp,
+            pm.match_id
+        FROM PlayerMatch pm
+        JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+        WHERE pr.player_rating_timestamp = (
+            SELECT MAX(pr2.player_rating_timestamp)
+            FROM PlayerMatch pm2
+            JOIN PlayerRating pr2 ON pm2.player_match_id = pr2.player_match_id
+            WHERE pm2.player_id = pm.player_id
+              AND pr2.player_rating_timestamp >= '2023-03-01' AND pr2.player_rating_timestamp <= '2023-03-31'
+        ) AND pm.player_id IN (
+            SELECT DISTINCT pm3.player_id
+            FROM PlayerMatch pm3
+            JOIN PlayerRating pr3 ON pm3.player_match_id = pr3.player_match_id
+            WHERE pr3.player_rating_timestamp >= '2023-03-01' AND pr3.player_rating_timestamp <= '2023-03-31'
+        )
+    ) pr ON p.player_id = pr.player_id
+    JOIN PlayerMatch pm ON p.player_id = pm.player_id
+    JOIN Team t ON p.player_id = ANY(ARRAY[t.team_player_1_id, t.team_player_2_id])
+    JOIN TeamMatch tm ON tm.team_id = t.team_id AND tm.match_id = pm.match_id
+    JOIN Match m ON tm.match_id = m.match_id
+    WHERE p.active = true AND pm.match_id IN (
+        SELECT match_id FROM Match
+        WHERE match_timestamp >= '2023-03-01' AND match_timestamp <= '2023-03-31'
+    )
+    GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
+) wp
+JOIN Player p ON wp.player_name = CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1))
+ORDER BY wp.rating DESC; 
+
+
 /*delete a specific match*/
 DELETE FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE match_id = 1157);
 DELETE FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE match_id = 1157);
