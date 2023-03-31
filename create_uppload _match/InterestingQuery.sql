@@ -284,7 +284,7 @@ FROM (
     GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
 ) wp
 JOIN Player p ON wp.player_name = CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1))
-ORDER BY wp.rating DESC;
+ORDER BY wp.rating DESC; 
 
 
 /*delete a specific match*/
