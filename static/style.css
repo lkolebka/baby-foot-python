@@ -555,7 +555,7 @@ input[type="submit"]:hover {
 }
 
   .month-label {
-    padding-top: 0.1em;
+    padding-top: 0.5em;
     margin-bottom: 0.3em;
     color: rgb(0, 0, 0); /* Example */
     font-weight: bold;

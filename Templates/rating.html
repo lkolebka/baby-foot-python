@@ -27,8 +27,16 @@
 <body>
     <h1>Player rankings</h1>
 <p>See where you stand in the competition!<br>
-    <span class="match-description">Please choose a month to view the ranking</span></p>
+    <span class="match-description">Please pick a date to view the ranking</span></p>
+    {% set current_year = now.year %}
+    {% set current_month = now.strftime('%m') %}
     <form method="GET" class="form-month">
+        <label for="year" class="month-label">Year</label>
+        <select name="year" id="year">
+            {% for y in range(2021, now.year+1) %}
+                <option value="{{ y }}" {% if y|string() == year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
         <label for="month" class="month-label">Month</label>
         <select name="month" id="month">
             <option value="01" {% if month == "01" %}selected{% endif %}>January</option>

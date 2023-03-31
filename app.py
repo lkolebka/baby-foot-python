@@ -541,13 +541,14 @@ def get_players_full_list():
 
     return players
 
-def get_latest_player_ratings(month=None):
+def get_latest_player_ratings(month=None, year=None):
     now = datetime.now()
     default_month = now.month
     default_year = now.year
+    selected_year = int(year) if year else default_year
     selected_month = int(month) if month else default_month
-    start_date = f'{default_year}-{selected_month:02d}-01 00:00:00'
-    end_date = f'{default_year}-{selected_month:02d}-{get_last_day_of_month(selected_month, default_year):02d} 23:59:59'
+    start_date = f'{selected_year}-{selected_month:02d}-01 00:00:00'
+    end_date = f'{selected_year}-{selected_month:02d}-{get_last_day_of_month(selected_month, selected_year):02d} 23:59:59'
 
     query = '''
                 SELECT 
@@ -755,11 +756,11 @@ def calculate_expected_score_route():
 
 @app.route('/rating')
 def rating():
-    month = request.args.get('month')
-    if not month:
-       month = request.args.get('month', datetime.now().strftime('%m'))
-    player_ratings = get_latest_player_ratings(month=month)
-    return render_template('rating.html', player_ratings=player_ratings, month=month)
+    month = request.args.get('month', datetime.now().strftime('%m'))
+    year = request.args.get('year', datetime.now().strftime('%Y'))
+    player_ratings = get_latest_player_ratings(month=month, year=year)
+    now = datetime.now()
+    return render_template('rating.html', player_ratings=player_ratings, month=month, year=year, now=now)
 
 
 @app.route('/match_list')
