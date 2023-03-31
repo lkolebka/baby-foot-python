@@ -53,8 +53,7 @@
             <th>Rank</th>
             <th>Name</th>
             <th>Rating</th>
-            <th>Games </th>
-            <th>Victory</th>
+            <th>Games</th>
             <th>Last Game</th>
         </tr>
     </thead>
@@ -77,10 +76,9 @@
                 <td>{{ player[0] }}</td>
                 <td>{{ player[1] }}</td>
                 <td style="text-align: center;">{{ player[2] }}</td>
-                <td style="text-align: center;">{{ player[3] }}%</td>
-                <td>{{ player[4].strftime('%d-%m-%y %H:%M') }}</td>
+                <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
             </tr>
-    
+
         {% endfor %}
         {% for player in player_ratings if player[2] < 10 %}
             <tr class="less-than-10">
@@ -88,12 +86,11 @@
                 <td>{{ player[0] }}</td>
                 <td>{{ player[1] }}</td>
                 <td style="text-align: center;">{{ player[2] }}</td>
-                <td style="text-align: center;">{{ player[3] }}%</td>
-                <td>{{ player[4].strftime('%d-%m-%y %H:%M') }}</td>
+                <td>{{ player[3].strftime('%d-%m-%y %H:%M') }}</td>
             </tr>
         {% endfor %}
     </tbody>
-    </table>
+</table>
     
     
 
