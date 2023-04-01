@@ -2,6 +2,8 @@ html {
     overflow-x: hidden;
 }
 
+
+
 body {
     margin: 0;
     padding: 0;
@@ -255,6 +257,22 @@ input[type="submit"]:hover {
     
     
   }
+
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+.action {
+    background-color: lightgray;
+    height: 100px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
   
   /* Individual actions */
 .action:nth-child(1) {
@@ -288,9 +306,9 @@ input[type="submit"]:hover {
 }
 
   /* Common styles for all actions */
-  .action {
+.action {
   padding: 0.2em;
-  border-radius: 90px;
+  border-radius: 5px;
   text-align: center;
   display: flex;
   justify-content: center;
@@ -299,7 +317,6 @@ input[type="submit"]:hover {
   font-size: 1.5em;
   font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
   word-wrap: normal;
-
   }
   
   /*table odds and probability*/
@@ -617,47 +634,61 @@ input[type="submit"]:hover {
 }
 
 .dropdown-container {
-  width: 50%;
   margin: auto;
 }
 
 .chart-container {
-  width: 80%;
   margin: auto;
   display: flex;
   flex-direction: column;
-  height: 400px;
 }
 
 .nsewdrag.drag {
   width: 80%;
   margin: 0.5em auto;
   padding: 0.4em;
-  position: absolute;
+  position: relative;
   top: 50px;
   left: 50px;
 }
 
-  
-  /* Add some space between the dropdown and chart containers on small screens */
-  @media screen and (max-width: 576px) {
-    .dropdown-container {
-      margin-bottom: 1em;
-    }
-    .chart-container {
-      margin-top: 1em;
-    }
-    /* Move the legend below the chart on small screens */
-    .chart-container .plotly .legend {
-      position: absolute;
-      bottom: -2em;
-      left: 0;
-      right: 0;
-      margin: 0;
-    }
+/* Add some space between the dropdown and chart containers on small screens */
+@media screen and (max-width: 576px) {
+  .dropdown-container {
+    width: 100%;
+    margin-bottom: 1em;
   }
-  /* Make the chart responsive on small screens */
-  .chart-container .plotly-graph {
-    max-width: 100%;
-    height: auto;
+
+  .chart-container {
+    width: 100%;
+    height: calc(100vh - 200px);
+    margin-top: 1em;
   }
+
+  /* Move the legend below the chart on small screens */
+  .chart-container .plotly .legend {
+    position: absolute;
+    bottom: -2em;
+    left: 0;
+    right: 0;
+    margin: 0;
+  }
+}
+
+/* Make the chart responsive on larger screens */
+@media screen and (min-width: 577px) {
+  .dropdown-container {
+    width: 50%;
+  }
+
+  .chart-container {
+    width: 80%;
+    height: 500px;
+  }
+}
+
+/* Set the graph size based on the screen size */
+#rating-graph {
+  width: 100%;
+  height: 100%;
+}
