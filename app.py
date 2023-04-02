@@ -980,7 +980,7 @@ def update_rating_graph(players):
                     GROUP BY DATE_TRUNC('week', m.match_timestamp)
                     ORDER BY week_start ASC"""
         data = pd.read_sql(query, engine)
-        fig.add_trace(go.Scatter(x=data['week_start'], y=data['rating'], name=player))
+        fig.add_trace(go.Scatter(x=data['week_start'], y=data['rating'], name=player, line=dict(shape='spline')))
     fig.update_xaxes(title_text='')
     fig.update_yaxes(title_text='')
     fig.update_layout(yaxis={'categoryorder':'total ascending'})
