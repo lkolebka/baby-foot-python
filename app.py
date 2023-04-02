@@ -875,13 +875,13 @@ dash_app = dash.Dash(__name__, server=app, external_stylesheets=[dbc.themes.BOOT
 
 
 # Your Dash app layout and callbacks
-def get_responsive_margins():
-    screen_width = os.get_terminal_size().columns
+#def get_responsive_margins():
+ #   screen_width = os.get_terminal_size().columns
 
-    if screen_width <= 576:  # Small screens (e.g., mobile devices)
-        return dict(l=0, r=0, t=30, b=10)
-    else:  # Larger screens (e.g., desktop)
-        return dict(l=30, r=30, t=50, b=30)
+  #  if screen_width <= 576:  # Small screens (e.g., mobile devices)
+   #     return dict(l=0, r=0, t=30, b=10)
+    #else:  # Larger screens (e.g., desktop)
+     #   return dict(l=30, r=30, t=50, b=30)
 
 fontFormat = dict(family="Segoe UI, Roboto, Helvetica Neue, Helvetica, Microsoft YaHei, Meiryo, Meiryo UI, Arial Unicode MS, sans-serif",
                   size=18,)
@@ -991,7 +991,7 @@ def update_rating_graph(players):
     # Set different width and height values based on screen size
     fig.update_layout(
     autosize=True,
-    margin=get_responsive_margins(),
+    margin= dict(l=0, r=0, t=30, b=10),
     paper_bgcolor="white",
     plot_bgcolor="white",
     dragmode='zoom',
