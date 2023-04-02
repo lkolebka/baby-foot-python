@@ -931,16 +931,22 @@ dash_app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             html.Div([
-                html.A('Upload game', href='/', className='action action1'),
-                html.A('Calculate odds', href='/calculate_odds', className='action action2'),
-                html.A('Add player', href='/add_player', className='action action3'),
-                html.A('Player list', href='/players', className='action action4')
-            ], className='action-grid')
+                html.Div([
+                    html.A('Upload game', href='/',
+                           className='action action1'),
+                    html.A('Calculate odds', href='/calculate_odds',
+                           className='action action2'),
+                    html.A('Add player', href='/add_player',
+                           className='action action3'),
+                    html.A('Player list', href='/players',
+                           className='action action4'),
+                ], className='action-grid')
+            ]),
+            width=12
         )
     ], style={"margin-top": "20px"}),
+    
 ])
-
-
 
 
 
