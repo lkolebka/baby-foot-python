@@ -45,3 +45,4 @@ Werkzeug==2.2.2
 gunicorn==20.1.0
 user-agents==2.2.0
 sqlalchemy==1.4.29
+dash-bootstrap-components==1.4.1
