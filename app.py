@@ -5,7 +5,7 @@ from datetime import datetime, date, timedelta
 import math
 from flask import Flask
 import dash
-from dash import Dash, html, dcc
+from dash import html, dcc
 from dash.dependencies import Input, Output
 import pandas as pd
 import plotly.express as px
@@ -13,8 +13,6 @@ import plotly.graph_objs as go
 from sqlalchemy import create_engine
 from config import DATABASE_CONFIG
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
 import sys
 import os
 
@@ -881,7 +879,7 @@ def get_responsive_margins():
     screen_width = os.get_terminal_size().columns
 
     if screen_width <= 576:  # Small screens (e.g., mobile devices)
-        return dict(l=10, r=10, t=20, b=10)
+        return dict(l=0, r=0, t=30, b=10)
     else:  # Larger screens (e.g., desktop)
         return dict(l=30, r=30, t=50, b=30)
 
@@ -913,9 +911,14 @@ dash_app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(
             dcc.Graph(id='rating-graph'),
-            width=12
+            width={"size": 12, "offset": 0},
+            lg={"size": 12, "offset": 0},
+            md={"size": 12, "offset": 0},
+            sm={"size": 12, "offset": 0}
         )
-    ], style={"margin-top": "20px", "height": "calc(100vh - 200px)"}),
+    ], className="graph-row",style={"margin-top": "20px", "margin-right": "10px"})
+,
+    html.Div([
     dbc.Row([
         dbc.Col(
             html.Div([
@@ -927,26 +930,34 @@ dash_app.layout = dbc.Container([
             md={"size": 8, "offset": 2},
             sm={"size": 12, "offset": 0},
         )
-    ], style={"margin-top": "20px"}),
+    ], className="do-more", style={"margin-top": "20px"}),
     dbc.Row([
         dbc.Col(
             html.Div([
-                html.Div([
-                    html.A('Upload game', href='/',
-                           className='action action1'),
-                    html.A('Calculate odds', href='/calculate_odds',
-                           className='action action2'),
-                    html.A('Add player', href='/add_player',
-                           className='action action3'),
-                    html.A('Player list', href='/players',
-                           className='action action4'),
-                ], className='action-grid')
-            ]),
-            width=12
+                 html.Div([
+                                html.A('Upload game', href='/',
+                                       className='action action1'),
+                                html.A('Calculate odds', href='/calculate_odds',
+                                       className='action action2'),
+                                html.A('Ranking', href='/ranking',
+                                       className='action action3'),
+                                html.A('Match history', href='/match_list',
+                                       className='action action4'),
+                                # Add two more options
+                                html.A('Rating evolution', href='/rating_evolution',
+                                       className='action action5'),
+                                # Add Rating Evolution option
+                                html.A('Coming soon', href='/',
+                                       className='action action7'),
+                            ], className='action-grid')
+                        ]),
+                        width=12
         )
     ], style={"margin-top": "20px"}),
     
+], style={"margin-left": "0px","background-color": "#EEF0F9"})
 ])
+
 
 
 
@@ -1002,18 +1013,27 @@ def update_rating_graph(players):
         xanchor="center",  # Anchor the legend horizontally at the center
         x=0.5,  # Position the legend at the center along the X axis
         yanchor="bottom",  # Anchor the legend vertically at the bottom
-        y=-0.25,  # Position the legend slightly below the bottom along the Y axis
+        y=-0.22,  # Position the legend slightly below the bottom along the Y axis
     ),
 )
 
     
     fig.update_layout(
-        {
-            "title": {
-                "font": {"size": 12},
-            }
-        }
-    )
+    legend=dict(
+        font=dict(family='Segoe UI, Roboto, Helvetica Neue, Helvetica, Microsoft YaHei, Meiryo, Meiryo UI, Arial Unicode MS, sans-serif', size=12),
+        # other legend properties...
+    ),
+    xaxis=dict(
+        tickfont=dict(family='Segoe UI, Roboto, Helvetica Neue, Helvetica, Microsoft YaHei, Meiryo, Meiryo UI, Arial Unicode MS, sans-serif', size=12),
+
+    ),
+    yaxis=dict(
+        tickfont=dict(family='Segoe UI, Roboto, Helvetica Neue, Helvetica, Microsoft YaHei, Meiryo, Meiryo UI, Arial Unicode MS, sans-serif', size=12),
+
+    ),
+    # other layout properties...
+)
+
     
     return fig
 
