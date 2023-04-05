@@ -430,10 +430,14 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
         team2_actual_score = 1
        
     # Calculate the new Elo ratings for each player
+    
     player1_new_rating = player1_rating + k1 * point_factor  * (team1_actual_score - player1_expected_score)
     player2_new_rating = player2_rating + k2 * point_factor  * (team1_actual_score - player2_expected_score)
     player3_new_rating = player3_rating + k3 * point_factor  * (team2_actual_score - player3_expected_score)
     player4_new_rating = player4_rating + k4 * point_factor  * (team2_actual_score - player4_expected_score)
+
+
+    
 
     # Calculate the new Elo ratings for each team
     team1_new_rating = team1_rating + k5 * point_factor * (team1_actual_score - team1_expected_score)
