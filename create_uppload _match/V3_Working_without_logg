@@ -7,7 +7,6 @@ import logging
 # Set up logging to a file
 logging.basicConfig(filename='elo_log.txt', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
 
-
 # Connect to the database
 conn = psycopg2.connect(
     host=DATABASE_CONFIG['host'],
@@ -50,9 +49,6 @@ def get_team_match_id_by_timestamp_and_by_team_id(team1_id,team2_id, date, cur):
         team_match2_id = cur.fetchone()[0]
         return (team_match1_id,team_match2_id)
 
-
-
-
 # Get the player ID of the players playing a match
 def get_player_id(player1_name, player2_name, player3_name, player4_name, cur):
         cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player1_name,))
@@ -61,13 +57,11 @@ def get_player_id(player1_name, player2_name, player3_name, player4_name, cur):
         cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player2_name,))
         player2_id = cur.fetchone()[0]
 
-
         cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player3_name,))
         player3_id = cur.fetchone()[0]
 
         cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player4_name,))
         player4_id = cur.fetchone()[0]
-
 
         # Return a tuple containing all the player IDs
         return (player1_id, player2_id, player3_id, player4_id)
@@ -121,7 +115,6 @@ def number_of_games_player(player1_id, player2_id, player3_id, player4_id, date,
     # Return the number of games played by each player as a tuple
     return (number_of_game_player1, number_of_game_player2, number_of_game_player3, number_of_game_player4)
 
-
 def number_of_games_team(team1_id, team2_id,date, cur):
     cur.execute("SELECT COUNT(*) FROM Match WHERE (winning_team_id =%s OR losing_team_id = %s ) AND match_timestamp <=%s", (team1_id,team1_id,date))
     number_of_game_team_1 = cur.fetchone()[0] or 0 
@@ -140,7 +133,6 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
         player1_rating = result[0]
     else:
      player1_rating = 1500
-
 
     cur.execute("SELECT rating, player_rating_timestamp FROM playerrating WHERE player_match_id IN (SELECT player_match_id FROM playermatch WHERE player_id = %s) ORDER BY player_rating_timestamp DESC LIMIT 1;", (player2_id,))
     result = cur.fetchone()
@@ -166,7 +158,6 @@ def get_player_ratings(player1_id, player2_id, player3_id, player4_id, cur):
 
     return player1_rating, player2_rating, player3_rating, player4_rating
 
-
 def get_team_ratings(team1_id, team2_id, cur):
     cur.execute("SELECT rating, team_rating_timestamp FROM teamrating WHERE team_match_id IN (SELECT team_match_id FROM teammatch WHERE team_id = %s) ORDER BY team_rating_timestamp DESC LIMIT 1;", (team1_id,))
     result = cur.fetchone()
@@ -189,8 +180,6 @@ def get_team_ratings(team1_id, team2_id, cur):
 def calculate_point_factor(score_difference):
     return 2 + (math.log(score_difference + 1) / math.log(10)) ** 3
 
-
-
 # Iterate through the rows of the sheet
 for row in ws.rows:
 
@@ -204,7 +193,6 @@ for row in ws.rows:
     player3_name = row[4].value
     player4_name = row[5].value
     team2_score = row[6].value
-
     
     # Call the get_player_id function inside the loop
     player1_id, player2_id, player3_id, player4_id = get_player_id(player1_name, player2_name, player3_name, player4_name, cur)
@@ -229,7 +217,6 @@ for row in ws.rows:
 
     # Call the get_team_match_id_by_timestamp_and_by_team_id function inside the loop
     team_match1_id, team_match2_id  = get_team_match_id_by_timestamp_and_by_team_id(team1_id, team2_id, date, cur)
-
     
     # Calculate the expected scores for the players
     player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 500))
@@ -249,22 +236,15 @@ for row in ws.rows:
     player4_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player4_rating) / 500))
     player4_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player4_rating) / 500))
     player4_expected_score = (player4_expected_score_against_player1 + player4_expected_score_against_player2) / 2
-   
-    #input("Press enter to continue...")
+
 
     # Calculate the expected scores for the teams
     team1_expected_score = (player1_expected_score + player2_expected_score) / 2
     team2_expected_score = (player3_expected_score + player4_expected_score) / 2
 
-   
-    #input("Press enter to continue...")
-
-
-
     # Calculate the point factor to be used as a variable
     score_difference = abs(team1_score - team2_score)
     point_factor = calculate_point_factor(score_difference)
-   
     # Calculate the K value for each player based on the number of games played and their rating
 
     k1 = 50 / (1 + number_of_game_player1 / 300)
@@ -296,23 +276,19 @@ for row in ws.rows:
     # Calculate the new Elo ratings for each team
     team1_new_rating = team1_rating + k5 * point_factor * (team1_actual_score - team1_expected_score)
     team2_new_rating = team2_rating + k6 * point_factor * (team2_actual_score - team2_expected_score)
-    # Log the new ratings for teams
+
 
     # Update the database with the player ratings
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match1_id, player1_new_rating, date))
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES ( %s, %s, %s)", (player_match2_id, player2_new_rating, date))
     cur.execute("INSERT INTO playerrating (player_match_id,rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match3_id,player3_new_rating, date))
     cur.execute("INSERT INTO playerrating (player_match_id, rating, player_rating_timestamp) VALUES (%s, %s, %s)", (player_match4_id, player4_new_rating, date))
-  
     conn.commit()
 
     # Update the database with the team ratings
     cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match1_id, team1_new_rating, date))
     cur.execute("INSERT INTO teamrating (team_match_id, rating, team_rating_timestamp) VALUES (%s, %s, %s)", (team_match2_id, team2_new_rating, date))
-  
     conn.commit()
-
-
 
 # Close the cursor and connection
 print("Done !")
