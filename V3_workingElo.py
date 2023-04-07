@@ -348,7 +348,6 @@ for row in ws.rows:
     conn.commit()
     logging.info('_________________')
 
-
 # Close the cursor and connection
 print("Done !")
 cur.close()
