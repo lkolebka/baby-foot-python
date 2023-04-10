@@ -1,0 +1,5 @@
+player3_rating = 1500
+player1_rating = 1200
+
+player1_expected_score_against_player3 = 1 / (1 + 10**((player3_rating - player1_rating) / 400))
+print(player1_expected_score_against_player3)
