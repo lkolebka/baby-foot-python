@@ -15,6 +15,8 @@ from config import DATABASE_CONFIG
 import dash_bootstrap_components as dbc
 import sys
 import os
+import pytz
+
 
 
 
@@ -653,6 +655,9 @@ def get_last_day_of_month(month, year):
     else:
         return (date(year, month+1, 1) - timedelta(days=1)).day
 
+# Set the time zone you want to use
+timezone = 'Europe/Brussels'
+
 @app.route('/', methods=['GET', 'POST'])
 def create_game():
     players = get_players()
@@ -674,8 +679,9 @@ def create_game():
     
         print(f"date: {date}")
 
-         # Get the current time
-        now = datetime.now().strftime('%H:%M:%S')
+        # Get the current time in the desired time zone
+        tz = pytz.timezone(timezone)
+        now = datetime.now(tz).strftime('%H:%M:%S')
         
         # Convert date to string in the desired format with current time
         date_str = datetime.strptime(date, '%Y-%m-%d').strftime(f'%Y-%m-%d {now}')
