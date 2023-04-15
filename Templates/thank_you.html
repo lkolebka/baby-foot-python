@@ -27,31 +27,60 @@
 
     <p>Thank you for uploading the match details. <br>Here is a summary of the match:</p>
     <br>
+    
+  <!-- First table -->
+<table>
+    <tr>
+        <th>Attribute</th>
+        <th>Value</th>
+    </tr>
+    <tr>
+        <td>Match ID:</td>
+        <td style="text-align:center"> {{ last_match[0] }}</td>
+    </tr>
+    <tr>
+        <td>Date:</td>
+        <td style="text-align:center"> {{ last_match[1].strftime('%d/%m/%Y %H:%M:%S') }}</td>
+    </tr>
+    <tr>
+        <td>Winning Team:</td>
+        <td style="text-align:center"> {{ last_match[2] }} & {{ last_match[3] }} (score: {{ last_match[6] }})</td>
+    </tr>
+    <tr>
+        <td>Losing Team:</td>
+        <td style="text-align:center"> {{ last_match[4] }} & {{ last_match[5] }} (score: {{ last_match[7] }})</td>
+    </tr>
+</table>
+<br>
+<!-- Second table -->
+<table>
+    <tr>
+        <th>Players </th>
+        <th>Old Rating</th>
+        <th>Evolution</th>
+        <th>New Rating</th>
 
-        <table>
-            <tr>
-                <td>Match ID:</td>
-                <td>{{ last_match[0] }}</td>
-            </tr>
-            <tr>
-                <td>Date:</td>
-                <td>{{ last_match[1].strftime('%d/%m/%Y %H:%M:%S') }}</td>
-            </tr>
-            <tr>
-                <td>Winning Team:</td>
-                <td>{{ last_match[2] }} & {{ last_match[3] }} (score: {{ last_match[6] }})</td>
-            </tr>
-            <tr>
-                <td>Losing Team:</td>
-                <td>{{ last_match[4] }} & {{ last_match[5] }} (score: {{ last_match[7] }})</td>
-            </tr>
-        </table>
+    </tr>
+    {% for player in player_rat_bef_and_aft %}
+    <tr>
+        <td>{{ player[1] }}</td>
+        <td style="text-align:center">{{ player[2] }}</td>
+        <td style="text-align:center">{% if player[3] - player[2] > 0 %}+{% endif %}{{ player[3] - player[2] }}</td>
+        <td style="text-align:center">{{ player[3] }}</td>
+      </tr>
+    {% endfor %}
+</table>
 
+
+
+    
+    
         <p>If you need to make any corrections, you can delete the match by clicking the button below:</p>
-
+    
         <form class="thank-you-form" id="deleteForm" action="{{ url_for('delete_last_match_route') }}" method="post">
             <button type="submit" id="deleteButton">Delete Last Match</button>
         </form>
+    
     
     <script>
         var deleteForm = document.getElementById("deleteForm");
