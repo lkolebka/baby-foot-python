@@ -294,3 +294,21 @@ DELETE FROM playermatch WHERE match_id = 1157;
 DELETE FROM teammatch WHERE match_id = 1557;
 DELETE FROM match WHERE match_id = 1557
 
+/*average game perm months per players*/
+SELECT 
+    p.player_id, 
+    p.first_name || ' ' || p.last_name AS player_name, 
+    EXTRACT(YEAR FROM m.match_timestamp) * 12 + EXTRACT(MONTH FROM m.match_timestamp) AS month_num, 
+    COUNT(DISTINCT m.match_id) AS num_games, 
+    AVG(COUNT(DISTINCT m.match_id)) OVER (PARTITION BY p.player_id, EXTRACT(YEAR FROM m.match_timestamp) * 12 + EXTRACT(MONTH FROM m.match_timestamp)) AS avg_num_games_per_month_per_player 
+FROM 
+    Player p 
+    INNER JOIN PlayerMatch pm ON p.player_id = pm.player_id 
+    INNER JOIN Match m ON pm.match_id = m.match_id 
+GROUP BY 
+    p.player_id, 
+    player_name, 
+    month_num 
+ORDER BY 
+    p.player_id, 
+    month_num;

@@ -645,7 +645,6 @@ input[type="submit"]:hover {
 }
 
 .nsewdrag.drag {
-  width: 80%;
   margin: 0.5em auto;
   padding: 0.4em;
   position: relative;
@@ -680,6 +679,8 @@ input[type="submit"]:hover {
     left: 0%;
   }
 }
+
+
 
 /* Make the chart responsive on larger screens */
 @media screen and (min-width: 577px) {

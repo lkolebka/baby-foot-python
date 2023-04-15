@@ -15,6 +15,8 @@ from config import DATABASE_CONFIG
 import dash_bootstrap_components as dbc
 import sys
 import os
+import pytz
+
 
 
 
@@ -430,10 +432,14 @@ def process_game_data(player1_name, player2_name, team1_score, player3_name, pla
         team2_actual_score = 1
        
     # Calculate the new Elo ratings for each player
+    
     player1_new_rating = player1_rating + k1 * point_factor  * (team1_actual_score - player1_expected_score)
     player2_new_rating = player2_rating + k2 * point_factor  * (team1_actual_score - player2_expected_score)
     player3_new_rating = player3_rating + k3 * point_factor  * (team2_actual_score - player3_expected_score)
     player4_new_rating = player4_rating + k4 * point_factor  * (team2_actual_score - player4_expected_score)
+
+
+    
 
     # Calculate the new Elo ratings for each team
     team1_new_rating = team1_rating + k5 * point_factor * (team1_actual_score - team1_expected_score)
@@ -649,6 +655,9 @@ def get_last_day_of_month(month, year):
     else:
         return (date(year, month+1, 1) - timedelta(days=1)).day
 
+# Set the time zone you want to use
+timezone = 'Europe/Brussels'
+
 @app.route('/', methods=['GET', 'POST'])
 def create_game():
     players = get_players()
@@ -670,8 +679,9 @@ def create_game():
     
         print(f"date: {date}")
 
-         # Get the current time
-        now = datetime.now().strftime('%H:%M:%S')
+        # Get the current time in the desired time zone
+        tz = pytz.timezone(timezone)
+        now = datetime.now(tz).strftime('%H:%M:%S')
         
         # Convert date to string in the desired format with current time
         date_str = datetime.strptime(date, '%Y-%m-%d').strftime(f'%Y-%m-%d {now}')
@@ -875,13 +885,13 @@ dash_app = dash.Dash(__name__, server=app, external_stylesheets=[dbc.themes.BOOT
 
 
 # Your Dash app layout and callbacks
-def get_responsive_margins():
-    screen_width = os.get_terminal_size().columns
+#def get_responsive_margins():
+ #   screen_width = os.get_terminal_size().columns
 
-    if screen_width <= 576:  # Small screens (e.g., mobile devices)
-        return dict(l=0, r=0, t=30, b=10)
-    else:  # Larger screens (e.g., desktop)
-        return dict(l=30, r=30, t=50, b=30)
+  #  if screen_width <= 576:  # Small screens (e.g., mobile devices)
+   #     return dict(l=0, r=0, t=30, b=10)
+    #else:  # Larger screens (e.g., desktop)
+     #   return dict(l=30, r=30, t=50, b=30)
 
 fontFormat = dict(family="Segoe UI, Roboto, Helvetica Neue, Helvetica, Microsoft YaHei, Meiryo, Meiryo UI, Arial Unicode MS, sans-serif",
                   size=18,)
@@ -939,7 +949,7 @@ dash_app.layout = dbc.Container([
                                        className='action action1'),
                                 html.A('Calculate odds', href='/calculate_odds',
                                        className='action action2'),
-                                html.A('Ranking', href='/ranking',
+                                html.A('Ranking', href='/rating',
                                        className='action action3'),
                                 html.A('Match history', href='/match_list',
                                        className='action action4'),
@@ -970,17 +980,18 @@ def update_rating_graph(players):
     fig = go.Figure()
     for player in players:
         query = f"""SELECT
-                        DATE_TRUNC('week', m.match_timestamp) AS week_start,
-                        MAX(CASE WHEN p.first_name = '{player}' THEN pr.rating ELSE NULL END) AS rating
-                    FROM PlayerMatch pm
-                    JOIN Player p ON pm.player_id = p.player_id
-                    JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
-                    JOIN Match m ON pm.match_id = m.match_id
-                    WHERE p.first_name = '{player}'
-                    GROUP BY DATE_TRUNC('week', m.match_timestamp)
-                    ORDER BY week_start ASC"""
+                DATE_TRUNC('day', m.match_timestamp) AS day_start,
+                MAX(CASE WHEN p.first_name = '{player}' THEN pr.rating ELSE NULL END ORDER BY m.match_timestamp DESC) AS rating
+            FROM PlayerMatch pm
+            JOIN Player p ON pm.player_id = p.player_id
+            JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+            JOIN Match m ON pm.match_id = m.match_id
+            WHERE p.first_name = '{player}'
+            GROUP BY DATE_TRUNC('day', m.match_timestamp)
+            ORDER BY day_start DESC
+                                """
         data = pd.read_sql(query, engine)
-        fig.add_trace(go.Scatter(x=data['week_start'], y=data['rating'], name=player))
+        fig.add_trace(go.Scatter(x=data['day_start'], y=data['rating'], name=player, line=dict(shape='spline')))
     fig.update_xaxes(title_text='')
     fig.update_yaxes(title_text='')
     fig.update_layout(yaxis={'categoryorder':'total ascending'})
@@ -991,7 +1002,7 @@ def update_rating_graph(players):
     # Set different width and height values based on screen size
     fig.update_layout(
     autosize=True,
-    margin=get_responsive_margins(),
+    margin= dict(l=0, r=0, t=30, b=10),
     paper_bgcolor="white",
     plot_bgcolor="white",
     dragmode='zoom',

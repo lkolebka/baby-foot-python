@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
-from myAppELO import calculate_expected_score, calculate_expected_score_route, app
-from flask import render_template
+from V3_workingElo import calculate_expected_score, calculate_expected_score_route, app
+from flask import render_template 
 
 
 class TestApp(unittest.TestCase):

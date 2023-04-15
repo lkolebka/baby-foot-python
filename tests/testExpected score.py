@@ -22,7 +22,11 @@ player4_expected_score_against_player1 = 1 / (1 + 10**((player1_rating - player4
 player4_expected_score_against_player2 = 1 / (1 + 10**((player2_rating - player4_rating) / 500))
 player4_expected_score = (player4_expected_score_against_player1 + player4_expected_score_against_player2) / 2     
 
+print(f"Player 1 (John) expected score against P3: {player1_expected_score_against_player3:.6f}")
+print(f"Player 1 (John) expected score against P4: {player1_expected_score_against_player4:.6f}")
 print(f"Player 1 (John) expected score: {player1_expected_score:.6f}")
+print(f"Player 2 (Jane) expected score against P3: {player2_expected_score_against_player3:.6f}")
+print(f"Player 2 (Jane) expected score against P4: {player2_expected_score_against_player4:.6f}")
 print(f"Player 2 (Jane) expected score: {player2_expected_score:.6f}")
 print(f"Player 3 (Steve) expected score: {player3_expected_score:.6f}")
 print(f"Player 4 (Sara) expected score: {player4_expected_score:.6f}")
