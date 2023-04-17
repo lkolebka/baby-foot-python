@@ -330,8 +330,6 @@ filtered_player_match AS (
         pm.match_id
     FROM PlayerMatch pm
     JOIN max_player_rating_timestamp mprt ON pm.player_id = mprt.player_id
-    JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
-        AND pr.player_rating_timestamp = mprt.max_timestamp
 ),
 filtered_matches AS (
     SELECT match_id

@@ -992,16 +992,17 @@ def update_rating_graph(players):
     fig = go.Figure()
     for player in players:
         query = f"""SELECT
-                DATE_TRUNC('day', m.match_timestamp) AS day_start,
-                MAX(CASE WHEN p.first_name = '{player}' THEN pr.rating ELSE NULL END ORDER BY m.match_timestamp DESC) AS rating
-            FROM PlayerMatch pm
-            JOIN Player p ON pm.player_id = p.player_id
-            JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
-            JOIN Match m ON pm.match_id = m.match_id
-            WHERE p.first_name = '{player}'
-            GROUP BY DATE_TRUNC('day', m.match_timestamp)
-            ORDER BY day_start DESC
-                                """
+        DISTINCT ON (DATE_TRUNC('day', m.match_timestamp))
+        DATE_TRUNC('day', m.match_timestamp) AS day_start,
+            CASE WHEN p.first_name = '{player}' THEN pr.rating ELSE NULL END AS rating
+        FROM PlayerMatch pm
+        JOIN Player p ON pm.player_id = p.player_id
+        JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+        JOIN Match m ON pm.match_id = m.match_id
+        WHERE p.first_name = '{player}'
+        ORDER BY DATE_TRUNC('day', m.match_timestamp) DESC, m.match_timestamp DESC
+                        """
+
         data = pd.read_sql(query, engine)
         fig.add_trace(go.Scatter(x=data['day_start'], y=data['rating'], name=player, line=dict(shape='spline')))
     fig.update_xaxes(title_text='')
