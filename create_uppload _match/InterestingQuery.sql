@@ -312,3 +312,42 @@ GROUP BY
 ORDER BY 
     p.player_id, 
     month_num;
+
+
+/*retrieve the ranking faster*/
+WITH max_player_rating_timestamp AS (
+    SELECT 
+        pm.player_id,
+        MAX(pr.player_rating_timestamp) as max_timestamp
+    FROM PlayerMatch pm
+    JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+    WHERE pr.player_rating_timestamp BETWEEN '2023-01-23' AND '2023-02-22'
+    GROUP BY pm.player_id
+),
+filtered_player_match AS (
+    SELECT 
+        pm.player_id,
+        pm.match_id
+    FROM PlayerMatch pm
+    JOIN max_player_rating_timestamp mprt ON pm.player_id = mprt.player_id
+),
+filtered_matches AS (
+    SELECT match_id
+    FROM Match
+    WHERE match_timestamp BETWEEN '2023-01-23' AND '2023-02-22'
+)
+SELECT 
+    CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, 
+    pr.rating, 
+    COUNT(DISTINCT fpm.match_id) as num_matches,
+    pr.player_rating_timestamp
+FROM Player p
+JOIN max_player_rating_timestamp mprt ON p.player_id = mprt.player_id
+JOIN PlayerMatch pm ON p.player_id = pm.player_id
+JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+    AND pr.player_rating_timestamp = mprt.max_timestamp
+JOIN filtered_player_match fpm ON p.player_id = fpm.player_id
+JOIN filtered_matches fm ON fpm.match_id = fm.match_id
+WHERE p.active = true
+GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
+ORDER BY pr.rating DESC;

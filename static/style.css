@@ -626,13 +626,7 @@ input[type="submit"]:hover {
 
 /* Chart DASH */
 /* Style the dropdown container */
-.container {
-  margin: 0.5em auto;
-  padding: 0.4em;
-  background-color: #ffffff;
-  border-radius: 15px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
+
 
 .dropdown-container {
   margin: auto;

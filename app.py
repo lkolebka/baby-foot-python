@@ -569,44 +569,47 @@ def get_latest_player_ratings(month=None, year=None):
     end_date = f'{selected_year}-{selected_month:02d}-{get_last_day_of_month(selected_month, selected_year):02d} 23:59:59'
 
     query = '''
-                SELECT 
-            CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, 
-            pr.rating, 
-            COUNT(DISTINCT pm.match_id) as num_matches,
-            pr.player_rating_timestamp
-        FROM Player p
-        JOIN (
+        WITH max_player_rating_timestamp AS (
             SELECT 
-                pm.player_id, 
-                pr.rating, 
-                pr.player_rating_timestamp,
-                pm.match_id
+                pm.player_id,
+                MAX(pr.player_rating_timestamp) as max_timestamp
             FROM PlayerMatch pm
             JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
-            WHERE pr.player_rating_timestamp = (
-                SELECT MAX(pr2.player_rating_timestamp)
-                FROM PlayerMatch pm2
-                JOIN PlayerRating pr2 ON pm2.player_match_id = pr2.player_match_id
-                WHERE pm2.player_id = pm.player_id
-                AND pr2.player_rating_timestamp >= %s AND pr2.player_rating_timestamp <= %s
-            ) AND pm.player_id IN (
-                SELECT DISTINCT pm3.player_id
-                FROM PlayerMatch pm3
-                JOIN PlayerRating pr3 ON pm3.player_match_id = pr3.player_match_id
-                WHERE pr3.player_rating_timestamp >= %s AND pr3.player_rating_timestamp <= %s
-            )
-        ) pr ON p.player_id = pr.player_id
-        JOIN PlayerMatch pm ON p.player_id = pm.player_id
-        WHERE pm.match_id IN (
-            SELECT match_id FROM Match
-            WHERE match_timestamp >= %s AND match_timestamp <= %s
+            WHERE pr.player_rating_timestamp BETWEEN %s AND %s
+            GROUP BY pm.player_id
+        ),
+        filtered_player_match AS (
+            SELECT 
+                pm.player_id,
+                pm.match_id
+            FROM PlayerMatch pm
+            JOIN max_player_rating_timestamp mprt ON pm.player_id = mprt.player_id
+        ),
+        filtered_matches AS (
+            SELECT match_id
+            FROM Match
+            WHERE match_timestamp BETWEEN %s AND %s
         )
+        SELECT 
+            CONCAT(p.first_name, '.', SUBSTRING(p.last_name FROM 1 FOR 1)) as player_name, 
+            pr.rating, 
+            COUNT(DISTINCT fpm.match_id) as num_matches,
+            pr.player_rating_timestamp
+        FROM Player p
+        JOIN max_player_rating_timestamp mprt ON p.player_id = mprt.player_id
+        JOIN PlayerMatch pm ON p.player_id = pm.player_id
+        JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+            AND pr.player_rating_timestamp = mprt.max_timestamp
+        JOIN filtered_player_match fpm ON p.player_id = fpm.player_id
+        JOIN filtered_matches fm ON fpm.match_id = fm.match_id
+        WHERE p.active = true
         GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
         ORDER BY pr.rating DESC;
     '''
+
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
-        cur.execute(query, (start_date, end_date, start_date, end_date,start_date, end_date))
+        cur.execute(query, (start_date, end_date, start_date, end_date))
         player_ratings = cur.fetchall()
 
 
@@ -989,16 +992,17 @@ def update_rating_graph(players):
     fig = go.Figure()
     for player in players:
         query = f"""SELECT
-                DATE_TRUNC('day', m.match_timestamp) AS day_start,
-                MAX(CASE WHEN p.first_name = '{player}' THEN pr.rating ELSE NULL END ORDER BY m.match_timestamp DESC) AS rating
-            FROM PlayerMatch pm
-            JOIN Player p ON pm.player_id = p.player_id
-            JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
-            JOIN Match m ON pm.match_id = m.match_id
-            WHERE p.first_name = '{player}'
-            GROUP BY DATE_TRUNC('day', m.match_timestamp)
-            ORDER BY day_start DESC
-                                """
+        DISTINCT ON (DATE_TRUNC('day', m.match_timestamp))
+        DATE_TRUNC('day', m.match_timestamp) AS day_start,
+            CASE WHEN p.first_name = '{player}' THEN pr.rating ELSE NULL END AS rating
+        FROM PlayerMatch pm
+        JOIN Player p ON pm.player_id = p.player_id
+        JOIN PlayerRating pr ON pm.player_match_id = pr.player_match_id
+        JOIN Match m ON pm.match_id = m.match_id
+        WHERE p.first_name = '{player}'
+        ORDER BY DATE_TRUNC('day', m.match_timestamp) DESC, m.match_timestamp DESC
+                        """
+
         data = pd.read_sql(query, engine)
         fig.add_trace(go.Scatter(x=data['day_start'], y=data['rating'], name=player, line=dict(shape='spline')))
     fig.update_xaxes(title_text='')
