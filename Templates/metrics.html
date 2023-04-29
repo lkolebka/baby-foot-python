@@ -10,20 +10,17 @@
   <h1>Player Metrics</h1>
 
   <form method="POST" action="/metrics">
-    <!-- Player Label -->
-    <label for="player_name" class="player-label">Player </label>
+    <form method="POST" action="/metrics">
+    <label for="player_name">Select player:</label>
     <select id="player_name" name="player_name">
-      <option value="" {% if not player_name %}selected{% endif %} disabled>Select a player</option>
+      <option value="" {% if not player_name %}selected{% endif %} disabled>Select player</option>
       {% for player in players %}
         <option value="{{ player }}" {% if player == player_name %}selected{% endif %}>{{ player }}</option>
       {% endfor %}
     </select>
-
-    <br>
-
-    <input type="submit" value="Get Metrics">
+    <input type="submit" value="Get metrics">
   </form>
-
+  
   {% if total_games is defined and total_wins is defined and total_losses is defined and avg_score is defined and player_most_played_with is defined and player_metrics is defined %}
     <h2>Player Metrics for {{ player_name }}</h2>
 

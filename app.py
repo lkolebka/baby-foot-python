@@ -1068,10 +1068,13 @@ def player_stats_route():
         conn.close()
 
         # Pass the player stats to the template
-        return render_template('metrics.html', player_name=player_name, total_games=total_games, total_wins=total_wins, total_losses=total_losses,avg_score=avg_score,player_most_played_with=player_most_played_with,player_most_played_against=player_most_played_against,player_metrics=player_metrics)
+        players = get_players()
+
+        return render_template('metrics.html', players=players,player_name=player_name, total_games=total_games, total_wins=total_wins, total_losses=total_losses,avg_score=avg_score,player_most_played_with=player_most_played_with,player_most_played_against=player_most_played_against,player_metrics=player_metrics)
     else:
         # Render the form for selecting the player
-        players = get_players() 
+        players = get_players()
+        print(f"Available players: {players}")
         return render_template('metrics.html', players=players)
 
 
