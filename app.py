@@ -1071,53 +1071,6 @@ def player_stats_route():
                 win_rate DESC""", (player_id,))
         player_most_played_against_win_rate = cur.fetchall()
 
-        # Name of the player they played against the most with win rate
-        cur.execute("""
-            SELECT 
-                p2.first_name, 
-                p2.last_name, 
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
-                        WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
-                        ELSE 0 END) AS games_won,
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
-                        WHEN t.team_player_2_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
-                        ELSE 0 END) AS games_lost,
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END) AS total_games
-            FROM 
-                Player p1
-            JOIN 
-                PlayerMatch pm1 ON p1.player_id = pm1.player_id
-            JOIN 
-                Match m ON pm1.match_id = m.match_id
-            JOIN 
-                Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
-            JOIN 
-                PlayerMatch pm2 ON pm2.match_id = pm1.match_id 
-                    AND pm2.player_id != pm1.player_id 
-                    AND pm2.player_match_id > pm1.player_match_id
-            JOIN 
-                Player p2 ON p2.player_id = pm2.player_id
-            WHERE 
-                p1.player_id = %s
-            GROUP BY 
-                p2.player_id, 
-                p2.first_name, 
-                p2.last_name
-            ORDER BY 
-                total_games DESC
-        """, (player_id,))
-        results = cur.fetchall()
-
-        # Format the results as a list of dictionaries
-        player_metrics = []
-        for row in results:
-            player_metrics.append({
-                'player_name': row[0] + ' ' + row[1],
-                'games_won': row[2],
-                'games_lost': row[3],
-                'total_games': row[4],
-                'win_rate': round(row[2] / row[4] * 100, 2) if row[4] != 0 else 0
-            })
 
         # Close the database connection
         cur.close()
@@ -1126,7 +1079,7 @@ def player_stats_route():
         # Pass the player stats to the template
         players = get_players()
 
-        return render_template('metrics.html', players=players,player_name=player_name, total_games=total_games, total_wins=total_wins, total_losses=total_losses,avg_score=avg_score,player_most_played_with=player_most_played_with,player_most_played_with_win_rate=player_most_played_with_win_rate,player_most_played_against=player_most_played_against,player_most_played_against_win_rate=player_most_played_against_win_rate,player_metrics=player_metrics)
+        return render_template('metrics.html', players=players,player_name=player_name, total_games=total_games, total_wins=total_wins, total_losses=total_losses,avg_score=avg_score,player_most_played_with=player_most_played_with,player_most_played_with_win_rate=player_most_played_with_win_rate,player_most_played_against=player_most_played_against,player_most_played_against_win_rate=player_most_played_against_win_rate)
     else:
         # Render the form for selecting the player
         players = get_players()

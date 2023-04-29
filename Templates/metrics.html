@@ -70,15 +70,19 @@
   @media screen and (max-width: 767px) {
     .metric-label {
       font-weight: 500;
-      font-size: 0.6em; /* Adjust the font size for the label on smaller screens */
+      font-size: 0.60em; /* Adjust the font size for the label on smaller screens */
       line-height: normal; /* Adjust the line height to reduce the space between lines */
+      white-space: nowrap; /* Add this property to keep the text in one line */
+
 
     }
 
     .metric-value {
       font-weight: 500;
-      font-size: 0.6; /* Adjust the font size for the value on smaller screens */
+      font-size: 0.7em !important;
       line-height: normal; /* Adjust the line height to reduce the space between lines */
+      white-space: nowrap; /* Add this property to keep the text in one line */
+
 
     }  
 
@@ -167,8 +171,8 @@
   </form>
   
   <div class="do-more" style="background-color: #F8F7F7;">
-  {% if total_games is defined and total_wins is defined and total_losses is defined and avg_score is defined and player_most_played_with is defined and player_metrics is defined %}
-    <h2>Metrics for {{ player_name }}</h2>
+  {% if total_games is defined and total_wins is defined and total_losses is defined and avg_score is defined and player_most_played_with is defined %}
+    <h2 style="margin-bottom: 10px !important;">Metrics for {{ player_name }}</h2>
 
     <style>
       .metrics-action-grid {
@@ -235,34 +239,6 @@
   </div>
 </div>
 
-
-
-    {% if player_metrics %}
-    <h2>Player Metrics vs Opponents</h2>
-
-    <table style="text-align: center;">
-      <thead>
-        <tr>
-          <th>Opponent</th>
-          <th>Games Won</th>
-          <th>Games Lost</th>
-          <th>Total Games Played</th>
-          <th>Win Rate</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for metric in player_metrics %}
-        <tr>
-          <td>{{ metric['player_name'] }}</td>
-          <td>{{ metric['games_won'] }}</td>
-          <td>{{ metric['games_lost'] }}</td>
-          <td>{{ metric['total_games'] }}</td>
-          <td>{{ metric['win_rate'] }}%</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
   {% endif %}
 
   <div class="do-more">
@@ -276,7 +252,26 @@
     <a href="/rating" class="action action3">Ranking</a>
     <a href="/match_list" class="action action4">Match history</a>
     <a href="/rating_evolution" class="action action3">Rating evolution</a>
-    <a href="/" class="action action4">Coming soon</a>
+    <a href="/metrics" class="action action4">Players Metrics (new)</a>
   </div>
+  <script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+      event.preventDefault(); // prevent the form from submitting
+  
+      // get the player name input value
+      var playerNameInput = document.getElementById('player_name');
+      var playerName = playerNameInput.value;
+  
+      // validate the player name input
+      if (!playerName) {
+        alert('Please select a player.');
+        playerNameInput.focus();
+        return false; // stop the function and prevent the form from submitting
+      }
+  
+      // if all inputs are valid, submit the form
+      this.submit();
+    });
+  </script>
 </body>
 </html>

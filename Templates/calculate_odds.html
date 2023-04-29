@@ -108,16 +108,40 @@
 
 <div class="action-grid">
   <a href="/" class="action action2">Upload game</a>
-  <a href="calculate_odds" class="action action2">Calculate odds</a>
+  <a href="/calculate_odds" class="action action2">Calculate odds</a>
   <a href="/rating" class="action action3">Ranking</a>
   <a href="/match_list" class="action action4">Match history</a>
   <a href="/rating_evolution" class="action action3">Rating evolution</a>
-  <a href="/" class="action action4">Coming soon</a>
+  <a href="/metrics" class="action action4">Players Metrics (new)</a>
 </div>
 
 
 </div>
 
 </div>
+<script>
+  document.querySelector('form').addEventListener('submit', function(event) {
+  // Prevent form submission until it's validated
+  event.preventDefault();
+
+  // Get form inputs
+  const player1Name = document.getElementById('player1_name').value.trim();
+  const player2Name = document.getElementById('player2_name').value.trim();
+  const player3Name = document.getElementById('player3_name').value.trim();
+  const player4Name = document.getElementById('player4_name').value.trim();
+
+  // Check if all player names are selected
+  if (!player1Name || !player2Name || !player3Name || !player4Name) {
+    alert('Please select all player names');
+    return;
+  }
+
+
+
+  // If all validation passes, submit the form
+  event.target.submit();
+});
+
+</script>
 </body>
 </html>
