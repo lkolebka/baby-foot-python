@@ -70,6 +70,9 @@ def get_player_id(player1_name, player2_name, player3_name, player4_name, cur):
         # Return a tuple containing all the player IDs
         return (player1_id, player2_id, player3_id, player4_id)
 
+
+
+
 # Get the team ID of the teams playing a match
 def insert_team_or_get_team_id(player1_id, player2_id, player3_id, player4_id, cur):
      # Check if the first team already exists
@@ -876,11 +879,10 @@ def delete_match():
         return redirect(url_for('add_player'))
     else:
         return render_template('delete_match.html')
+
+
+ 
     
-
-
-
-
     
 @app.route('/show_dash')
 def rating_evolution():
@@ -890,20 +892,194 @@ def rating_evolution():
 def do_more():
     return render_template('do_more.html')
 
+def get_player_id_metrics(player_name):
+    conn = psycopg2.connect(
+        host=DATABASE_CONFIG['host'],
+        database=DATABASE_CONFIG['database'],
+        user=DATABASE_CONFIG['user'],
+        password=DATABASE_CONFIG['password']
+    )
+    cur = conn.cursor()
+
+    cur.execute("SELECT player_id FROM player WHERE first_name=%s", (player_name,))
+    player_id = cur.fetchone()[0]
+
+    cur.close()
+    conn.close()
+
+    return player_id
+
+
+@app.route('/metrics', methods=['GET', 'POST'])
+def player_stats_route():
+    if request.method == 'POST':
+        player_name = request.form['player_name']
+        player_id = get_player_id_metrics(player_name) 
+        
+        # Query the database to get the player stats
+        conn = psycopg2.connect(
+            host=DATABASE_CONFIG['host'],
+            database=DATABASE_CONFIG['database'],
+            user=DATABASE_CONFIG['user'],
+            password=DATABASE_CONFIG['password']
+        )
+        cur = conn.cursor()
+
+        # Total number of games played by the player
+        cur.execute("SELECT COUNT(PlayerMatch.player_id) AS total_games \
+                     FROM PlayerMatch \
+                     WHERE PlayerMatch.player_id = %s", (player_id,))
+        total_games = cur.fetchone()[0]
+
+        # Total number of games won by the player
+        cur.execute("SELECT COUNT(CASE WHEN Match.winning_team_id = t.team_id THEN 1 END) AS total_wins \
+                     FROM PlayerMatch pm \
+                     JOIN Match ON Match.match_id = pm.match_id \
+                     JOIN Team t ON (t.team_player_1_id = pm.player_id OR t.team_player_2_id = pm.player_id) \
+                     WHERE pm.player_id = %s \
+                     AND (Match.winning_team_id = t.team_id OR Match.losing_team_id = t.team_id)", (player_id,))
+        total_wins = cur.fetchone()[0]
+
+        # Total number of games lost by the player
+        cur.execute("SELECT COUNT(CASE WHEN Match.losing_team_id = t.team_id THEN 1 END) AS total_losses \
+                     FROM PlayerMatch pm \
+                     JOIN Match ON Match.match_id = pm.match_id \
+                     JOIN Team t ON (t.team_player_1_id = pm.player_id OR t.team_player_2_id = pm.player_id) \
+                     WHERE pm.player_id = %s \
+                     AND (Match.winning_team_id = t.team_id OR Match.losing_team_id = t.team_id)", (player_id,))
+        total_losses = cur.fetchone()[0]
+
+         # Average score per game by the player
+        cur.execute("SELECT AVG(CASE \
+                       WHEN t.team_player_1_id = pm.player_id THEN m.winning_team_score \
+                       ELSE m.losing_team_score \
+                     END) AS avg_score \
+                     FROM PlayerMatch pm \
+                     JOIN Match m ON m.match_id = pm.match_id \
+                     JOIN Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id \
+                     WHERE pm.player_id = %s", (player_id,))
+        avg_score = cur.fetchone()[0]
+
+        # Name of the player played with the most on the same team 
+        cur.execute("""SELECT p2.first_name, p2.last_name, COUNT(DISTINCT pm2.match_id) AS games_played,
+                COUNT(DISTINCT CASE WHEN m.winning_team_id = t.team_id THEN pm2.match_id END) AS games_won,
+                COUNT(DISTINCT CASE WHEN m.losing_team_id = t.team_id THEN pm2.match_id END) AS games_lost,
+                COUNT(DISTINCT CASE WHEN m.winning_team_id = t.team_id THEN pm2.match_id END) * 100.0 / COUNT(DISTINCT pm2.match_id) AS win_rate
+                FROM Player p1
+                JOIN PlayerMatch pm1 ON p1.player_id = pm1.player_id
+                JOIN Match m ON pm1.match_id = m.match_id
+                JOIN Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
+                JOIN Team t2 ON t2.team_id = t.team_id AND (t2.team_player_1_id = p1.player_id OR t2.team_player_2_id = p1.player_id)
+                JOIN PlayerMatch pm2 ON pm2.match_id = pm1.match_id AND (t2.team_player_1_id = pm2.player_id OR t2.team_player_2_id = pm2.player_id) AND pm2.player_id != p1.player_id
+                JOIN Player p2 ON p2.player_id = pm2.player_id AND p2.player_id != p1.player_id
+                WHERE p1.player_id = %s AND (t.team_player_1_id = %s OR t.team_player_2_id = %s)
+                GROUP BY p2.player_id, p2.first_name, p2.last_name
+                ORDER BY games_played DESC""", (player_id, player_id, player_id))
+        player_most_played_with = cur.fetchone()
+
+         # Name of the player played against the most 
+        cur.execute("""SELECT 
+                p2.first_name, 
+                p2.last_name, 
+                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
+                        WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
+                        ELSE 0 END) AS games_won,
+                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
+                        WHEN t.team_player_2_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
+                        ELSE 0 END) AS games_lost,
+                SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END) AS total_games,
+                ROUND(SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
+                        WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
+                        ELSE 0 END) * 100.0 / SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END), 2) AS win_rate
+            FROM 
+                Player p1
+            JOIN 
+                PlayerMatch pm1 ON p1.player_id = pm1.player_id
+            JOIN 
+                Match m ON pm1.match_id = m.match_id
+            JOIN 
+                Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
+            JOIN 
+                PlayerMatch pm2 ON pm2.match_id = pm1.match_id 
+                    AND pm2.player_id != pm1.player_id 
+                    AND pm2.player_match_id > pm1.player_match_id
+            JOIN 
+                Player p2 ON p2.player_id = pm2.player_id
+            WHERE 
+                p1.player_id = %s
+            GROUP BY 
+                p2.player_id, 
+                p2.first_name, 
+                p2.last_name
+            ORDER BY 
+                total_games DESC""", (player_id,))
+        player_most_played_against = cur.fetchone()
+
+        # Name of the player they played against the most with win rate
+        cur.execute("""
+            SELECT 
+                p2.first_name, 
+                p2.last_name, 
+                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
+                        WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
+                        ELSE 0 END) AS games_won,
+                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
+                        WHEN t.team_player_2_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
+                        ELSE 0 END) AS games_lost,
+                SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END) AS total_games
+            FROM 
+                Player p1
+            JOIN 
+                PlayerMatch pm1 ON p1.player_id = pm1.player_id
+            JOIN 
+                Match m ON pm1.match_id = m.match_id
+            JOIN 
+                Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
+            JOIN 
+                PlayerMatch pm2 ON pm2.match_id = pm1.match_id 
+                    AND pm2.player_id != pm1.player_id 
+                    AND pm2.player_match_id > pm1.player_match_id
+            JOIN 
+                Player p2 ON p2.player_id = pm2.player_id
+            WHERE 
+                p1.player_id = %s
+            GROUP BY 
+                p2.player_id, 
+                p2.first_name, 
+                p2.last_name
+            ORDER BY 
+                total_games DESC
+        """, (player_id,))
+        results = cur.fetchall()
+
+        # Format the results as a list of dictionaries
+        player_metrics = []
+        for row in results:
+            player_metrics.append({
+                'player_name': row[0] + ' ' + row[1],
+                'games_won': row[2],
+                'games_lost': row[3],
+                'total_games': row[4],
+                'win_rate': round(row[2] / row[4] * 100, 2) if row[4] != 0 else 0
+            })
+
+        # Close the database connection
+        cur.close()
+        conn.close()
+
+        # Pass the player stats to the template
+        return render_template('metrics.html', player_name=player_name, total_games=total_games, total_wins=total_wins, total_losses=total_losses,avg_score=avg_score,player_most_played_with=player_most_played_with,player_most_played_against=player_most_played_against,player_metrics=player_metrics)
+    else:
+        # Render the form for selecting the player
+        players = get_players() 
+        return render_template('metrics.html', players=players)
+
+
+
+
 #DASH START HERE#
 
 dash_app = dash.Dash(__name__, server=app, external_stylesheets=[dbc.themes.BOOTSTRAP, '/static/style.css'])
-
-
-
-# Your Dash app layout and callbacks
-#def get_responsive_margins():
- #   screen_width = os.get_terminal_size().columns
-
-  #  if screen_width <= 576:  # Small screens (e.g., mobile devices)
-   #     return dict(l=0, r=0, t=30, b=10)
-    #else:  # Larger screens (e.g., desktop)
-     #   return dict(l=30, r=30, t=50, b=30)
 
 fontFormat = dict(family="Segoe UI, Roboto, Helvetica Neue, Helvetica, Microsoft YaHei, Meiryo, Meiryo UI, Arial Unicode MS, sans-serif",
                   size=18,)
@@ -1060,8 +1236,6 @@ def update_rating_graph(players):
 
     
     return fig
-
-
 
 if __name__ == '__main__':
     app.static_folder = 'static'

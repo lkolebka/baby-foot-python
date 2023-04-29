@@ -351,3 +351,145 @@ JOIN filtered_matches fm ON fpm.match_id = fm.match_id
 WHERE p.active = true
 GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
 ORDER BY pr.rating DESC;
+
+
+/*METRICS*/
+
+/*Total number of games played by the player */
+SELECT COUNT(PlayerMatch.player_id) AS total_games
+FROM PlayerMatch
+WHERE PlayerMatch.player_id = 1
+
+/*Total number of games won by the player*/
+SELECT COUNT(CASE WHEN Match.winning_team_id = t.team_id THEN 1 END) AS total_wins
+FROM PlayerMatch pm
+JOIN Match ON Match.match_id = pm.match_id
+JOIN Team t ON (t.team_player_1_id = pm.player_id OR t.team_player_2_id = pm.player_id)
+WHERE pm.player_id = 1
+AND (Match.winning_team_id = t.team_id OR Match.losing_team_id = t.team_id);
+
+/*Total number of games lost by the player*/
+SELECT COUNT(CASE WHEN Match.losing_team_id = t.team_id THEN 1 END) AS total_losses
+FROM PlayerMatch pm
+JOIN Match ON Match.match_id = pm.match_id
+JOIN Team t ON (t.team_player_1_id = pm.player_id OR t.team_player_2_id = pm.player_id)
+WHERE pm.player_id = 1
+AND (Match.winning_team_id = t.team_id OR Match.losing_team_id = t.team_id);
+
+/*Average score per game by the player*/
+SELECT AVG(CASE
+           WHEN t.team_player_1_id = pm.player_id THEN m.winning_team_score
+           ELSE m.losing_team_score
+         END) AS avg_score
+FROM PlayerMatch pm
+JOIN Match m ON m.match_id = pm.match_id
+JOIN Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
+WHERE pm.player_id = 1
+
+
+/*Name of the player they played with the most on the same team*/
+SELECT p2.first_name, p2.last_name, COUNT(DISTINCT pm2.match_id) AS games_played,
+                COUNT(DISTINCT CASE WHEN m.winning_team_id = t.team_id THEN pm2.match_id END) AS games_won,
+                COUNT(DISTINCT CASE WHEN m.losing_team_id = t.team_id THEN pm2.match_id END) AS games_lost,
+                COUNT(DISTINCT CASE WHEN m.winning_team_id = t.team_id THEN pm2.match_id END) * 100.0 / COUNT(DISTINCT pm2.match_id) AS win_rate
+                FROM Player p1
+                JOIN PlayerMatch pm1 ON p1.player_id = pm1.player_id
+                JOIN Match m ON pm1.match_id = m.match_id
+                JOIN Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
+                JOIN Team t2 ON t2.team_id = t.team_id AND (t2.team_player_1_id = p1.player_id OR t2.team_player_2_id = p1.player_id)
+                JOIN PlayerMatch pm2 ON pm2.match_id = pm1.match_id AND (t2.team_player_1_id = pm2.player_id OR t2.team_player_2_id = pm2.player_id) AND pm2.player_id != p1.player_id
+                JOIN Player p2 ON p2.player_id = pm2.player_id AND p2.player_id != p1.player_id
+                WHERE p1.player_id = 1 AND (t.team_player_1_id = 1 OR t.team_player_2_id = 1)
+                GROUP BY p2.player_id, p2.first_name, p2.last_name
+                ORDER BY games_played DESC
+
+
+/*Name of the player they played against the most*/
+SELECT 
+    p2.first_name, 
+    p2.last_name, 
+    SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
+            WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
+            ELSE 0 END) AS games_won,
+    SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
+            WHEN t.team_player_2_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
+            ELSE 0 END) AS games_lost,
+    SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END) AS total_games,
+    ROUND(SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
+            WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
+            ELSE 0 END) * 100.0 / SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END), 2) AS win_rate
+FROM 
+    Player p1
+JOIN 
+    PlayerMatch pm1 ON p1.player_id = pm1.player_id
+JOIN 
+    Match m ON pm1.match_id = m.match_id
+JOIN 
+    Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
+JOIN 
+    PlayerMatch pm2 ON pm2.match_id = pm1.match_id 
+        AND pm2.player_id != pm1.player_id 
+        AND pm2.player_match_id > pm1.player_match_id
+JOIN 
+    Player p2 ON p2.player_id = pm2.player_id
+WHERE 
+    p1.player_id = 1
+GROUP BY 
+    p2.player_id, 
+    p2.first_name, 
+    p2.last_name
+ORDER BY 
+    total_games DESC
+
+
+
+/*Name of the player they played with the most on the same team with win rate*/
+SELECT p2.first_name, p2.last_name, COUNT(DISTINCT pm2.match_id) AS games_played,
+COUNT(DISTINCT CASE WHEN m.winning_team_id = t.team_id THEN pm2.match_id END) AS games_won,
+COUNT(DISTINCT CASE WHEN m.losing_team_id = t.team_id THEN pm2.match_id END) AS games_lost,
+COUNT(DISTINCT CASE WHEN m.winning_team_id = t.team_id THEN pm2.match_id END) * 100.0 / COUNT(DISTINCT pm2.match_id) AS win_rate
+FROM Player p1
+JOIN PlayerMatch pm1 ON p1.player_id = pm1.player_id
+JOIN Match m ON pm1.match_id = m.match_id
+JOIN Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
+JOIN Team t2 ON t2.team_id = t.team_id AND (t2.team_player_1_id = p1.player_id OR t2.team_player_2_id = p1.player_id)
+JOIN PlayerMatch pm2 ON pm2.match_id = pm1.match_id AND (t2.team_player_1_id = pm2.player_id OR t2.team_player_2_id = pm2.player_id) AND pm2.player_id != p1.player_id
+JOIN Player p2 ON p2.player_id = pm2.player_id AND p2.player_id != p1.player_id
+WHERE p1.player_id = 1 AND (t.team_player_1_id = 1 OR t.team_player_2_id = 1)
+GROUP BY p2.player_id, p2.first_name, p2.last_name
+ORDER BY games_played DESC;
+
+
+/*Name of the player they played against the most with win rate*/
+SELECT 
+    p2.first_name, 
+    p2.last_name, 
+    SUM(CASE WHEN t.team_player_1_id = p1.player_id AND m.winning_team_id = t.team_id THEN 1
+             WHEN t.team_player_2_id = p1.player_id AND m.losing_team_id = t.team_id THEN 1
+             ELSE 0 END) AS games_won,
+    SUM(CASE WHEN t.team_player_1_id = p1.player_id AND m.losing_team_id = t.team_id THEN 1
+             WHEN t.team_player_2_id = p1.player_id AND m.winning_team_id = t.team_id THEN 1
+             ELSE 0 END) AS games_lost,
+    SUM(CASE WHEN t.team_player_1_id = p1.player_id OR t.team_player_2_id = p1.player_id THEN 1 ELSE 0 END) AS total_games
+FROM 
+    Player p1
+JOIN 
+    PlayerMatch pm1 ON p1.player_id = pm1.player_id
+JOIN 
+    Match m ON pm1.match_id = m.match_id
+JOIN 
+    Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
+JOIN 
+    PlayerMatch pm2 ON pm2.match_id = pm1.match_id 
+        AND pm2.player_id != pm1.player_id 
+        AND pm2.player_match_id > pm1.player_match_id
+JOIN 
+    Player p2 ON p2.player_id = pm2.player_id
+WHERE 
+    p1.player_id = 1
+GROUP BY 
+    p2.player_id, 
+    p2.first_name, 
+    p2.last_name
+ORDER BY 
+    total_games DESC;

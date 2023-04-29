@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+
+  <title>Player Metrics</title>
+</head>
+<body>
+  <h1>Player Metrics</h1>
+
+  <form method="POST" action="/metrics">
+    <!-- Player Label -->
+    <label for="player_name" class="player-label">Player </label>
+    <select id="player_name" name="player_name">
+      <option value="" {% if not player_name %}selected{% endif %} disabled>Select a player</option>
+      {% for player in players %}
+        <option value="{{ player }}" {% if player == player_name %}selected{% endif %}>{{ player }}</option>
+      {% endfor %}
+    </select>
+
+    <br>
+
+    <input type="submit" value="Get Metrics">
+  </form>
+
+  {% if total_games is defined and total_wins is defined and total_losses is defined and avg_score is defined and player_most_played_with is defined and player_metrics is defined %}
+    <h2>Player Metrics for {{ player_name }}</h2>
+
+    <table class="centered-table">
+      <tr>
+        <td class="metric-label">Total Games Played:</td>
+        <td class="metric-value">{{ total_games }}</td>
+      </tr>
+      <tr>
+        <td class="metric-label">Total Games Won:</td>
+        <td class="metric-value">{{ total_wins }}</td>
+      </tr>
+      <tr>
+        <td class="metric-label">Total Games Lost:</td>
+        <td class="metric-value">{{ total_losses }}</td>
+      </tr>
+      <tr>
+        <td class="metric-label">Average Score per Game:</td>
+        <td class="metric-value">{{ avg_score |round(2)  }}</td>
+      </tr>
+      <tr>
+        <td class="metric-label">Player most played against:</td>
+        <td class="metric-value">{{ player_most_played_against[0] }} {{ player_most_played_against[1] }} games played : {{ player_most_played_against[2] }} games won: {{ player_most_played_against[3] }} - games lost : {{ player_most_played_against[4] }}  win rate  {{ player_most_played_against[5] }}</td>
+      </tr>
+      {% if player_most_played_with %}
+      <tr>
+        <td class="metric-label">Player most played with:</td>
+        <td class="metric-value">{{ player_most_played_with[0] }} {{ player_most_played_with[1] }} games played : {{ player_most_played_with[2] }} games won: {{ player_most_played_with[3] }} - games lost : {{ player_most_played_with[4] }} win rate  {{ player_most_played_with[5] }}</td>
+      </tr>
+      {% endif %}
+    </table>
+
+    {% if player_metrics %}
+    <h2>Player Metrics vs Opponents</h2>
+
+    <table class="centered-table">
+      <thead>
+        <tr>
+          <th>Opponent</th>
+          <th>Games Won</th>
+          <th>Games Lost</th>
+          <th>Total Games Played</th>
+          <th>Win Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for metric in player_metrics %}
+        <tr>
+          <td>{{ metric['player_name'] }}</td>
+          <td>{{ metric['games_won'] }}</td>
+          <td>{{ metric['games_lost'] }}</td>
+          <td>{{ metric['total_games'] }}</td>
+          <td>{{ metric['win_rate'] }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  {% endif %}
+
+
+  <div class="action-grid">
+    <a href="/" class="action action2">Upload game</a>
+    <a href="/calculate_odds" class="action action2">Calculate odds</a>
+    <a href="/rating" class="action action3">Ranking</a>
+    <a href="/match_list" class="action action4">Match history</a>
+    <a href="/rating_evolution" class="action action3">Rating evolution</a>
+    <a href="/" class="action action4">Coming soon</a>
+  </div>
+</body>
+</html>
