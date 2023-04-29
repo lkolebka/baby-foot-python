@@ -972,7 +972,7 @@ def player_stats_route():
                 JOIN Team t2 ON t2.team_id = t.team_id AND (t2.team_player_1_id = p1.player_id OR t2.team_player_2_id = p1.player_id)
                 JOIN PlayerMatch pm2 ON pm2.match_id = pm1.match_id AND (t2.team_player_1_id = pm2.player_id OR t2.team_player_2_id = pm2.player_id) AND pm2.player_id != p1.player_id
                 JOIN Player p2 ON p2.player_id = pm2.player_id AND p2.player_id != p1.player_id
-                WHERE p1.player_id = %s AND (t.team_player_1_id = %s OR t.team_player_2_id = %s)
+                WHERE p1.player_id = %s AND (t.team_player_1_id = %s OR t.team_player_2_id = %s) AND p2.first_name != 'Guest'
                 GROUP BY p2.player_id, p2.first_name, p2.last_name
                 ORDER BY games_played DESC""", (player_id, player_id, player_id))
         player_most_played_with = cur.fetchone()
@@ -989,7 +989,7 @@ def player_stats_route():
                 JOIN Team t2 ON t2.team_id = t.team_id AND (t2.team_player_1_id = p1.player_id OR t2.team_player_2_id = p1.player_id)
                 JOIN PlayerMatch pm2 ON pm2.match_id = pm1.match_id AND (t2.team_player_1_id = pm2.player_id OR t2.team_player_2_id = pm2.player_id) AND pm2.player_id != p1.player_id
                 JOIN Player p2 ON p2.player_id = pm2.player_id AND p2.player_id != p1.player_id
-                WHERE p1.player_id = %s AND (t.team_player_1_id = %s OR t.team_player_2_id = %s)
+                WHERE p1.player_id = %s AND (t.team_player_1_id = %s OR t.team_player_2_id = %s) AND p2.first_name != 'Guest'
                 GROUP BY p2.player_id, p2.first_name, p2.last_name
                 ORDER BY win_rate DESC""", (player_id, player_id, player_id))
         player_most_played_with_win_rate = cur.fetchall()
@@ -1024,7 +1024,7 @@ def player_stats_route():
             JOIN 
                 Player p2 ON p2.player_id = pm2.player_id
             WHERE 
-                p1.player_id = %s
+                p1.player_id = %s AND p2.first_name != 'Guest'
             GROUP BY 
                 p2.player_id, 
                 p2.first_name, 
@@ -1062,7 +1062,7 @@ def player_stats_route():
             JOIN 
                 Player p2 ON p2.player_id = pm2.player_id
             WHERE 
-                p1.player_id = %s
+                p1.player_id = %s AND p2.first_name != 'Guest'
             GROUP BY 
                 p2.player_id, 
                 p2.first_name, 
