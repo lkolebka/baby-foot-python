@@ -318,7 +318,70 @@ input[type="submit"]:hover {
   font-size: 1.5em;
   font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
   word-wrap: normal;
-  }
+}
+
+
+/*grid control metrics*/
+/* Grid control */
+.metrics-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: center;
+  grid-gap: 10px;
+  border: 0px solid rgba(0, 0, 0, 0.1);
+  padding: 1em;
+  overflow: hidden;
+  background-color: #EBF0F9;
+}
+
+.metrics-action {
+  height: 100px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.2em;
+  font-weight: 600;
+  font-size: 1.5em;
+  font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+  word-wrap: normal;
+}
+
+.metrics-action:nth-child(1) {
+  background: linear-gradient(141.69deg, #ff9a9e 0%, #fad0c4 39%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(2) {
+  background: linear-gradient(141.13deg, #a18cd1 26.29%, #fbc2eb 100%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(3) {
+  background: linear-gradient(141.69deg, #f6d365 10%, #fda085 100%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(4) {
+  background: linear-gradient(141.13deg, #84fab0 26.29%, #8fd3f4 100%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(5) {
+  background: linear-gradient(141.13deg, #c79081 26.29%, #dfa579 100%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(6) {
+  background: linear-gradient(141.13deg, #fccb90 26.29%, #d57eeb 100%);
+  color: #fff;
+}
+
+
+
+
+
   
   /*table odds and probability*/
   .centered-table {

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}">
+
+  <title>Player Metrics</title>
+</head>
+<style>
+  /* Grid control */
+  .metrics-action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: center;
+    grid-gap: 10px;
+    border: 0px solid rgba(0, 0, 0, 0.1);
+    padding: 1em;
+    overflow: hidden;
+    background-color: #F7F7F7;
+  }
+
+  .metrics-action {
+      height: 100px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0.2em;
+      font-weight: 600;
+      font-size: 1.5em;
+      font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
+      word-wrap: normal;
+  }
+
+  .metric-label {
+      font-size: 1em; /* Adjust the font size for the label */
+      margin-bottom: 0.3em; /* Add some margin to separate it from the value */
+      justify-content: center;
+      align-items: center;
+      display: block;
+      text-align: center;
+      line-height: 1.3; /* Adjust the line height to reduce the space between lines */
+
+  }
+
+  .metric-value {
+      font-size: 1em; /* Adjust the font size for the value */
+      font-weight: bold; /* Make the value bold */
+      justify-content: center;
+      align-items: center;
+      display: block;
+      text-align: center;
+      line-height: 1.3; /* Adjust the line height to reduce the space between lines */
+
+  }
+
+  .metric-sub-label {
+    font-size: 0.8em; /* Adjust the font size for the value */
+    font-weight: lighter; 
+    justify-content: center;
+    align-items: center;
+    display: block;
+    text-align: center;
+    line-height: 1.3; /* Adjust the line height to reduce the space between lines */
+}
+
+
+  /* Media query for smaller screens, like iPhone */
+  @media screen and (max-width: 767px) {
+    .metric-label {
+      font-weight: 500;
+      font-size: 0.60em; /* Adjust the font size for the label on smaller screens */
+      line-height: normal; /* Adjust the line height to reduce the space between lines */
+      white-space: nowrap; /* Add this property to keep the text in one line */
+
+
+    }
+
+    .metric-value {
+      font-weight: 500;
+      font-size: 0.7em !important;
+      line-height: normal; /* Adjust the line height to reduce the space between lines */
+      white-space: nowrap; /* Add this property to keep the text in one line */
+
+
+    }  
+
+    .metric-sub-label {
+    font-weight: 400;
+    font-size: 0.5em; /* Adjust the font size for the value on smaller screens */
+    line-height: normal; /* Adjust the line height to reduce the space between lines */
+
+    } 
+    
+
+    .metrics-action {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+
+.metrics-action:nth-child(1) {
+  background: linear-gradient(141.69deg, #9BC53D 0%, #5A9 39%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(2) {
+  background: linear-gradient(141.13deg, #56CCF2 26.29%, #2A5298 100%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(3) {
+  background: linear-gradient(141.69deg, #F94144 10%, #C65102 100%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(4) {
+  background: linear-gradient(101.69deg, #9BC53D 14%, #5A9 39%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(5) {
+  background: linear-gradient(111.13deg, #4D90C6 20.29%, #1D3659 90%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(6) {
+  background: linear-gradient(131.13deg, #F7593E 26.29%, #A34601 100%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(7) {
+  background: linear-gradient(141.69deg, #9BC53D 29%, #5A9 80%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(8) {
+  background: linear-gradient(151.13deg, #3E88B5 30.29%, #0F2753 100%);
+  color: #fff;
+}
+
+.metrics-action:nth-child(9) {
+  background: linear-gradient(161.13deg, #F37038 35.29%, #8C3A00 100%);
+  color: #fff;
+}
+
+
+  
+</style>
+    <body class="match-page">
+
+</head>
+<body>
+
+  <h1>Player Metrics</h1>
+
+  <form method="POST" action="/metrics">
+    <form method="POST" action="/metrics">
+    <label for="player_name" class="team-label">Select player:</label>
+    <select id="player_name" name="player_name">
+      <option value="" {% if not player_name %}selected{% endif %} disabled>Select player</option>
+      {% for player in players %}
+        <option value="{{ player }}" {% if player == player_name %}selected{% endif %}>{{ player }}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Get metrics">
+  </form>
+  
+  <div class="do-more" style="background-color: #F8F7F7;">
+  {% if total_games is defined and total_wins is defined and total_losses is defined and avg_score is defined and player_most_played_with is defined %}
+    <h2 style="margin-bottom: 10px !important;">Metrics for {{ player_name }}</h2>
+
+    <style>
+      .metrics-action-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .metrics-action {
+        background-color: lightgray;
+        height: 100px;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+ <div class="metrics-action-grid">
+  <div class="metrics-action">
+    <span class="metric-label">Main Partner:</span>
+    <span class="metric-value">{{ player_most_played_with[0] }}</span>
+    <span class="metric-sub-label">({{ player_most_played_with[2] }} games)</span>
+  </div>
+  <div class="metrics-action">
+    <span class="metric-label">Games Played:</span>
+    <span class="metric-value">{{ total_games }}</span>
+    <span class="metric-sub-label">(avg {{ avg_score | round(1) }} points)</span>
+  </div>
+  <div class="metrics-action">
+    <span class="metric-label">Main Rival:</span>
+    <span class="metric-value">{{ player_most_played_against[0] }}</span>
+    <span class="metric-sub-label">({{ player_most_played_against[4] }} games)</span>
+  </div>
+  <div class="metrics-action">
+    <span class="metric-label">Best Partner:</span>
+    <span class="metric-value">{{ player_most_played_with_win_rate[0][0] }}</span>
+    <span class="metric-sub-label">({{ player_most_played_with_win_rate[0][5]|round(0) }}% win rate)</span>
+  </div>
+  <div class="metrics-action">
+    <span class="metric-label">Games Won</span>
+    <span class="metric-value">{{ total_wins }}{% if total_games > 0 %}</span>
+    <span class="metric-sub-label">({{ (total_wins / total_games * 100)|round()|int }}%){% endif %} win rate</span>
+  </div>
+  <div class="metrics-action">
+    <span class="metric-label">Easiest Rival:</span>
+    <span class="metric-value">{{ player_most_played_against_win_rate[0][0] }}</span>
+    <span class="metric-sub-label">({{ player_most_played_against_win_rate[0][5]|round(0) }}% win rate)</span>
+  </div>
+  <div class="metrics-action">
+    <span class="metric-label">Worst Partner:</span>
+    <span class="metric-value">{{ player_most_played_with_win_rate[-1][0] }}</span>
+    <span class="metric-sub-label">({{100- player_most_played_with_win_rate[-1][5]|round(0)}}% lost rate)</span>
+  </div>
+  <div class="metrics-action">
+    <span class="metric-label">Games Lost:</span>
+    <span class="metric-value">{{ total_losses }}{% if total_games > 0 %}{% endif %}</span>
+    <span class="metric-sub-label">({{ (total_losses / total_games * 100)|round()|int }}% lost rate)</span>
+  </div>
+
+  <div class="metrics-action">
+    <span class="metric-label">Strongest Rival:</span>
+    <span class="metric-value">{{ player_most_played_against_win_rate[-1][0] }}</span>
+    <span class="metric-sub-label">({{ 100- player_most_played_against_win_rate[-1][5]|round(0)}}% lost rate)</span>
+  </div>
+</div>
+
+  {% endif %}
+
+  <div class="do-more">
+    <h2>Explore more options</h2>
+    <p>Make the most of your game time with this all-in-one platform. Calculate your odds, compare your ranking, and upload your game results quickly and easily.</p>
+</div>
+
+  <div class="action-grid">
+    <a href="/" class="action action2">Upload game</a>
+    <a href="/calculate_odds" class="action action2">Calculate odds</a>
+    <a href="/rating" class="action action3">Ranking</a>
+    <a href="/match_list" class="action action4">Match history</a>
+    <a href="/rating_evolution" class="action action3">Rating evolution</a>
+    <a href="/metrics" class="action action4">Players Metrics (new)</a>
+  </div>
+  <script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+      event.preventDefault(); // prevent the form from submitting
+  
+      // get the player name input value
+      var playerNameInput = document.getElementById('player_name');
+      var playerName = playerNameInput.value;
+  
+      // validate the player name input
+      if (!playerName) {
+        alert('Please select a player.');
+        playerNameInput.focus();
+        return false; // stop the function and prevent the form from submitting
+      }
+  
+      // if all inputs are valid, submit the form
+      this.submit();
+    });
+  </script>
+</body>
+</html>
