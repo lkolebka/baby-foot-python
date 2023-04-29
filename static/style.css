@@ -301,7 +301,7 @@ input[type="submit"]:hover {
 }
 
 .action:nth-child(6) {
-  background: linear-gradient(141.13deg, #e2bb30 26.29%, #36a5ef 100%);
+  background: linear-gradient(141.13deg, #e2bb30 26.29%, #e69c13 100%);
   color: #fff;
 }
 
