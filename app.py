@@ -1000,14 +1000,14 @@ def player_stats_route():
         cur.execute("""WITH match_stats AS (
                 SELECT
                     p.player_id,
-                    SUM(CASE WHEN t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id THEN 1 ELSE 0 END) AS games_won,
-                    SUM(CASE WHEN t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id THEN 1 ELSE 0 END) AS games_lost
+                    SUM(CASE WHEN t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id THEN 1 ELSE 0 END) AS games_lost,
+                    SUM(CASE WHEN t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id THEN 1 ELSE 0 END) AS games_won
                 FROM
                     Player p
                 JOIN
                     Team t1 ON p.player_id = t1.team_player_1_id OR p.player_id = t1.team_player_2_id
                 JOIN
-                    Team t2 ON (t2.team_player_1_id =%s OR t2.team_player_2_id = %s) AND t1.team_id != t2.team_id
+                    Team t2 ON (t2.team_player_1_id = %s OR t2.team_player_2_id = %s) AND t1.team_id != t2.team_id
                 JOIN
                     Match m ON (t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id) OR (t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id)
                 WHERE
@@ -1026,7 +1026,7 @@ def player_stats_route():
             JOIN
                 match_stats ms ON p.player_id = ms.player_id
             WHERE
-                p.player_id != %s
+                p.player_id != %s AND p.first_name != 'Guest'
             ORDER BY
             total_games DESC""", (player_id,player_id,player_id,player_id))
         player_most_played_against = cur.fetchone()
@@ -1035,14 +1035,14 @@ def player_stats_route():
         cur.execute("""WITH match_stats AS (
                 SELECT
                     p.player_id,
-                    SUM(CASE WHEN t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id THEN 1 ELSE 0 END) AS games_won,
-                    SUM(CASE WHEN t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id THEN 1 ELSE 0 END) AS games_lost
+                    SUM(CASE WHEN t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id THEN 1 ELSE 0 END) AS games_lost,
+                    SUM(CASE WHEN t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id THEN 1 ELSE 0 END) AS games_won
                 FROM
                     Player p
                 JOIN
                     Team t1 ON p.player_id = t1.team_player_1_id OR p.player_id = t1.team_player_2_id
                 JOIN
-                    Team t2 ON (t2.team_player_1_id =%s OR t2.team_player_2_id = %s) AND t1.team_id != t2.team_id
+                    Team t2 ON (t2.team_player_1_id = %s OR t2.team_player_2_id = %s) AND t1.team_id != t2.team_id
                 JOIN
                     Match m ON (t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id) OR (t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id)
                 WHERE
@@ -1061,7 +1061,7 @@ def player_stats_route():
             JOIN
                 match_stats ms ON p.player_id = ms.player_id
             WHERE
-                p.player_id != %s
+                p.player_id != %s AND p.first_name != 'Guest'
             ORDER BY
             win_rate DESC""", (player_id,player_id,player_id,player_id))
         player_most_played_against_win_rate = cur.fetchall()
