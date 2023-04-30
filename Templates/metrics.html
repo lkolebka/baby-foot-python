@@ -225,18 +225,18 @@
   <div class="metrics-action">
     <span class="metric-label">Worst Partner:</span>
     <span class="metric-value">{{ player_most_played_with_win_rate[-1][0] }}</span>
-    <span class="metric-sub-label">({{100- player_most_played_with_win_rate[-1][5]|round(0)}}% lost rate)</span>
+    <span class="metric-sub-label">({{100- player_most_played_with_win_rate[-1][5]|round(0)}}% loss rate)</span>
   </div>
   <div class="metrics-action">
     <span class="metric-label">Games Lost:</span>
     <span class="metric-value">{{ total_losses }}{% if total_games > 0 %}{% endif %}</span>
-    <span class="metric-sub-label">({{ (total_losses / total_games * 100)|round()|int }}% lost rate)</span>
+    <span class="metric-sub-label">({{ (total_losses / total_games * 100)|round()|int }}% loss rate)</span>
   </div>
 
   <div class="metrics-action">
     <span class="metric-label">Strongest Rival:</span>
     <span class="metric-value">{{ player_most_played_against_win_rate[-1][0] }}</span>
-    <span class="metric-sub-label">({{ 100- player_most_played_against_win_rate[-1][5]|round(0)}}% lost rate)</span>
+    <span class="metric-sub-label">({{ 100- player_most_played_against_win_rate[-1][5]|round(0)}}% loss rate)</span>
   </div>
 </div>
 
