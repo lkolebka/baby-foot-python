@@ -1152,7 +1152,7 @@ dash_app.layout = dbc.Container([
                                 html.A('Rating evolution', href='/rating_evolution',
                                        className='action action5'),
                                 # Add Rating Evolution option
-                                html.A('Coming soon', href='/',
+                                html.A('Player metrics', href='/metrics',
                                        className='action action7'),
                             ], className='action-grid')
                         ]),
