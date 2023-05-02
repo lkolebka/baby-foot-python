@@ -1121,7 +1121,7 @@ dash_app.layout = dbc.Container([
             md={"size": 12, "offset": 0},
             sm={"size": 12, "offset": 0}
         )
-    ], className="graph-row",style={"margin-top": "20px", "margin": "10px"})
+    ], className="graph-row",style={"margin-top": "20px", "margin-right": "10px"})
 ,
     html.Div([
     dbc.Row([
