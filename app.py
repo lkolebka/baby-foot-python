@@ -554,13 +554,13 @@ def get_players():
             conn.close()
 
 def get_players_full_list():
-    query = 'SELECT player_id, first_name, last_name, active FROM Player ORDER BY player_id'
+    query = 'SELECT first_name FROM player ORDER BY first_name ASC'
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
         cur.execute(query)
-        players = cur.fetchall()
+        players_full = cur.fetchall()
 
-    return players
+    return [player[0] for player in players_full]
 
 def get_latest_player_ratings(month=None, year=None):
     now = datetime.now()
@@ -1072,12 +1072,12 @@ def player_stats_route():
         conn.close()
 
         # Pass the player stats to the template
-        players = get_players()
+        players = get_players_full_list()
 
         return render_template('metrics.html', players=players,player_name=player_name, total_games=total_games, total_wins=total_wins, total_losses=total_losses,avg_score=avg_score,player_most_played_with=player_most_played_with,player_most_played_with_win_rate=player_most_played_with_win_rate,player_most_played_against=player_most_played_against,player_most_played_against_win_rate=player_most_played_against_win_rate)
     else:
         # Render the form for selecting the player
-        players = get_players()
+        players = get_players_full_list()
         print(f"Available players: {players}")
         return render_template('metrics.html', players=players)
 
@@ -1103,7 +1103,7 @@ dash_app.layout = dbc.Container([
         dbc.Col(
             dcc.Dropdown(
                 id='player-dropdown',
-                options=[{'label': player, 'value': player} for player in get_players()],
+                options=[{'label': player, 'value': player} for player in get_players_full_list()],
                 value=['Matthieu', 'Lazare'],
                 multi=True
             ),
