@@ -562,6 +562,16 @@ def get_players_full_list():
 
     return [player[0] for player in players_full]
 
+def get_players_detailed_list():
+    query = 'SELECT player_id, first_name, last_name, active FROM player ORDER BY first_name ASC'
+    with psycopg2.connect(**DATABASE_CONFIG) as conn:
+        cur = conn.cursor()
+        cur.execute(query)
+        players_full = cur.fetchall()
+
+    return players_full
+
+
 def get_latest_player_ratings(month=None, year=None):
     now = datetime.now()
     default_month = now.month
@@ -810,7 +820,7 @@ def match_list():
 
 @app.route('/players')
 def players_list_showed():
-    players_list = get_players_full_list()
+    players_list = get_players_detailed_list()
     print(players_list)  # Add this line to print the contents of players_list
     return render_template('players.html', players_list=players_list)
 
