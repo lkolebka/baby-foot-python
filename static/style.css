@@ -2,23 +2,18 @@ html {
     overflow-x: hidden;
 }
 
-
-
 body {
     margin: 0;
     padding: 0;
     background-color: #f9f9f9;
     font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
-    color: #111;
-   
-
+    color: #111;   
 }
 
 a {
     text-decoration: none;
   }
   
-
 h1, h2, h3 {
     font-weight: 700;
     margin-top: 0.3em;
@@ -80,7 +75,6 @@ h1 {
         font-size: 24px;
     }
 }
-
 
 .cdx_mkt_subtext_container {
     max-width: 1200px;
@@ -146,7 +140,6 @@ form {
     text-align: center;
 }
 
-
 label {
     font-size: 22px;
     line-height: 20px;
@@ -159,8 +152,6 @@ label {
     text-align: left;
     font-family: SegoeUI, 'Segoe UI', Roboto, 'Helvetica Neue', Helvetica, 'Microsoft YaHei', Meiryo, 'Meiryo UI', Arial Unicode MS, sans-serif;
 }
-
-
 
 input[type="text"], input[type="number"], select {
     width: 80%;
@@ -177,7 +168,6 @@ input[type="text"], input[type="number"], select {
     text-align-last: center;
     display: block;
 }
-
 
 input[type="date"], input[type="time"], select {
     width: 80%;
@@ -210,8 +200,6 @@ input[type="submit"] {
     margin-right: auto;
     display: block;
 }
-
-
 
 input[type="submit"]:hover {
     background: linear-gradient(81.62deg, #ffffff 8.72%, #ffffff 85.01%);
@@ -254,8 +242,6 @@ input[type="submit"]:hover {
     padding: 1em;
     overflow: hidden;
     background-color: #EBF0F9;
-    
-    
   }
 
   .action-grid {
@@ -271,8 +257,6 @@ input[type="submit"]:hover {
     justify-content: center;
     align-items: center;
 }
-
-
   
   /* Individual actions */
 .action:nth-child(1) {
@@ -301,7 +285,7 @@ input[type="submit"]:hover {
 }
 
 .action:nth-child(6) {
-  background: linear-gradient(141.13deg, #3077e2 26.29%, #36a5ef 100%);
+  background: linear-gradient(226deg, #f1c62a 26.29%, #e69c13 100%);
   color: #fff;
 }
 
@@ -320,9 +304,7 @@ input[type="submit"]:hover {
   word-wrap: normal;
 }
 
-
 /*grid control metrics*/
-/* Grid control */
 .metrics-action-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -378,11 +360,6 @@ input[type="submit"]:hover {
   color: #fff;
 }
 
-
-
-
-
-  
   /*table odds and probability*/
   .centered-table {
     margin: 0 auto;
@@ -390,15 +367,12 @@ input[type="submit"]:hover {
     border-collapse: separate;
     border-spacing: 10px;
     border: #000000;
-    
-  
   }
   
   .emoji {
     text-align: center;
   }
   
-
   .chance-of-winning {
     text-align: center;
   }
@@ -406,7 +380,6 @@ input[type="submit"]:hover {
   .odds-number {
    text-align: left;
   }
-  
 
   /*THANK YOU PAGE */
   .thank-you-page {
@@ -432,14 +405,12 @@ input[type="submit"]:hover {
     text-align: center;
 }
 
-
 .thank-you-page table {
     font-size: 1em;
     border-collapse: collapse;
     margin-bottom: 1em;
     margin: 0 auto;
     text-align: center;
-
 }
 
 .thank-you-page table tr td.score {
@@ -454,8 +425,6 @@ input[type="submit"]:hover {
     margin: 0 auto;
   }
   
- 
-
 .thank-you-page table th {
     padding-top: 1em;
     padding-right: 0.2em;
@@ -464,7 +433,6 @@ input[type="submit"]:hover {
     border-bottom: 2px solid #ddd;
     text-align: center;
 }
-
 
 .thank-you-page table tr:nth-child(even) {
     background-color: #f2f2f2;
@@ -486,7 +454,6 @@ input[type="submit"]:hover {
     border-radius: 15px;
     box-shadow : 0px;
 }
-
 
 .thank-you-page button {
     width: 40%;
@@ -523,7 +490,6 @@ input[type="submit"]:hover {
     align-items: center;
 }
 
-
 .match-page p {
     font-size: 1em;
     padding-left: 2em;
@@ -535,14 +501,12 @@ input[type="submit"]:hover {
     text-align: center;
 }
 
-
 .match-page table {
     font-size: 1em;
     border-collapse: collapse;
     margin-bottom: 1em;
     margin: 0 auto;
     text-align: center;
-
 }
 
 @media only screen and (max-width: 768px) {
@@ -588,7 +552,6 @@ input[type="submit"]:hover {
     text-align: center;
 }
 
-
 .match-page table tr:nth-child(even) {
     background-color: #f2f2f2;
 }
@@ -609,7 +572,6 @@ input[type="submit"]:hover {
     border-radius: 15px;
     box-shadow : 0px;
 }
-
 
 .match-page button {
     width: 40%;
@@ -686,10 +648,8 @@ input[type="submit"]:hover {
     background-color: #bbbbbb;
 }
 
-
 /* Chart DASH */
 /* Style the dropdown container */
-
 
 .dropdown-container {
   margin: auto;
@@ -713,7 +673,6 @@ input[type="submit"]:hover {
   .dropdown-container {
     width: 100%;
     margin-bottom: 1em;
-    
   }
 
   .chart-container {
@@ -737,8 +696,6 @@ input[type="submit"]:hover {
   }
 }
 
-
-
 /* Make the chart responsive on larger screens */
 @media screen and (min-width: 577px) {
   .dropdown-container {
@@ -756,7 +713,6 @@ input[type="submit"]:hover {
   width: 100%;
   height: 100%;
 }
-
 
 .graph-row {
   display: flex;

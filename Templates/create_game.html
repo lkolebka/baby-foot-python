@@ -108,6 +108,12 @@
                   alert("Scores cannot be greater than 11.");
                   return false;
               }
+
+              // Check if the scores are not greater than 11
+              if (team1_score -1 || team2_score <= -1) {
+                  alert("Scores cannot be lower than 0.");
+                  return false;
+              }
       
               // Check if one of the scores is equal to 11
               if (team1_score != 11 && team2_score != 11) {

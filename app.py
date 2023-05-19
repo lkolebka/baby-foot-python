@@ -554,13 +554,13 @@ def get_players():
             conn.close()
 
 def get_players_full_list():
-    query = 'SELECT player_id, first_name, last_name, active FROM Player ORDER BY player_id'
+    query = 'SELECT first_name FROM player ORDER BY first_name ASC'
     with psycopg2.connect(**DATABASE_CONFIG) as conn:
         cur = conn.cursor()
         cur.execute(query)
-        players = cur.fetchall()
+        players_full = cur.fetchall()
 
-    return players
+    return [player[0] for player in players_full]
 
 def get_latest_player_ratings(month=None, year=None):
     now = datetime.now()
@@ -961,20 +961,21 @@ def player_stats_route():
         avg_score = cur.fetchone()[0]
 
         # Name of the player played with the most on the same team 
-        cur.execute("""SELECT p2.first_name, p2.last_name, COUNT(DISTINCT pm2.match_id) AS games_played,
-                COUNT(DISTINCT CASE WHEN m.winning_team_id = t.team_id THEN pm2.match_id END) AS games_won,
-                COUNT(DISTINCT CASE WHEN m.losing_team_id = t.team_id THEN pm2.match_id END) AS games_lost,
-                COUNT(DISTINCT CASE WHEN m.winning_team_id = t.team_id THEN pm2.match_id END) * 100.0 / COUNT(DISTINCT pm2.match_id) AS win_rate
-                FROM Player p1
-                JOIN PlayerMatch pm1 ON p1.player_id = pm1.player_id
-                JOIN Match m ON pm1.match_id = m.match_id
-                JOIN Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
-                JOIN Team t2 ON t2.team_id = t.team_id AND (t2.team_player_1_id = p1.player_id OR t2.team_player_2_id = p1.player_id)
-                JOIN PlayerMatch pm2 ON pm2.match_id = pm1.match_id AND (t2.team_player_1_id = pm2.player_id OR t2.team_player_2_id = pm2.player_id) AND pm2.player_id != p1.player_id
-                JOIN Player p2 ON p2.player_id = pm2.player_id AND p2.player_id != p1.player_id
-                WHERE p1.player_id = %s AND (t.team_player_1_id = %s OR t.team_player_2_id = %s)
-                GROUP BY p2.player_id, p2.first_name, p2.last_name
-                ORDER BY games_played DESC""", (player_id, player_id, player_id))
+        cur.execute("""SELECT p2.first_name, p2.last_name, COUNT(DISTINCT tm2.match_id) AS games_played,
+       COUNT(DISTINCT CASE WHEN m.winning_team_id = tm2.team_id THEN tm2.match_id END) AS games_won,
+       COUNT(DISTINCT CASE WHEN m.losing_team_id = tm2.team_id THEN tm2.match_id END) AS games_lost,
+       COUNT(DISTINCT CASE WHEN m.winning_team_id = tm2.team_id THEN tm2.match_id END) * 100.0 / COUNT(DISTINCT tm2.match_id) AS win_rate
+        FROM Player p1
+        JOIN PlayerMatch pm1 ON p1.player_id = pm1.player_id
+        JOIN Match m ON pm1.match_id = m.match_id
+        JOIN TeamMatch tm1 ON tm1.match_id = m.match_id AND (tm1.team_id = m.winning_team_id OR tm1.team_id = m.losing_team_id)
+        JOIN Team t1 ON t1.team_id = tm1.team_id AND (t1.team_player_1_id = p1.player_id OR t1.team_player_2_id = p1.player_id)
+        JOIN TeamMatch tm2 ON tm2.match_id = tm1.match_id AND tm2.team_id = t1.team_id
+        JOIN PlayerMatch pm2 ON pm2.match_id = tm2.match_id AND pm2.player_id != p1.player_id AND (t1.team_player_1_id = pm2.player_id OR t1.team_player_2_id = pm2.player_id)
+        JOIN Player p2 ON p2.player_id = pm2.player_id AND p2.player_id != p1.player_id AND p2.first_name != 'Guest'
+        WHERE p1.player_id = %s
+        GROUP BY p2.player_id, p2.first_name, p2.last_name
+        ORDER BY games_played DESC""", (player_id,))
         player_most_played_with = cur.fetchone()
 
         # Name of the player played with the ranked by win_rate
@@ -989,86 +990,80 @@ def player_stats_route():
                 JOIN Team t2 ON t2.team_id = t.team_id AND (t2.team_player_1_id = p1.player_id OR t2.team_player_2_id = p1.player_id)
                 JOIN PlayerMatch pm2 ON pm2.match_id = pm1.match_id AND (t2.team_player_1_id = pm2.player_id OR t2.team_player_2_id = pm2.player_id) AND pm2.player_id != p1.player_id
                 JOIN Player p2 ON p2.player_id = pm2.player_id AND p2.player_id != p1.player_id
-                WHERE p1.player_id = %s AND (t.team_player_1_id = %s OR t.team_player_2_id = %s)
+                WHERE p1.player_id = %s AND (t.team_player_1_id = %s OR t.team_player_2_id = %s) AND p2.first_name != 'Guest'
                 GROUP BY p2.player_id, p2.first_name, p2.last_name
                 ORDER BY win_rate DESC""", (player_id, player_id, player_id))
         player_most_played_with_win_rate = cur.fetchall()
 
 
          # Name of the player played against the most 
-        cur.execute("""SELECT 
-                p2.first_name, 
-                p2.last_name, 
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
-                        WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
-                        ELSE 0 END) AS games_won,
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
-                        WHEN t.team_player_2_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
-                        ELSE 0 END) AS games_lost,
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END) AS total_games,
-                ROUND(SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
-                        WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
-                        ELSE 0 END) * 100.0 / SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END), 2) AS win_rate
-            FROM 
-                Player p1
-            JOIN 
-                PlayerMatch pm1 ON p1.player_id = pm1.player_id
-            JOIN 
-                Match m ON pm1.match_id = m.match_id
-            JOIN 
-                Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
-            JOIN 
-                PlayerMatch pm2 ON pm2.match_id = pm1.match_id 
-                    AND pm2.player_id != pm1.player_id 
-                    AND pm2.player_match_id > pm1.player_match_id
-            JOIN 
-                Player p2 ON p2.player_id = pm2.player_id
-            WHERE 
-                p1.player_id = %s
-            GROUP BY 
-                p2.player_id, 
-                p2.first_name, 
-                p2.last_name
-            ORDER BY 
-                total_games DESC""", (player_id,))
+        cur.execute("""WITH match_stats AS (
+                SELECT
+                    p.player_id,
+                    SUM(CASE WHEN t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id THEN 1 ELSE 0 END) AS games_lost,
+                    SUM(CASE WHEN t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id THEN 1 ELSE 0 END) AS games_won
+                FROM
+                    Player p
+                JOIN
+                    Team t1 ON p.player_id = t1.team_player_1_id OR p.player_id = t1.team_player_2_id
+                JOIN
+                    Team t2 ON (t2.team_player_1_id = %s OR t2.team_player_2_id = %s) AND t1.team_id != t2.team_id
+                JOIN
+                    Match m ON (t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id) OR (t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id)
+                WHERE
+                    p.player_id != %s
+                GROUP BY p.player_id
+            )
+            SELECT
+                p.first_name,
+                p.last_name,
+                ms.games_won,
+                ms.games_lost,
+                ms.games_won + ms.games_lost AS total_games,
+                ROUND(ms.games_won * 100.0 / (ms.games_won + ms.games_lost), 2) AS win_rate
+            FROM
+                Player p
+            JOIN
+                match_stats ms ON p.player_id = ms.player_id
+            WHERE
+                p.player_id != %s AND p.first_name != 'Guest'
+            ORDER BY
+            total_games DESC""", (player_id,player_id,player_id,player_id))
         player_most_played_against = cur.fetchone()
 
         # Name of the player played against the most with win rate
-        cur.execute("""SELECT 
-                p2.first_name, 
-                p2.last_name, 
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
-                        WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
-                        ELSE 0 END) AS games_won,
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
-                        WHEN t.team_player_2_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
-                        ELSE 0 END) AS games_lost,
-                SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END) AS total_games,
-                ROUND(SUM(CASE WHEN t.team_player_1_id = pm1.player_id AND m.winning_team_id = t.team_id THEN 1
-                        WHEN t.team_player_2_id = pm1.player_id AND m.losing_team_id = t.team_id THEN 1
-                        ELSE 0 END) * 100.0 / SUM(CASE WHEN t.team_player_1_id = pm1.player_id OR t.team_player_2_id = pm1.player_id THEN 1 ELSE 0 END), 2) AS win_rate
-            FROM 
-                Player p1
-            JOIN 
-                PlayerMatch pm1 ON p1.player_id = pm1.player_id
-            JOIN 
-                Match m ON pm1.match_id = m.match_id
-            JOIN 
-                Team t ON t.team_id = m.winning_team_id OR t.team_id = m.losing_team_id
-            JOIN 
-                PlayerMatch pm2 ON pm2.match_id = pm1.match_id 
-                    AND pm2.player_id != pm1.player_id 
-                    AND pm2.player_match_id > pm1.player_match_id
-            JOIN 
-                Player p2 ON p2.player_id = pm2.player_id
-            WHERE 
-                p1.player_id = %s
-            GROUP BY 
-                p2.player_id, 
-                p2.first_name, 
-                p2.last_name
-            ORDER BY 
-                win_rate DESC""", (player_id,))
+        cur.execute("""WITH match_stats AS (
+                SELECT
+                    p.player_id,
+                    SUM(CASE WHEN t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id THEN 1 ELSE 0 END) AS games_lost,
+                    SUM(CASE WHEN t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id THEN 1 ELSE 0 END) AS games_won
+                FROM
+                    Player p
+                JOIN
+                    Team t1 ON p.player_id = t1.team_player_1_id OR p.player_id = t1.team_player_2_id
+                JOIN
+                    Team t2 ON (t2.team_player_1_id = %s OR t2.team_player_2_id = %s) AND t1.team_id != t2.team_id
+                JOIN
+                    Match m ON (t1.team_id = m.winning_team_id AND t2.team_id = m.losing_team_id) OR (t1.team_id = m.losing_team_id AND t2.team_id = m.winning_team_id)
+                WHERE
+                    p.player_id != %s
+                GROUP BY p.player_id
+            )
+            SELECT
+                p.first_name,
+                p.last_name,
+                ms.games_won,
+                ms.games_lost,
+                ms.games_won + ms.games_lost AS total_games,
+                ROUND(ms.games_won * 100.0 / (ms.games_won + ms.games_lost), 2) AS win_rate
+            FROM
+                Player p
+            JOIN
+                match_stats ms ON p.player_id = ms.player_id
+            WHERE
+                p.player_id != %s AND p.first_name != 'Guest'
+            ORDER BY
+            win_rate DESC""", (player_id,player_id,player_id,player_id))
         player_most_played_against_win_rate = cur.fetchall()
 
 
@@ -1077,12 +1072,12 @@ def player_stats_route():
         conn.close()
 
         # Pass the player stats to the template
-        players = get_players()
+        players = get_players_full_list()
 
         return render_template('metrics.html', players=players,player_name=player_name, total_games=total_games, total_wins=total_wins, total_losses=total_losses,avg_score=avg_score,player_most_played_with=player_most_played_with,player_most_played_with_win_rate=player_most_played_with_win_rate,player_most_played_against=player_most_played_against,player_most_played_against_win_rate=player_most_played_against_win_rate)
     else:
         # Render the form for selecting the player
-        players = get_players()
+        players = get_players_full_list()
         print(f"Available players: {players}")
         return render_template('metrics.html', players=players)
 
@@ -1108,7 +1103,7 @@ dash_app.layout = dbc.Container([
         dbc.Col(
             dcc.Dropdown(
                 id='player-dropdown',
-                options=[{'label': player, 'value': player} for player in get_players()],
+                options=[{'label': player, 'value': player} for player in get_players_full_list()],
                 value=['Matthieu', 'Lazare'],
                 multi=True
             ),
@@ -1126,7 +1121,7 @@ dash_app.layout = dbc.Container([
             md={"size": 12, "offset": 0},
             sm={"size": 12, "offset": 0}
         )
-    ], className="graph-row",style={"margin-top": "20px", "margin-right": "10px"})
+    ], className="graph-row",style={"margin-top": "20px"})
 ,
     html.Div([
     dbc.Row([
@@ -1157,7 +1152,7 @@ dash_app.layout = dbc.Container([
                                 html.A('Rating evolution', href='/rating_evolution',
                                        className='action action5'),
                                 # Add Rating Evolution option
-                                html.A('Coming soon', href='/',
+                                html.A('Player metrics', href='/metrics',
                                        className='action action7'),
                             ], className='action-grid')
                         ]),

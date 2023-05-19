@@ -16,9 +16,10 @@ CREATE TABLE Match (
     match_timestamp timestamp NOT NULL,
     winning_team_id int REFERENCES Team(team_id),
     losing_team_id int REFERENCES Team(team_id),
-    winning_team_score int,
-    losing_team_score int NOT NULL
+    winning_team_score int CHECK (winning_team_score = 11),
+    losing_team_score int NOT NULL CHECK (losing_team_score >= 0 AND losing_team_score != 11)
 );
+
 
 CREATE TABLE PlayerMatch (
     player_match_id serial PRIMARY KEY,
