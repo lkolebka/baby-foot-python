@@ -77,9 +77,9 @@ To use the system, follow these steps:
 1. Create and configure your database settings in the `config.py` file
 2. Run the `create_database.py`
 3. If you have an Excel file with previous match data, use the data processing module `V3_Working_without_logg.py` to transform this data into a suitable format for the rating system.
-4. Use the application module (app.py) to calculate and update player ratings based on match outcomes.
-
-Continuously feed match data into the system to keep player ratings up-to-date.
+4. Run the application by using the module `app.py` to calculate and update player ratings based on match outcomes.
+5. Continuously feed match data into the system to keep player ratings up-to-date.
+6. Take a look at the data vizualiation and the different players metrics in the app.
 
 The baby-foot Elo rating system allows for fair player performance evaluation and fosters a competitive environment for players of all skill levels.
 
