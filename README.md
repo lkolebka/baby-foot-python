@@ -49,7 +49,7 @@ Before diving into the features, it is important to understand the underlying da
 ![Database Diagram](https://github.com/lkolebka/baby-foot-python/blob/main/database%20diagram.png?raw=true)
 
 ## Features and Workflow
-#### Data Processing `V3_Working_without_logg.py`
+#### Data Processing
 
 
 This initial step prepares player data for the Elo rating calculations by processing Excel files and transforming raw data into a suitable format. This step is optional and depends on whether there's an Excel file containing previous match data.
@@ -57,7 +57,7 @@ This initial step prepares player data for the Elo rating calculations by proces
 To use this module, an Excel file with previous match data is required. An example Excel file is provided in the repository for reference.
 After obtaining the Excel file, run the script `V3_Working_without_logg.py`. This script reads, processes the data from the Excel file, and stores it in a format suitable for the application. Make sure to place the Excel file in the correct directory for the script to access.
 
-#### Web Application `app.py`
+#### Web Application
 The web application is the primary interface for users to interact with the Elo rating system. It provides several main features:
 - Record Matches: Users can record match results including players, scores, and the winning team.
 
