@@ -48,15 +48,16 @@
             <th>Active</th>
             <th>Actions</th>
         </tr>
-        {% for player in players_list %}
-            <tr>
-                <td>{{ player[0] }}</td>
-                <td>{{ player[1] }}</td>
-                <td>{{ player[2] }}</td>
-                <td>{{ player[3] }}</td>
-                <td><a href="{{ url_for('edit_player', player_id=player[0]) }}">Edit</a></td>
-            </tr>
-        {% endfor %}
+        {% for Players in players_list %}
+        <tr>
+            <td>{{ Players[0] }}</td>
+            <td>{{ Players[1] }}</td>
+            <td>{{ Players[2] }}</td>
+            <td>{{ Players[3] }}</td>
+            <td><a href="{{ url_for('edit_player', player_id=Players[0]) }}">Edit</a></td>
+        </tr>
+    {% endfor %}
+    
     </table>
 
     <div class="do-more">

@@ -140,6 +140,10 @@ form {
     text-align: center;
 }
 
+.game_date {
+  white-space: nowrap;
+}
+
 label {
     font-size: 22px;
     line-height: 20px;
