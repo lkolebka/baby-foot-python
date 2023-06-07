@@ -52,10 +52,11 @@ Before diving into the features, it is important to understand the underlying da
 #### Data Processing
 
 
-This initial step prepares player data for the Elo rating calculations by processing Excel files and transforming raw data into a suitable format. This step is optional and depends on whether there's an Excel file containing previous match data.
+This initial step prepares player data for the Elo rating calculations. It handles the processing of Excel files, extracting raw match data and transforming it into a suitable format for accurate Elo calculations and appropriate database insertion. This step is optional and depends on whether there's an Excel file containing previous match data.
 
 To use this module, an Excel file with previous match data is required. An example Excel file is provided in the repository for reference.
-After obtaining the Excel file, run the script `V3_Working_without_logg.py`. This script reads, processes the data from the Excel file, and stores it in a format suitable for the application. Make sure to place the Excel file in the correct directory for the script to access.
+
+After obtaining the Excel file, run the script V3_Working_without_logg.py. This script reads the data from the Excel file, transforms it, and effectively manages the data insertion into the database, ensuring the correct links between tables. It also initiates and compute the Elo rating for every player involved in a match.
 
 #### Web Application
 The web application is the primary interface for users to interact with the Elo rating system. It provides several main features:
