@@ -56,7 +56,7 @@ This initial step prepares player data for the Elo rating calculations. It handl
 
 To use this module, an Excel file with previous match data is required. An example Excel file is provided in the repository for reference.
 
-After obtaining the Excel file, run the script V3_Working_without_logg.py. This script reads the data from the Excel file, transforms it, and effectively manages the data insertion into the database, ensuring the correct links between tables. It also initiates and compute the Elo rating for every player involved in a match.
+After obtaining the Excel file, run the script `V3_Working_without_logg.py`. This script reads the data from the Excel file, transforms it, and effectively manages the data insertion into the database, ensuring the correct links between tables. It also initiates and compute the Elo rating for every player involved in a match.
 
 #### Web Application
 The web application is the primary interface for users to interact with the Elo rating system. It provides several main features:
