@@ -1,7 +1,7 @@
 
 # Creating Connection Throuh Competition: The Development of an Elo-Based, Data-Driven Ranking System for Baby-Foot
 
-This project is a sophisticated foosball Elo rating system, built as part of a thesis research. Designed specifically for four-player foosball matches, it refines the Elo rating system with new parameters and a modified K-value to provide accurate player ratings. The system is implemented in Python and comprises two major components:
+This project is a sophisticated baby-foot (table soccer) Elo rating system, built as part of a thesis research. Designed specifically for four-player foosball matches, it refines the Elo rating system with new parameters and a modified K-value to provide accurate player ratings. The system is implemented in Python and comprises two major components:
 
 
 
