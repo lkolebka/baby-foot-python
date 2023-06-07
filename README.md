@@ -44,7 +44,7 @@ else:
     } 
 ```
 ## Database Schema
-Before diving into the features, it is important to understand the underlying  [database schema](https://github.com/lkolebka/baby-foot-python/blob/main/create_uppload%20_match/createDB.sql). This schema illustrates how different data points are linked to each other within the database. The schema consists of the following tables: 
+Before diving into the features, it is important to understand the underlying database shcema [code for the creation is here](https://github.com/lkolebka/baby-foot-python/blob/main/create_uppload%20_match/createDB.sql). This schema illustrates how different data points are linked to each other within the database. The schema consists of the following tables: 
 
 ![Database Diagram](https://github.com/lkolebka/baby-foot-python/blob/main/database%20diagram.png?raw=true)
 
