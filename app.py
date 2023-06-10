@@ -615,7 +615,6 @@ def get_latest_player_ratings(month=None, year=None):
             AND pr.player_rating_timestamp = mprt.max_timestamp
         JOIN filtered_player_match fpm ON p.player_id = fpm.player_id
         JOIN filtered_matches fm ON fpm.match_id = fm.match_id
-        WHERE p.active = true
         GROUP BY p.player_id, pr.rating, pr.player_rating_timestamp
         ORDER BY pr.rating DESC;
     '''
