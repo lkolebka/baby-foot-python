@@ -85,7 +85,7 @@ The baby-foot Elo rating system allows for fair player performance evaluation an
 
 ## Authors
 
-- [@lkolebka](https://www.github.com/lkolebka
+- [@lkolebka] https://www.github.com/lkolebka
 
 
 ## License
