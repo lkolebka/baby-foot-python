@@ -90,4 +90,4 @@ The baby-foot Elo rating system allows for fair player performance evaluation an
 
 ## License
 
-This application is available under the MIT License. See the [LICENSE](LICENSE) file for more information.
+This application is available under the AGPLv3 License. See the [LICENSE](LICENSE) file for more information.
