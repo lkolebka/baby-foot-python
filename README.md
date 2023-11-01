@@ -11,8 +11,8 @@ This project is a sophisticated baby-foot (table soccer) Elo rating system, buil
 
 ## Usefull Ressources
 
-[Medium Article](https://towardsdatascience.com/developing-an-elo-based-data-driven-ranking-system-for-2v2-multiplayer-games-7689f7d42a53#e1e8)
-[Full Paper ](https://www.academia.edu/104818976/CREATING_CONNECTION_THROUGH_COMPETITION_THE_DEVELOPMENT_OF_AN_ELO_BASED_DATA_DRIVEN_RANKING_SYSTEM_FOR_BABY_FOOT)
+- Summary of this work can be found on Medium (Towards Data Science): [Medium Article](https://towardsdatascience.com/developing-an-elo-based-data-driven-ranking-system-for-2v2-multiplayer-games-7689f7d42a53#e1e8)
+- The full complete paper with all the appendices can be found here: [Full Paper ](https://www.academia.edu/104818976/CREATING_CONNECTION_THROUGH_COMPETITION_THE_DEVELOPMENT_OF_AN_ELO_BASED_DATA_DRIVEN_RANKING_SYSTEM_FOR_BABY_FOOT)
 
 ## Installation
 
