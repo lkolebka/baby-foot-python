@@ -9,6 +9,11 @@ This project is a sophisticated baby-foot (table soccer) Elo rating system, buil
 - A data processing module that handles initial data from Excel files.
 - A web application that continuously updates player ratings based on the game outcomes, offering multiple interactive features for users.
 
+## Usefull Ressources
+
+[Medium Article](https://towardsdatascience.com/developing-an-elo-based-data-driven-ranking-system-for-2v2-multiplayer-games-7689f7d42a53#e1e8)
+[Full Paper ](https://www.academia.edu/104818976/CREATING_CONNECTION_THROUGH_COMPETITION_THE_DEVELOPMENT_OF_AN_ELO_BASED_DATA_DRIVEN_RANKING_SYSTEM_FOR_BABY_FOOT)
+
 ## Installation
 
 1. Clone this repository.
