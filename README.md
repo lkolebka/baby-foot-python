@@ -80,7 +80,7 @@ To use the application, run the `app.py` script. This starts the web server and 
 To use the system, follow these steps:
 
 1. Create and configure your database settings in the `config.py` file
-2. Run the `create_database.py`
+2. Run the `createDB.sql`
 3. If you have an Excel file with previous match data, use the data processing module `V3_Working_without_logg.py` to transform this data into a suitable format for the rating system.
 4. Run the application by using the module `app.py` to calculate and update player ratings based on match outcomes.
 5. Continuously feed match data into the system to keep player ratings up-to-date.
